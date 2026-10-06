@@ -1,6 +1,6 @@
 # Documentation index
 
-Baseline: **4 October 2026**. These documents describe the local implementation. Planned features are explicitly distinguished from implemented features.
+Baseline: **6 October 2026**. These documents describe the Next.js PoC implementation. Planned features are explicitly distinguished from implemented features.
 
 ## Product and user guides
 
@@ -11,7 +11,7 @@ Baseline: **4 October 2026**. These documents describe the local implementation.
 
 ## Technical references
 
-- [Setup](SETUP.md): local commands, environment, and preview.
+- [Setup](SETUP.md): local commands, environment, production start, and Vercel readiness.
 - [Architecture](ARCHITECTURE.md): components, execution boundaries, and source map.
 - [Data model](DATA-MODEL.md): persisted schemas, mappings, and runtime records.
 - [Workflow engine](WORKFLOW-ENGINE.md): validation, branches, review, and failure behavior.

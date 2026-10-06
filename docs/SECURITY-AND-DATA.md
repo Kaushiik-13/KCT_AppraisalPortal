@@ -9,7 +9,7 @@
 | Submitted values, traces, reviews | Browser session memory |
 | Approved duplicate records | Current workflow session |
 | DOI | Browser to Crossref for lookup |
-| Selected AI input excerpts and instructions | Browser to local middleware, then OpenRouter in live mode |
+| Selected AI input excerpts and instructions | Browser to same-origin Next.js route, then OpenRouter in live mode |
 | OpenRouter key | Server environment / ignored `.env.local` |
 
 The PDF binary is not uploaded by the app's AI path, but selected extracted text may be sent externally. A local draft is not encrypted storage, a cloud backup, or an audit log. Saved policies/instructions can contain personal text if the creator enters it.
@@ -17,13 +17,13 @@ The PDF binary is not uploaded by the app's AI path, but selected extracted text
 ## Implemented protections
 
 - Keys remain server-side and are not included in draft exports or status responses.
-- The AI endpoint checks loopback peer and supplied Origin, bounds requests, and has timeouts/concurrency control.
+- The AI POST endpoint requires a same-origin host/protocol in production, including forwarded Vercel headers; it also bounds requests and has timeouts/concurrency control.
 - Context is bounded and evidence is separated from system instructions.
 - PDF extraction disables PDF.js eval support and enforces size/page limits.
 - Models do not directly mutate evidence or approve scores; deterministic engine/review actions own those operations.
 - Corrupt drafts are protected against automatic overwrite; clearing requires confirmation.
 
-Do not interpret these as production security guarantees. Browser state can be modified locally. Reviewer names are not authenticated. Arbitrary creator policies may consume AI response text as a condition source; the PoC has no trust-level enforcement for evidence.
+Do not interpret these as production security guarantees. Origin validation is not user authentication and the in-memory concurrency guard is not a distributed rate limit. Browser state can be modified locally. Reviewer names are not authenticated. Arbitrary creator policies may consume AI response text as a condition source; the PoC has no trust-level enforcement for evidence.
 
 ## Retention and deletion
 

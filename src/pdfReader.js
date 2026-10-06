@@ -1,7 +1,6 @@
 import {getDocument,GlobalWorkerOptions} from 'pdfjs-dist';
-import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import {analysePaper,textLines} from './paperFindings';
-GlobalWorkerOptions.workerSrc=workerUrl;
+GlobalWorkerOptions.workerSrc='/pdf.worker.min.mjs';
 export async function readPaper(file,onProgress=()=>{}){
  if(!file||file.size===0)throw new Error('Choose a non-empty PDF file.');
  if(file.size>20*1024*1024)throw new Error('For this prototype, choose a PDF smaller than 20 MB.');

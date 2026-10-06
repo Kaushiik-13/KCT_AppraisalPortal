@@ -17,6 +17,7 @@ These records summarize accepted conversation choices and implemented behavior; 
 | D-11 | Save named standalone policy versions | Draft edits must not alter earlier test snapshots |
 | D-12 | Keep two scoring paths temporarily | Preserve existing publication behavior while generalizing the builder |
 | D-13 | Desktop first, compact canvas | Mobile excluded; collapsible navigation and reduced chrome |
+| D-16 | Use Next.js App Router for deployment readiness | Preserve the browser workflow engine behind a client-only boundary; expose AI through Node route handlers and keep secrets server-side |
 
 ## Unresolved domain questions
 
@@ -45,3 +46,7 @@ Publication is offered through a Plugin block/modal; legacy IDs stay compatible.
 ## D-15 — Full document text and explicit evaluation context
 
 Expose extracted PDF text and pages without requiring labelled fields. Preserve page/coverage warnings; all-unreadable PDFs yield null text. Support named additional AI inputs and separate creator reference material. Replace the 2,000-character string clipping with a 100,000-character combined budget and refuse truncated evaluation. Chunking/OCR and web-search integration remain separate work.
+
+## D-16 — Next.js migration and Vercel boundary
+
+Use Next.js 16 App Router as the application host. Keep the existing Framework Studio, workflow engine, PDF processing and autosave in a client-only boundary because they depend on browser APIs and browser-owned state. Use Node route handlers for AI status and provider calls. Copy the PDF.js worker into `public/` during development/build instead of relying on a bundler URL import. This establishes deployment compatibility; it does not add a database, authentication, distributed rate limiting or a production deployment.

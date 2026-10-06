@@ -2,7 +2,7 @@
 
 A desktop proof of concept for creating configurable KPI forms, verification workflows, and scoring policies. The aim is to let different institutions compose their own KPIs from shared tools. Publication verification is the first worked example, not the only supported workflow.
 
-Documentation baseline: **4 October 2026**. This is a local PoC, not a production appraisal platform.
+Documentation baseline: **6 October 2026**. This is a PoC, not a production appraisal platform.
 
 ## Run locally
 
@@ -18,7 +18,7 @@ npm.cmd test
 npm.cmd run build
 ```
 
-See [setup](docs/SETUP.md) for environment configuration, preview mode, and the optional OpenRouter key.
+See [setup](docs/SETUP.md) for environment configuration, the production server, Vercel readiness, and the optional OpenRouter key.
 
 ## Start here
 
@@ -49,7 +49,7 @@ Indexing is mocked, not verified against Scopus/WOS. Only first-listed authors a
 
 AI can summarize findings but does not itself mutate recorded evidence or scores. Creator-authored policies can consume exposed text values; the PoC does not enforce a production evidence-trust model.
 
-The most recent automated baseline was **87 passing tests** and a passing production build. Browser checks covered publication lookup/review, training branches/scoring, live custom AI output, sidebar recovery, and draft clearing. See [testing](docs/TESTING.md). Historical results are retained in [Phase 6 verification](PHASE-6-VERIFICATION.md).
+The application now uses Next.js App Router and is ready to import into Vercel, but it has not been pushed or deployed. The most recent automated baseline was **90 passing tests** and a passing production build. Migration checks covered the rendered interface, PDF worker, AI status and a live OpenRouter response through the Next.js route. See [testing](docs/TESTING.md). Historical results are retained in [Phase 6 verification](PHASE-6-VERIFICATION.md).
 
 The included PRISMA PDF is an attributed, unmodified fixture. See [sample attribution](public/samples/README.txt) and [security and data](docs/SECURITY-AND-DATA.md).
 

@@ -1,6 +1,8 @@
 node_modules/
 dist/
+.next/
 artifacts/
+public/pdf.worker.min.mjs
 
 .env
 .env.*

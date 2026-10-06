@@ -1,6 +1,6 @@
 # Feature history
 
-This is a development summary through 4 October 2026, not a version-control commit log. The package remains `0.1.0`; no release/deployment is implied.
+This is a development summary through 6 October 2026, not a version-control commit log. The package remains `0.1.0`; no release/deployment is implied.
 
 1. Built the dynamic input form and the publication extraction/verification/scoring/review example.
 2. Added browser draft autosave and recovery; kept submission evidence and decisions session-only.
@@ -27,3 +27,7 @@ Added Plugin below Result with a Publication operation picker. General Actions n
 ## 5 October 2026 — Document relevance evaluation
 
 Added full-text/page outputs, optional labelled extraction, additional AI inputs, and creator rubric/reference material. Increased text allowance and reject oversize inputs before model calls, preventing a partial document being treated as complete. Added content relevance guide.
+
+## 6 October 2026 — Next.js migration
+
+Replaced the Vite host with Next.js 16 App Router while retaining the existing client-side Framework Studio and browser autosave behavior. Added Node route handlers for AI status/assistance, reverse-proxy-aware same-origin checks, automated PDF worker preparation and a Node engine requirement. The local production build, rendered interface, PDF worker and live OpenRouter route were verified. Vercel deployment was prepared but not performed.

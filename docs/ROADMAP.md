@@ -15,6 +15,8 @@ Subsequent delivered improvements: configurable AI instructions and any-path inp
 
 Delivered on 5 October: built-in Publication plugin picker and reusable verification Actions, including explicit saved-policy scoring. General OCR, authenticated integrations and installable plugins remain planned.
 
+Delivered on 6 October: migrated the PoC from Vite to Next.js 16 App Router, retained the browser-owned studio through a client boundary, moved AI access to Node route handlers, and prepared the PDF worker during development/build. Local production build and runtime checks pass. The application has not been pushed or deployed.
+
 ## Next priorities — planned, not implemented
 
 1. **Creator usability review.** Have the project owner build a KPI from scratch and record confusing steps. Do not assume seeded test workflows prove independent authoring is easy.
@@ -28,7 +30,7 @@ Delivered on 5 October: built-in Publication plugin picker and reusable verifica
 - Database-backed KPI definitions, immutable policy releases, submissions, evidence references, runs and audit events.
 - Authentication, tenant isolation, permissions, genuine reviewer assignment and notifications.
 - Durable job execution, resumable reviews, idempotency, concurrency, and external-service retries.
-- Secure evidence/object storage, retention controls, backups, monitoring, and deployment.
+- Secure evidence/object storage, retention controls, backups, monitoring, authenticated rate limiting, and production deployment.
 - Plugin manifests and adapter registration if integrations must be installed without code changes.
 
 No backend/database/cloud vendor has been selected in these docs. No production dates, costs, compliance status, or organizational ownership are implied.

@@ -11,20 +11,21 @@ flowchart LR
   PDF[Local PDF] --> Extract[PDF.js extraction]
   Extract --> Engine
   Engine --> Crossref[Crossref API]
-  Engine --> LocalAPI[Local Vite AI middleware]
-  LocalAPI --> OpenRouter[OpenRouter free router]
+  Engine --> NextAPI[Next.js route handler]
+  NextAPI --> OpenRouter[OpenRouter free router]
   Engine --> Review[Session review pause]
   Review --> Engine
   Engine --> Result[Trace and result]
   Policy[Selected policy version] --> Engine
 ```
 
-The engine runs in the browser. The Node process serves Vite and proxies AI; it is not a general application backend. Crossref is called directly from the browser.
+Next.js App Router serves the application. `app/studio-client.jsx` loads the existing studio as a client-only boundary because workflow state, localStorage, file inputs and PDF.js are browser-owned. The workflow engine still runs in the browser. Node route handlers expose only the AI status and assistance endpoints; Crossref is called directly from the browser.
 
 ## Source map
 
 | Area | Files | Responsibility |
 |---|---|---|
+| App entry | `app/layout.jsx`, `app/page.jsx`, `app/studio-client.jsx`, `app/globals.css` | App Router shell, metadata, client boundary, global styles |
 | Shell and forms | `src/main.jsx`, `src/style.css` | Navigation, inputs, preview, sidebar |
 | Draft lifecycle | `src/useDraft.js`, `src/draftStorage.js` | Autosave, recovery, reset |
 | Workflow UI | `src/WorkflowStudio.jsx`, `src/TreeBuilder.jsx`, `src/treeModel.js` | Canvas, edits, test orchestration |
@@ -33,8 +34,8 @@ The engine runs in the browser. The Node process serves Vite and proxies AI; it 
 | Execution | `src/workflowEngine.js` | Validation, handlers, traversal, reviews |
 | Results | `src/WorkflowTest.jsx`, `src/ResultSummary.jsx` | Submission form, trace, decision forms |
 | Scoring | `src/ScoringStudio.jsx`, `src/scoringPolicy.js` | Standalone rules and saved versions |
-| Documents | `src/pdfReader.js`, `src/paperFindings.js` | PDF text and candidate findings |
-| AI | `src/aiContext.js`, `server/ai.js`, `vite.config.js` | Bounds, provider calls, endpoints |
+| Documents | `src/pdfReader.js`, `src/paperFindings.js`, `scripts/copy-pdf-worker.mjs` | PDF text, candidates, browser-worker preparation |
+| AI | `src/aiContext.js`, `server/ai.js`, `server/nextAiRoute.js`, `app/api/ai-*` | Bounds, provider calls, Next.js endpoints |
 
 `src/WorkflowView.jsx` and `src/ExtractionPanel.jsx` are older retained implementations. The active main app imports `WorkflowStudio.jsx` under the local name `WorkflowView`; the similarly named old file is not the active entry point.
 

@@ -4,8 +4,6 @@ import {exampleWorkflow} from './workflowModel';
 import {runWorkflow,finalizeReview,resumeWorkflow,validateRunConfiguration} from './workflowEngine';
 import TreeBuilder from './TreeBuilder';
 import {SubmissionFields,RunResults} from './WorkflowTest';
-import './workflow.css';
-import './studio.css';
 export default function WorkflowStudio({policy,nodes,setNodes,fields,values,onValue,onInputs,onPolicy,hidden}){
  const [view,setView]=useState('build');const [run,setRun]=useState(null);const [busy,setBusy]=useState(false);const busyRef=useRef(false);const [progress,setProgress]=useState('');const [records,setRecords]=useState([]);const [history,setHistory]=useState([]);const [notice,setNotice]=useState('');const captured=useRef(null);const reviewed=useRef(new Set());
  const [focusId,setFocusId]=useState('');

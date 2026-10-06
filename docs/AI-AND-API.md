@@ -8,7 +8,7 @@ Each instance has independent instructions. A clear-path node can summarize acce
 
 | Mode | Behavior |
 |---|---|
-| `openrouter` | Live request via the local server |
+| `openrouter` | Live request via the Next.js server route |
 | `simulated` | Explicit simulation; instructions are not executed |
 | `disabled` | Explicit no-connection result; no model request |
 
@@ -16,7 +16,7 @@ Older configurations without instructions use `DEFAULT_AI_INSTRUCTIONS`. The int
 
 ## Provider adapter
 
-Implementation: `server/ai.js`; middleware registered for both dev and preview in `vite.config.js`. The server requests OpenRouter chat completions using `openrouter/free`, temperature 0.1, and `max_tokens: 4096` with `reasoning: { effort: "low", exclude: true }`. There is no paid fallback. Actual model selection can vary.
+Provider implementation is in `server/ai.js`. `server/nextAiRoute.js` applies HTTP validation and is used by the App Router handlers under `app/api/`. The server requests OpenRouter chat completions using `openrouter/free`, temperature 0.1, and `max_tokens: 4096` with `reasoning: { effort: "low", exclude: true }`. There is no paid fallback. Actual model selection can vary.
 
 Messages separate the application-level constraints, creator-written system instructions, and user-role evidence JSON. Evidence commands are not intended to become instructions. This prompt separation is a mitigation, not a guarantee against model mistakes or prompt injection.
 
@@ -30,7 +30,7 @@ Publication decision inputs with checks/facts are summarized on the server, incl
 
 ## Endpoint access
 
-Endpoints accept loopback peers only. A supplied Origin must match `http://` plus the request Host. This is a local PoC restriction, not an authenticated multi-user security model. Responses use JSON and `Cache-Control: no-store`.
+The POST endpoint requires the browser Origin to match the request host and protocol. Forwarded host/protocol headers are used behind Vercel or another reverse proxy. Requests without Origin are allowed only outside production to support local tools and tests. This is CSRF-oriented request validation, not authentication or durable rate limiting. Responses use JSON and `Cache-Control: no-store`.
 
 ### `GET /api/ai-status`
 
@@ -72,14 +72,14 @@ Example successful response shape (illustrative):
 | HTTP status | Meaning |
 |---|---|
 | 400 | Invalid JSON/input/instructions |
-| 403 | Non-local peer or mismatching Origin |
+| 403 | Origin does not match the public request host/protocol |
 | 405 | Unsupported method |
 | 413 | Request body exceeds 650,000 bytes |
 | 415 | Not JSON |
 | 429 | Another AI request is active in this server instance |
-| 500 | Local middleware failed |
+| 500 | Server route failed |
 
-The concurrency guard is one active request per middleware instance, not per account. There is no authentication, provider failover, paid fallback, queue, or public hosting contract.
+The concurrency guard is one active request per server instance, not per account. There is no authentication, provider failover, paid fallback, queue, or public hosting contract.
 
 Response diagnostics retain the selected model and finish reason for empty or length-limited output. Server logs contain only model, finish reason and whether answer text exists; no evidence, instructions, credentials or reasoning text. There is no automatic retry. Free models can still time out or exhaust the allowance.
 

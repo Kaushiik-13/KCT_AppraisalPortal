@@ -22,21 +22,3 @@ export async function requestAI(decision,{key,fetcher=fetch,instructions=DEFAULT
  return {status:'advisory',summary:content.slice(0,12000),model:data.model||'openrouter/free',provider:'OpenRouter',inputTruncated:context.truncated,simulated:false,questions:[],receivedAt:new Date().toISOString()};
  }catch{return {status:'unavailable',summary:controller.signal.aborted?'AI assistance timed out. Continue with human review.':'AI assistance could not connect. Continue with human review.',questions:[],model:null};}finally{clearTimeout(timeout);}
 }
-export function aiMiddleware(getEnv){
- let active=false;
- return async(req,res,next)=>{
- const path=req.url?.split('?')[0];if(!['/api/ai-status','/api/ai-assistance'].includes(path))return next();
- const send=(code,data)=>{res.statusCode=code;res.setHeader('Content-Type','application/json');res.setHeader('Cache-Control','no-store');res.end(JSON.stringify(data));};
- const remote=req.socket?.remoteAddress;if(!['127.0.0.1','::1','::ffff:127.0.0.1'].includes(remote))return send(403,{error:'This prototype accepts local requests only.'});
- if(req.headers.origin&&req.headers.origin!==`http://${req.headers.host}`)return send(403,{error:'Use the local application to make this request.'});
- if(path==='/api/ai-status'&&req.method==='GET')return send(200,{configured:!!getEnv().OPENROUTER_API_KEY?.trim(),model:'openrouter/free'});
- if(req.method!=='POST')return send(405,{error:'Use POST.'});if(!req.headers['content-type']?.startsWith('application/json'))return send(415,{error:'Use JSON.'});if(active)return send(429,{error:'An AI request is already running. Please wait.'});
- active=true;
- try{const chunks=[];let bytes=0;for await(const chunk of req){bytes+=chunk.length;if(bytes>650000)return send(413,{error:'Evidence summary is too large.'});chunks.push(chunk);}let data;try{data=JSON.parse(Buffer.concat(chunks).toString('utf8'));}catch{return send(400,{error:'Invalid JSON.'});}const instructions=data?.instructions??DEFAULT_AI_INSTRUCTIONS;
- if(typeof instructions!=='string'||!instructions.trim()||instructions.length>MAX_AI_INSTRUCTIONS)return send(400,{error:'Provide system instructions of 1 to 6000 characters.'});
- const supplied=data?.input&&typeof data.input==='object'&&Object.hasOwn(data.input,'data');
- const input=supplied?data.input.data:data?.decision;
- if(input===undefined||input===null||input==='')return send(400,{error:'Provide an AI input.'});
- send(200,await requestAI(input,{key:getEnv().OPENROUTER_API_KEY,instructions,inputTruncated:!!data?.input?.truncated}));}catch{send(500,{error:'Could not complete AI assistance.'});}finally{active=false;}
- };
-}

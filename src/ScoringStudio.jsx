@@ -1,7 +1,6 @@
 import React,{useState} from 'react';
 import {newScoringRule,policySources,saveScoringVersion} from './scoringPolicy';
 import {PolicyEditor} from './NodeSettings';
-import './scoring.css';
 
 export default function ScoringStudio({policy,onChange,fields,nodes,setNodes}){
  const [message,setMessage]=useState('');const sources=policySources(fields,nodes),draft=policy.draft;

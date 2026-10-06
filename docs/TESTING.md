@@ -9,7 +9,7 @@ npm.cmd run build
 
 Tests use Node's built-in test runner over `src/*.test.js` and `server/*.test.js`. A passing build verifies bundling, not browser behavior. There is no lint script or committed full browser automation suite.
 
-Most recent automated baseline: **87 passing tests**, after whole-document evaluation support. Later sidebar and clear-draft UI changes were build-checked and browser-checked. The earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) records 67 tests at that checkpoint; it is historical, not the latest count.
+Most recent automated baseline: **90 passing tests** after the Next.js migration. The earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) records 67 tests at that checkpoint; it is historical, not the latest count.
 
 ## Coverage map
 
@@ -24,6 +24,7 @@ Most recent automated baseline: **87 passing tests**, after whole-document evalu
 | `scoringPolicy.test.js` | Version snapshots, caps, missing evidence, source changes |
 | `aiWorkflow.test.js` | Generic inputs, instructions, response chaining, old drafts |
 | `server/ai.test.js` | Provider adapter, bounds, prompt separation, endpoint responses |
+| `server/nextAiRoute.test.js` | Next route validation, forwarded origin handling, status secrecy, payload limits |
 
 Automated provider tests inject responses. They do not establish live indexing or guarantee future Crossref/OpenRouter availability.
 
@@ -65,3 +66,7 @@ Isolated browser checks verified Plugin below Result, Publication selection and 
 87 tests passed. New coverage verifies final-page text survives both client preparation and provider request construction, extraction works without labelled fields, unreadable pages remain explicit, blank scanned documents do not trigger AI, named contexts/rubric reach the evaluator, and oversize inputs are blocked on client and server without provider calls.
 
 An isolated browser workflow extracted the 15-page public sample (62,268 output characters) and sent full text plus topic/faculty and a deliberately mismatched Kubernetes rubric to live OpenRouter. The AI returned an advisory identifying the actual PRISMA topic, the mismatch, and absence of live market research; the response reached Result. No user draft was replaced. This establishes the flow, not universal model quality or OCR support.
+
+## Next.js migration verification — 6 October 2026
+
+All 90 tests passed. `npm.cmd run build` completed with a static `/` route and dynamic `/api/ai-status` and `/api/ai-assistance` routes. An isolated browser session rendered the Framework Studio at `127.0.0.1:5173`, exposed the three KPI sections and autosave controls, and reported no browser errors. The generated PDF worker returned HTTP 200 (1,375,838 bytes). AI status reported a configured server key without exposing it, and a live same-origin POST returned HTTP 200/advisory with the exact requested migration check text. A reverse-proxy origin regression was added after runtime verification exposed Next.js request-URL normalization. No Vercel deployment was run.
