@@ -780,6 +780,7 @@ export async function executeNode(node, input, ctx) {
       values: ctx.values,
       outputs: ctx.outputs,
       result: {},
+      componentValues: input,
     });
     return { scoring, points: scoring.points, status: scoring.status };
   }
@@ -816,7 +817,10 @@ export async function executeNode(node, input, ctx) {
   if (node.kind === "human_review")
     return {
       review: {
-        status: "awaiting-review",
+        status:
+          Object.keys(node.routes || {}).length === 0
+            ? "sent-to-review"
+            : "awaiting-review",
         role: node.config.role,
         instructions: node.config.instructions,
         package: {
@@ -1092,6 +1096,10 @@ export function validateRunConfiguration({ nodes, fields, policy }) {
       (v) => v.version === policy.activeVersion,
     );
     issues.push(...validateScoringVersion(selected, fields, nodes));
+    if ((selected?.mode || "rules") === "formula")
+      issues.push(
+        "Formula policies must be mapped through an Apply scoring policy Action.",
+      );
     if (
       nodes.some(
         (n) =>
@@ -1202,6 +1210,21 @@ async function continueWorkflow(options, state) {
       onStep({ id, status: "done", trace: [...trace] });
       const effectiveKind =
         node.kind === "plugin" ? node.config.tool : node.kind;
+      if (
+        effectiveKind === "human_review" &&
+        Object.keys(node.routes || {}).length === 0
+      )
+        return {
+          id: crypto.randomUUID(),
+          status: "sent-to-review",
+          trace,
+          outputs,
+          review: output.review,
+          snapshot,
+          reviewNode: id,
+          genericReview: false,
+          decisions,
+        };
       if (["review", "human_review"].includes(effectiveKind))
         return {
           id: crypto.randomUUID(),

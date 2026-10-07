@@ -459,7 +459,23 @@ export default function ReusableSettings({
           Saved policy version
           <select
             value={c.policyVersion}
-            onChange={(e) => patch({ policyVersion: e.target.value })}
+            onChange={(e) => {
+              const version = (policy?.versions || []).find(
+                (item) => item.version === e.target.value,
+              );
+              onChange({
+                ...node,
+                mappings: {},
+                config: {
+                  ...c,
+                  policyVersion: e.target.value,
+                  components:
+                    (version?.mode || "rules") === "formula"
+                      ? structuredClone(version.components || [])
+                      : [],
+                },
+              });
+            }}
           >
             <option value="">Choose a saved version</option>
             {(policy?.versions || []).map((v) => (
@@ -468,8 +484,9 @@ export default function ReusableSettings({
           </select>
           <small>
             Create and save a version in Scoring policy first. This step can use
-            only input fields and earlier outputs; final-outcome rules need a
-            Result instead.
+            formula components are mapped above to numeric outputs from earlier
+            workflow steps. Conditional rules can use input fields and earlier
+            outputs; final-outcome rules need a Result instead.
           </small>
         </label>
       )}

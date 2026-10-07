@@ -14,7 +14,10 @@ Storage key: `afpi.kpi-draft.v1`.
     "name": "Training participation", "fields": [], "nodes": [],
     "policy": {
       "enabled": false, "activeVersion": "", "versions": [],
-      "draft": {"version": "v1", "maxPoints": "", "fallback": "pending", "rules": []}
+      "draft": {
+        "version": "v1", "mode": "rules", "aggregation": "sum",
+        "maxPoints": "", "fallback": "pending", "components": [], "rules": []
+      }
     }
   }
 }
@@ -71,13 +74,13 @@ Ordinary workflow mappings resolve top-level declared output keys. Nested paths 
 }
 ```
 
-Version snapshots contain `version`, `maxPoints`, `fallback`, and `rules`. A selected version is copied into each run. This is local configuration versioning, not a database audit log or cryptographic immutability.
+Version snapshots contain `version`, `mode`, `maxPoints`, `fallback`, `rules`, and formula fields `aggregation` and `components`. A formula component is `{id,name,weight,required}`; its numeric source is mapped later by an Apply scoring policy node. A selected version is copied into each run. This is local configuration versioning, not a database audit log or cryptographic immutability.
 
 ## Runtime records
 
-Runs may contain `status`, `trace`, `outputs`, `snapshot`, `issues`, `review`, `reviewNode`, `genericReview`, `decisions`, `result`, and `scoring`. Fields vary by status. A paused generic run carries an execution `context` with values and handler references; it is not a portable serialized job.
+Runs may contain `status`, `trace`, `outputs`, `snapshot`, `issues`, `review`, `reviewNode`, `genericReview`, `decisions`, `result`, and `scoring`. Fields vary by status. A paused legacy routed-review run carries an execution `context` with values and handler references; it is not a portable serialized job. A new terminal review handoff does not carry a resumable context.
 
-Trace entries include node identity, name/kind, timestamps, output, and optional error. Action trace kinds identify the executed tool. Generic review packages contain the submission values, extraction packages, comparison findings, AI recommendations, scoring calculations, and policy versions available on the executed path. Decisions record action, reviewer, reason, final status, optional override score, package snapshot, and time. Publication decisions also record original/final scores, run identity, and mock-evidence status.
+Trace entries include node identity, name/kind, timestamps, output, and optional error. Action trace kinds identify the executed tool. New generic Human review is terminal and produces `status: "sent-to-review"` with a package containing submission values, extraction packages, comparison findings, AI recommendations, scoring calculations, and policy versions available on the executed path. It has no workflow decision record or outgoing route. Legacy saved generic reviews and the specialized publication review remain readable.
 
 ## Other storage and exports
 
@@ -90,6 +93,6 @@ Exports exclude test files/results and server keys. There is no import UI. New s
 
 ## Plugin and reusable configuration
 
-Plugin nodes use kind `plugin`, with config `{plugin: "publication", tool: <operation ID>, settings: <operation config>}`. Existing legacy kinds/Action wrappers remain readable. `use_form_value` stores `fieldId` and a cached `valueType`; execution resolves the current field and emits source metadata. `extract_evidence` stores `mode` (`fields`, `content`, or `both`) and stable field entries `{id,name,type,label}`. `compare_evidence` stores one or more `{id,name,valueType,operator,ignoreCase}` pairs; each pair creates left/right mapping ports. Apply-policy stores `policyVersion`; the runner snapshots saved versions for review continuation.
+Plugin nodes use kind `plugin`, with config `{plugin: "publication", tool: <operation ID>, settings: <operation config>}`. Existing legacy kinds/Action wrappers remain readable. `use_form_value` stores `fieldId` and a cached `valueType`; execution resolves the current field and emits source metadata. `extract_evidence` stores `mode` (`fields`, `content`, or `both`) and stable field entries `{id,name,type,label}`. `compare_evidence` stores one or more `{id,name,valueType,operator,ignoreCase}` pairs; each pair creates left/right mapping ports. Apply-policy stores `policyVersion` and a snapshot of formula component definitions; each component ID becomes a numeric mapping port. The runner resolves the saved policy version and records its calculation snapshot.
 
 Extract evidence emits reserved `evidence`, `content`, and `status` outputs plus configured field IDs. The evidence package preserves format, filename, candidates, confidence, `verified:false`, warnings, and page/slide/sheet locations. Legacy `document_extract`, `compare_values`, `external_lookup`, and `read_*` shapes remain valid for restored drafts but are not offered to new workflows.

@@ -5,7 +5,7 @@ Baseline: **7 October 2026**. These documents describe the Next.js PoC implement
 ## Product and user guides
 
 - [Project brief](PROJECT-BRIEF.md): purpose, roles, requirements, and scope.
-- [User guide](USER-GUIDE.md): navigation, forms, workflows, reviews, saving, and clearing.
+- [User guide](USER-GUIDE.md): policy-first navigation, forms, workflows, review handoffs, saving, and clearing.
 - [Publication KPI](PUBLICATION-KPI.md): complete example and unresolved scoring decisions.
 - [Training KPI](TRAINING-KPI.md): build a generic workflow and scoring policy.
 
@@ -16,7 +16,7 @@ Baseline: **7 October 2026**. These documents describe the Next.js PoC implement
 - [Data model](DATA-MODEL.md): persisted schemas, mappings, and runtime records.
 - [Workflow engine](WORKFLOW-ENGINE.md): validation, branches, review, and failure behavior.
 - [Tools and extensions](TOOLS-AND-EXTENSIONS.md): tool catalogue and developer extension points.
-- [Scoring](SCORING.md): both scoring models, versions, and approval timing.
+- [Scoring](SCORING.md): formula and conditional models, versions, mappings, and review boundaries.
 - [AI and API](AI-AND-API.md): instructions, provider adapter, endpoints, and limits.
 - [Security and data](SECURITY-AND-DATA.md): storage, external transfers, and production gaps.
 

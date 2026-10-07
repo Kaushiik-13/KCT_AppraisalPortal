@@ -20,7 +20,7 @@ The PDF binary is not uploaded by the app's AI path, but selected extracted text
 - The AI POST endpoint requires a same-origin host/protocol in production, including forwarded Vercel headers; it also bounds requests and has timeouts/concurrency control.
 - Context is bounded and evidence is separated from system instructions.
 - PDF extraction disables PDF.js eval support and enforces size/page limits. All evidence formats have a 20 MB client-side limit; Office extraction stays local.
-- Models do not directly mutate evidence or approve scores; deterministic engine/review actions own those operations.
+- Models do not directly mutate evidence or approve scores; deterministic workflow and scoring operations own those operations. New generic Human Review only transfers a package to a separate module.
 - Corrupt drafts are protected against automatic overwrite; clearing requires confirmation.
 
 Do not interpret these as production security guarantees. Origin validation is not user authentication and the in-memory concurrency guard is not a distributed rate limit. Browser state can be modified locally. Reviewer names are not authenticated. Arbitrary creator policies may consume AI response text as a condition source; the PoC has no trust-level enforcement for evidence.

@@ -155,7 +155,7 @@ function StepResult({ step }) {
           <p>
             {result.action
               ? `${result.action} by ${result.reviewer}. ${result.reason}`
-              : `Waiting for ${result.role}. ${result.instructions}`}
+              : `Sent to ${result.role} in the separate Human Review module. ${result.instructions}`}
           </p>
         ) : (
           <p>Value: {result === null ? "Missing" : String(result)}</p>
@@ -429,6 +429,20 @@ export function RunResults({ run, busy, progress, stale, onDecide, history }) {
             disabled={stale || busy}
           />
         ))}{" "}
+      {run?.status === "sent-to-review" && (
+        <div className="studio-warning">
+          <strong>Sent to Human Review</strong>
+          <p>
+            Automated execution ended here. The separate review module receives
+            this complete package; there are no approval or rejection branches
+            in this workflow.
+          </p>
+          <details open>
+            <summary>Human-review package</summary>
+            <JsonDetails data={run.review?.package} />
+          </details>
+        </div>
+      )}
       {run?.result && (
         <div className="studio-outcome">
           <strong>Outcome: {run.result.outcome}</strong>

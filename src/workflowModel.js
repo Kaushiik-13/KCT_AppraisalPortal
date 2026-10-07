@@ -186,10 +186,11 @@ export const blocks = [
   {
     kind: "human_review",
     name: "Human review",
-    description: "Ask a person to approve, reject, or request clarification.",
+    description:
+      "End this automated workflow and send its complete evidence and score package to the separate Human Review module.",
     inputs: [],
-    outputs: [port("review", "Review decision", "review")],
-    routes: ["approved", "rejected", "clarification"],
+    outputs: [port("review", "Human review handoff", "review")],
+    routes: [],
   },
   {
     kind: "result",

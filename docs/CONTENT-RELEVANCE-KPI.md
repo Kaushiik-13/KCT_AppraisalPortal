@@ -2,17 +2,17 @@
 
 This workflow evaluates alignment with a creator-provided rubric. It does not perform live market research or establish current demand.
 
-## Inputs and workflow
+## Inputs, policy, and workflow
 
-Keep Faculty Name (required text), Content File (required PDF) and Topic Name (required text).
+This is one worked example of the generic composer, not a built-in KPI. Keep Faculty Name (required text), Content 1 (required file), Content 2 (required file), and Topic Name (required text). Add or remove content inputs for another institution's policy.
 
-1. Add Action → Extract evidence. Map Evidence file to Content File and choose Full content (or Both when you also need `Label: value` fields).
-2. Add Action → AI evaluation. Map Primary input to Extract evidence → Full content.
-3. Click Add context input. Name it Topic Name and map its source above to Form: Topic Name. Repeat for Faculty Name if needed.
-4. Paste your criteria into Rubric / reference material. For a reference PDF instead, add a second input and extraction step before AI; connect its Full document text as additional context.
-5. Enter your task in System instructions; choose OpenRouter mode.
-6. Continue to Human review, then Result endings for approved/rejected/clarification. AI output is advisory and does not automatically award marks.
-7. Open Test & review, attach the PDF and fill the two text fields. Run. Inspect extracted page text and coverage before relying on the AI response.
+1. In Scoring policy, choose Formula and add components such as `content_1_relevance`, `content_2_relevance`, and `overall_ai_score`. Set the weights, required flags, aggregation, and optional cap that the organization defines; save the version.
+2. In Workflow, add one Extract evidence action for each content file and select Full content (or Both when labelled fields are also needed).
+3. Add an AI evaluation for each content item. Map its extracted text, add Topic Name or Faculty Name as context when useful, and define a numeric score in its output schema.
+4. Add any separate overall AI evaluation required by the policy. Reuse extracted outputs as named context rather than combining files invisibly.
+5. Add Apply scoring policy, select the saved formula version, and manually map each component port to the corresponding validated numeric AI output.
+6. End with a Result. Add Human Review only when automation must stop and transfer the complete package to the separate review module; it is terminal and has no decision branches.
+7. Open Test & review, attach both files and fill the text fields. Run. Inspect extracted locations, AI limitations, component values, and the calculation before relying on the result.
 
 ## Example system instructions
 

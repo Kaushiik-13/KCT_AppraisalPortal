@@ -6,7 +6,9 @@ This is a development summary through 7 October 2026, not a version-control comm
 
 Replaced the four typed Read catalogue entries with Use form value and removed generic External lookup from new workflows. Added common PDF/PPTX/XLS/XLSX evidence extraction with fields/content/both modes, format-specific locations, warnings and explicitly unverified candidates. Added multi-pair Compare evidence with match/mismatch/unknown results.
 
-Renamed AI assistance to AI evaluation, retained multi-input/rubric support, and added optional object JSON-schema validation with typed fields available to Conditions. Generic human review now displays and preserves submission, evidence, comparison, AI, scoring and policy context and supports reasoned score overrides. Input fields now support example values. Legacy tool IDs remain readable for existing browser drafts.
+Renamed AI assistance to AI evaluation, retained multi-input/rubric support, and added optional object JSON-schema validation with typed fields available to Conditions. Input fields now support example values. Legacy tool IDs remain readable for existing browser drafts.
+
+Reordered KPI authoring to Inputs → Scoring policy → Workflow. Formula policies now accept any number of organization-defined numeric components with required/optional status, weights, sum/average/weighted-average aggregation, and an optional cap. Apply scoring policy exposes those components as ports for manual mapping, so repeated content evaluations are composable without a KPI-specific block. New generic Human Review nodes are terminal handoffs to a separate module with the complete run package and no approve/reject/clarification branches; older routed review drafts remain compatible.
 
 1. Built the dynamic input form and the publication extraction/verification/scoring/review example.
 2. Added browser draft autosave and recovery; kept submission evidence and decisions session-only.

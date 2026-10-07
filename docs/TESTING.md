@@ -9,7 +9,7 @@ npm.cmd run build
 
 Tests use Node's built-in test runner over `src/*.test.js` and `server/*.test.js`. A passing build verifies bundling, not browser behavior. There is no lint script or committed full browser automation suite.
 
-Most recent automated baseline: **98 passing tests** on 7 October 2026 after the evidence-workflow implementation. The earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) records 67 tests at that checkpoint; it is historical, not the latest count.
+Most recent automated baseline: **101 passing tests** on 7 October 2026 after the policy-first composition update. The earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) records 67 tests at that checkpoint; it is historical, not the latest count.
 
 ## Coverage map
 
@@ -21,9 +21,9 @@ Most recent automated baseline: **98 passing tests** on 7 October 2026 after the
 | `blockExecution.test.js` | Branch values, review continuation, preflight, post-review failure |
 | `workflowEngine.test.js` | Publication checks, scores, errors, review restrictions |
 | `paperFindings.test.js` | Extraction candidate analysis and PDF fixture cases |
-| `scoringPolicy.test.js` | Version snapshots, caps, missing evidence, source changes |
+| `scoringPolicy.test.js` | Version snapshots, conditional rules, arbitrary formula components, aggregations, caps, missing evidence, and manual workflow mappings |
 | `aiWorkflow.test.js` | Generic inputs, instructions, response chaining, old drafts |
-| `frameworkStudio.test.js` | New catalogue, form-value mapping, evidence candidates/locations, comparison states, AI schema validation, Office adapters, review packages |
+| `frameworkStudio.test.js` | New catalogue, form-value mapping, evidence candidates/locations, comparison states, AI schema validation, Office adapters, and terminal review packages |
 | `server/ai.test.js` | Provider adapter, bounds, prompt separation, endpoint responses |
 | `server/nextAiRoute.test.js` | Next route validation, forwarded origin handling, status secrecy, payload limits |
 
@@ -36,18 +36,19 @@ Use an isolated profile/session so testing does not replace a user's only draft.
 1. **Inputs:** add each needed type; preview required/optional behavior; rename and reorder without losing mappings.
 2. **Builder:** add by + and drag/drop; open/close settings; move a linear action; connect a shared result; reject a cycle; inspect orphaned work after removal.
 3. **Preflight:** leave a required mapping or comparison blank; verify the test is blocked and Edit step opens its settings.
-4. **Training:** follow [the walkthrough](TRAINING-KPI.md); test 8, 7, zero, blank, approval/rejection/clarification, and stale review.
+4. **Training:** follow [the walkthrough](TRAINING-KPI.md); test 8, 7, zero, blank, and the optional terminal review handoff.
 5. **Publication:** follow [the walkthrough](PUBLICATION-KPI.md); verify sample extraction, Crossref response, 24 mock-index points, approval, and repeat-submission uncertainty.
 6. **Scoring:** save v1, edit only its draft, verify v1 unchanged; save v2; switch back; test cap and pending fallback.
 7. **AI:** test simulation, missing input, and live custom instructions if configured; check an ordinary/clear-path input and response chaining. Never treat simulated output as generation.
 8. **Persistence:** reload fields, mappings, instructions and versions; verify file/value/review loss is explicit.
 9. **Reset:** cancel Clear saved draft and verify no changes; confirm only in a disposable draft; verify blank configuration and retained sidebar preference.
 10. **Layout:** collapse/restore sidebar, reload, open settings and Test & review. Check desktop overflow and browser errors.
-11. **Evidence workflow:** extract a PDF, PPTX, XLS and XLSX; inspect page/slide/sheet references; confirm missing fields are unknown; compare multiple pairs; validate an AI schema; inspect the complete review package and record an override reason.
+11. **Evidence workflow:** extract a PDF, PPTX, XLS and XLSX; inspect page/slide/sheet references; confirm missing fields are unknown; compare multiple pairs; validate an AI schema; inspect the complete terminal review package.
+12. **Formula scoring:** create three differently named components, map numeric outputs manually, test sum/average/weighted average, omit an optional component, and confirm a missing required component remains pending.
 
 ## Framework Studio evidence workflow verification — 7 October 2026
 
-All 98 automated tests passed. Added coverage confirms the new catalogue hides Read and External lookup, Use form value records source/type, extraction candidates remain `verified:false`, comparison distinguishes unknown from mismatch, AI schema output is validated and exposed, XLS/XLSX and PPTX adapters preserve locations, and Human review receives the complete evidence package. The existing PDF fixture and all legacy publication/training tests still pass.
+All 101 automated tests passed. Added coverage confirms the new catalogue hides Read and External lookup, Use form value records source/type, extraction candidates remain `verified:false`, comparison distinguishes unknown from mismatch, AI schema output is validated and exposed, XLS/XLSX and PPTX adapters preserve locations, arbitrary formula components combine manually mapped outputs, required missing components remain pending, weighted averages calculate correctly, and new Human Review nodes terminate with the complete evidence package. The existing PDF fixture and all legacy publication/training tests still pass.
 
 The production build passed after the final code and documentation pass, producing the static `/` route and dynamic AI routes. No live OpenRouter call or full browser walkthrough was performed for this change.
 

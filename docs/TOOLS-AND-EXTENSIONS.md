@@ -51,7 +51,7 @@ Action now lists general tools only; existing publication Actions remain editabl
 | Compare evidence | One or more source pairs, type, operator, text case handling | Overall and field-level match/mismatch/unknown results; missing evidence is unknown |
 | Check date range | Date source and inclusive boundaries | Eligible/ineligible/uncertain |
 | Find duplicates | Identifier and owner sources; test records | Checks both fields; scope is configured records only |
-| Apply scoring policy | Saved version | Provisional points from input/earlier-output rules; no final-outcome dependencies |
+| Apply scoring policy | Saved version; formula component mappings or conditional sources | Combines any number of numeric workflow outputs or evaluates rules; returns calculation, points, status, and policy snapshot |
 | AI evaluation | Primary/additional inputs, rubric, system instructions and optional object JSON schema | Advisory response plus validated top-level schema fields for conditions |
 
 Extraction supports text, number, ISO date and boolean fields. PDF pages, PPTX slides and spreadsheet sheet/range locations are retained. Legacy binary PPT is not supported; `.ppt` must be saved as `.pptx`. The extractor does not provide OCR or semantic inference, and it never marks candidates verified. Custom output IDs remain stable on rename. General duplicate checks do not automatically capture approvals or provide organization-wide history. Condition supplies branching; Human review and Result remain reusable blocks.

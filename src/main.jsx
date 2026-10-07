@@ -265,22 +265,22 @@ export default function App() {
           <span className="stage-number">01</span>
         </button>
         <button
-          className={`stage as-button ${tab === "workflow" ? "active" : "later"}`}
-          onClick={() => setTab("workflow")}
-        >
-          <GitBranch size={19} />
-          <span>
-            Workflow<small>Build, test and review</small>
-          </span>
-          <span className="stage-number">02</span>
-        </button>
-        <button
           className={`stage as-button ${tab === "policy" ? "active" : "later"}`}
           onClick={() => setTab("policy")}
         >
           <Calculator size={19} />
           <span>
-            Scoring policy<small>Rules, points and outcomes</small>
+            Scoring policy<small>Define components, rules and points</small>
+          </span>
+          <span className="stage-number">02</span>
+        </button>
+        <button
+          className={`stage as-button ${tab === "workflow" ? "active" : "later"}`}
+          onClick={() => setTab("workflow")}
+        >
+          <GitBranch size={19} />
+          <span>
+            Workflow<small>Map evidence to the policy</small>
           </span>
           <span className="stage-number">03</span>
         </button>
@@ -331,7 +331,9 @@ export default function App() {
           }
         >
           <div>
-            <div className="eyebrow">BUILDING BLOCK 01</div>
+            <div className="eyebrow">
+              BUILDING BLOCK {tab === "policy" ? "02" : tab === "workflow" ? "03" : "01"}
+            </div>
             <h1>
               {tab === "policy"
                 ? "Define how achievements earn marks."
@@ -341,9 +343,9 @@ export default function App() {
             </h1>
             <p>
               {tab === "policy"
-                ? "Choose conditions, award points, and save policy versions."
+                ? "Define reusable score components or conditional rules, then save a policy version before mapping the workflow."
                 : tab === "workflow"
-                  ? "Choose tools, connect evidence, and configure how marks are awarded."
+                  ? "Manually connect evidence extraction and evaluation outputs to your saved scoring policy."
                   : "Define the fields. Choose their types. See the form your faculty will use."}
             </p>
           </div>

@@ -178,7 +178,19 @@ export function validDraft(d) {
             typeof r.owner === "string",
         )
       );
-    if (n.kind === "apply_policy") return typeof c.policyVersion === "string";
+    if (n.kind === "apply_policy")
+      return (
+        typeof c.policyVersion === "string" &&
+        (c.components === undefined ||
+          (Array.isArray(c.components) &&
+            c.components.every(
+              (component) =>
+                object(component) &&
+                typeof component.id === "string" &&
+                typeof component.name === "string" &&
+                typeof component.required === "boolean",
+            )))
+      );
     if (n.kind === "period")
       return ["start", "end", "dateRule"].every(
         (k) => typeof c[k] === "string",

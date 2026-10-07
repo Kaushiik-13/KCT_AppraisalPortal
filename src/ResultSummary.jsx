@@ -254,5 +254,12 @@ export default function ResultSummary({ kind, result }) {
         decision appear below.
       </p>
     );
+  if (kind === "human_review")
+    return (
+      <p>
+        The automated workflow ended and sent its complete package to the
+        separate Human Review module.
+      </p>
+    );
   return <p>Step completed. Evidence is available in the execution trace.</p>;
 }

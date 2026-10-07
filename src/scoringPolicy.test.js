@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {newScoringPolicy,newScoringRule,saveScoringVersion,evaluateScoringVersion,validateScoringVersion,validPolicyShape} from './scoringPolicy.js';
-import {createNode} from './workflowModel.js';
+import {newScoreComponent,newScoringPolicy,newScoringRule,saveScoringVersion,evaluateScoringVersion,validateScoringVersion,validPolicyShape} from './scoringPolicy.js';
+import {chooseActionTool,createNode} from './workflowModel.js';
 import {runWorkflow,resumeWorkflow} from './workflowEngine.js';
 import {writeDraft,readDraft} from './draftStorage.js';
 
@@ -48,4 +48,19 @@ test('policy continues with frozen version after human review',async()=>{
 test('policy draft and saved versions survive reload; malformed policy is protected',()=>{
  const f=fixture();let raw;const storage={setItem:(_,v)=>raw=v,getItem:()=>raw};const draft={name:'Training',fields,nodes:f.nodes,policy:f.policy};writeDraft(storage,draft);assert.deepEqual(readDraft(storage).draft,draft);
  assert.equal(validPolicyShape({...f.policy,versions:[null]}),false);raw=JSON.stringify({version:1,draft:{...draft,policy:{}}});assert.equal(readDraft(storage).blocked,true);
+});
+
+test('formula policy combines any number of organization-defined score components',()=>{
+ const policy={version:'relevance-v1',mode:'formula',aggregation:'sum',maxPoints:'20',fallback:'pending',rules:[],components:[{...newScoreComponent(),id:'evidence_a',name:'Evidence A relevance',weight:'1',required:true},{...newScoreComponent(),id:'evidence_b',name:'Evidence B relevance',weight:'1',required:true}]};
+ const scored=evaluateScoringVersion(policy,{componentValues:{evidence_a:8,evidence_b:7}});assert.equal(scored.points,15);assert.equal(scored.status,'scored');assert.equal(scored.components.length,2);
+ assert.equal(evaluateScoringVersion(policy,{componentValues:{evidence_a:8}}).status,'pending');
+ policy.aggregation='weighted_average';policy.components[0].weight='2';assert.equal(evaluateScoringVersion(policy,{componentValues:{evidence_a:8,evidence_b:5}}).points,7);
+});
+
+test('formula policy is manually mapped through Apply scoring policy',async()=>{
+ const scoreFields=[{id:'a',label:'First evaluated score',type:'number',required:true,help:'',options:'',accept:'',multiple:false},{id:'b',label:'Second evaluated score',type:'number',required:true,help:'',options:'',accept:'',multiple:false}];
+ const root=createNode('submit'),apply=chooseActionTool(createNode('action'),'apply_policy'),result=createNode('result');root.routes.next=apply.id;apply.routes.next=result.id;result.config.outcome='Calculated';
+ const components=[{id:'a_score',name:'First evidence score',weight:'1',required:true},{id:'b_score',name:'Second evidence score',weight:'1',required:true}];apply.config.settings={policyVersion:'org-v1',components};apply.mappings={a_score:'field|a',b_score:'field|b'};result.mappings.value=`node|${apply.id}|points`;result.config.valueType='number';
+ const version={version:'org-v1',mode:'formula',aggregation:'sum',maxPoints:'20',fallback:'pending',components,rules:[]};const policy={...newScoringPolicy(),versions:[version],activeVersion:'org-v1'};
+ const run=await runWorkflow({nodes:[root,apply,result],fields:scoreFields,values:{a:'8',b:'7'},policy});assert.equal(run.status,'completed');assert.equal(run.outputs[apply.id].points,15);assert.equal(run.result.value,15);
 });

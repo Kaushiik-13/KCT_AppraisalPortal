@@ -1,19 +1,31 @@
 # Scoring and approval
 
-Two scoring paths coexist. They must not be presented as interchangeable.
+Generic scoring supports two reusable policy styles, plus the legacy publication policy.
 
 | Path | Configuration | Executes | Review behavior |
 |---|---|---|---|
 | Original publication policy | Calculate marks or Existing publication policies | Before original Appraiser review | Reviewer approves/rejects/overrides recommendation |
-| Standalone policy | Scoring policy draft + saved version or explicit Apply scoring policy | At a generic Result / explicit step | Generic review sees provisional scoring and may record a reasoned override before following Approved |
+| Formula policy | Named numeric components, weights, aggregation, cap | Explicit Apply scoring policy Action | Produces a traceable combined score before Result or optional review handoff |
+| Conditional rule policy | Ordered conditions, fixed points and multipliers | At Result or explicit Apply scoring policy Action | Missing facts remain pending |
 
-An enabled standalone policy requires Result endings and is rejected when the graph contains the legacy terminal review. Leave it off for the original publication template.
+Formula policies are intentionally source-independent when drafted: organizations define the score components first, then manually connect workflow outputs after saving the version. They are not automatically applied at Result because their component mappings belong to the workflow. Conditional policies can still be enabled for automatic Result scoring.
 
-## Standalone policy
+## Formula policy
+
+Each component has a stable ID, organization-defined name, weight, and required/optional status. Components can represent any numeric measure: evidence relevance, impact, completion, quality, timeliness, compliance, or an AI schema score. The framework does not assume a particular KPI or number of evidence items.
+
+- **Weighted sum:** add `value × weight` for every available component.
+- **Simple average:** average available component values; weights are ignored.
+- **Weighted average:** divide the weighted total by the total available weight.
+- **Maximum points:** optionally cap the calculated result.
+
+A missing required component makes scoring pending. A missing optional component is omitted. Apply scoring policy preserves every supplied value, weight, aggregation method, cap, policy version, and calculation trace.
+
+## Conditional rule policy
 
 Enable the policy, create ordered rules, save a unique version, and select it. Each rule has a name, all/any conditions, non-negative points and multiplier, and scoring outcome. A cap is optional and applies **per submission**, not across a cycle.
 
-Conditions can use supported scalar form values, declared tool outputs, selected nested findings, reviewer actions, or `result|outcome`. The source type is recorded; removing or retyping the source blocks execution until corrected. Numeric/date operators are inclusive. Text equality is exact.
+Conditions can use supported scalar form values, declared tool outputs, selected nested findings, legacy reviewer actions, or `result|outcome`. New terminal Human Review nodes do not produce an in-studio decision. The source type is recorded; removing or retyping the source blocks execution until corrected. Numeric/date operators are inclusive. Text equality is exact.
 
 The first matching rule wins. Its points are multiplied, capped if configured, and rounded to two decimal places. The workflow outcome remains separate from the scoring outcome.
 
@@ -37,8 +49,8 @@ Original review permits a reasoned override, retaining original and final scores
 
 ## Remaining work
 
-Generic review now preserves the available scoring calculation, policy versions, evidence, AI recommendation, and a reasoned override score in session history. Result-time automatic scoring still runs after review when configured, so the override is an auditable reviewer decision rather than a mutation of the immutable policy calculation. Durable persistence and a single canonical production final-score record remain pending, along with institution-authorized rule resolution, assessment-cycle caps, policy activation dates, and approval permissions.
+New generic Human review is a terminal handoff and does not modify scoring. The separate review module receives the available calculation, policy version, evidence and AI recommendation. Durable persistence and a canonical production final-score/review record remain pending, along with institution-authorized rule resolution, assessment-cycle caps, policy activation dates, and permissions.
 
 ## Explicit scoring step
 
-Action → Apply scoring policy selects a saved version independently of automatic Result scoring. Its inputs are the version’s configured submission/earlier-output conditions. Rules depending on final outcomes or later steps fail preflight. The step emits calculation details, points and status. Marks remain provisional; it does not implicitly approve them.
+Action → Apply scoring policy selects a saved version independently of automatic Result scoring. Formula versions expose one numeric input per component for manual mapping. Conditional versions evaluate their configured submission/earlier-output conditions; rules depending on final outcomes or later steps fail preflight. The step emits calculation details, points and status. Marks remain provisional; it does not implicitly approve them.

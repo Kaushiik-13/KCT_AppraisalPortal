@@ -130,7 +130,7 @@ export function reusableDefaults(kind) {
     date_range: { start: "", end: "" },
     find_duplicates: { records: [], ignoreCase: true },
     external_lookup: { endpoint: "", fields: [] },
-    apply_policy: { policyVersion: "" },
+    apply_policy: { policyVersion: "", components: [] },
   }[kind];
 }
 export function reusableDefinition(node) {
@@ -160,6 +160,14 @@ export function reusableDefinition(node) {
         port("comparison", "Comparison findings", "comparison"),
         port("status", "Overall status", "text"),
       ],
+    };
+  if (node.kind === "apply_policy")
+    return {
+      inputs: (node.config.components || []).map((component) =>
+        port(component.id, component.name, "number", {
+          optional: !component.required,
+        }),
+      ),
     };
   if (["document_extract", "external_lookup"].includes(node.kind))
     return {

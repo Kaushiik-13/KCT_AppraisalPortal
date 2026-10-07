@@ -71,3 +71,10 @@ test('human review receives the complete inspectable evidence package',async()=>
  assert.equal(output.review.package.scoring[0].points,12);
  assert.equal(output.review.package.policyVersions[0].version,'v1');
 });
+
+test('new Human review is an optional terminal handoff without decision branches',async()=>{
+ const root=createNode('submit'),review=createNode('human_review');root.routes.next=review.id;
+ assert.deepEqual(review.routes,{});
+ const run=await (await import('./workflowEngine.js')).runWorkflow({nodes:[root,review],fields:[{id:'name',label:'Employee',type:'text',required:true}],values:{name:'Alex'},policy:{enabled:false,activeVersion:'',versions:[],draft:{version:'v1',mode:'rules',aggregation:'sum',maxPoints:'',fallback:'pending',components:[],rules:[]}}});
+ assert.equal(run.status,'sent-to-review');assert.equal(run.review.status,'sent-to-review');assert.equal(run.review.package.submission.values.name,'Alex');
+});

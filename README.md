@@ -40,8 +40,8 @@ See [setup](docs/SETUP.md) for environment configuration, the production server,
 - Local PDF, PPTX, XLS and XLSX evidence extraction with page/slide/sheet references.
 - Typed form-value mapping and multi-pair evidence comparison with match/mismatch/unknown states.
 - Configurable multi-input AI evaluation, optional JSON-schema validation, and human-review evidence packages.
-- Publication scoring and a separate, versioned general scoring builder.
-- Execution traces, session review decisions, and browser-local draft autosave.
+- Organization-defined formula and conditional scoring policies with immutable local versions.
+- Execution traces, terminal review packages, legacy publication review decisions, and browser-local draft autosave.
 - A collapsible sidebar and confirmed Clear saved draft action.
 
 ## Boundaries
@@ -54,6 +54,6 @@ The application uses Next.js App Router and is ready to import into Vercel, but 
 
 The included PRISMA PDF is an attributed, unmodified fixture. See [sample attribution](public/samples/README.txt) and [security and data](docs/SECURITY-AND-DATA.md).
 
-Publication is available through the built-in Plugin picker. New general workflows use Use form value, Extract evidence, Compare evidence, AI evaluation, date/duplicate checks, and saved-policy scoring. Generic External lookup is no longer offered for new MVP workflows; authenticated connectors remain planned. See [tool capabilities and limitations](docs/TOOLS-AND-EXTENSIONS.md).
+Publication is available through the built-in Plugin picker. New general workflows use Use form value, Extract evidence, Compare evidence, AI evaluation, date/duplicate checks, and saved-policy scoring. Formula policies can combine any number of manually mapped numeric outputs by weighted sum, average, or weighted average. Human Review is an optional terminal handoff to a separate module. See [tool capabilities and limitations](docs/TOOLS-AND-EXTENSIONS.md).
 
 [Content relevance KPI guide](docs/CONTENT-RELEVANCE-KPI.md): evaluate full PDF text against your reference rubric with named AI context inputs.
