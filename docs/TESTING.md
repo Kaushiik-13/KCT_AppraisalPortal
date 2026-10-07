@@ -9,7 +9,7 @@ npm.cmd run build
 
 Tests use Node's built-in test runner over `src/*.test.js` and `server/*.test.js`. A passing build verifies bundling, not browser behavior. There is no lint script or committed full browser automation suite.
 
-Most recent automated baseline: **90 passing tests** after the Next.js migration. The earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) records 67 tests at that checkpoint; it is historical, not the latest count.
+Most recent automated baseline: **98 passing tests** on 7 October 2026 after the evidence-workflow implementation. The earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) records 67 tests at that checkpoint; it is historical, not the latest count.
 
 ## Coverage map
 
@@ -23,6 +23,7 @@ Most recent automated baseline: **90 passing tests** after the Next.js migration
 | `paperFindings.test.js` | Extraction candidate analysis and PDF fixture cases |
 | `scoringPolicy.test.js` | Version snapshots, caps, missing evidence, source changes |
 | `aiWorkflow.test.js` | Generic inputs, instructions, response chaining, old drafts |
+| `frameworkStudio.test.js` | New catalogue, form-value mapping, evidence candidates/locations, comparison states, AI schema validation, Office adapters, review packages |
 | `server/ai.test.js` | Provider adapter, bounds, prompt separation, endpoint responses |
 | `server/nextAiRoute.test.js` | Next route validation, forwarded origin handling, status secrecy, payload limits |
 
@@ -42,6 +43,13 @@ Use an isolated profile/session so testing does not replace a user's only draft.
 8. **Persistence:** reload fields, mappings, instructions and versions; verify file/value/review loss is explicit.
 9. **Reset:** cancel Clear saved draft and verify no changes; confirm only in a disposable draft; verify blank configuration and retained sidebar preference.
 10. **Layout:** collapse/restore sidebar, reload, open settings and Test & review. Check desktop overflow and browser errors.
+11. **Evidence workflow:** extract a PDF, PPTX, XLS and XLSX; inspect page/slide/sheet references; confirm missing fields are unknown; compare multiple pairs; validate an AI schema; inspect the complete review package and record an override reason.
+
+## Framework Studio evidence workflow verification — 7 October 2026
+
+All 98 automated tests passed. Added coverage confirms the new catalogue hides Read and External lookup, Use form value records source/type, extraction candidates remain `verified:false`, comparison distinguishes unknown from mismatch, AI schema output is validated and exposed, XLS/XLSX and PPTX adapters preserve locations, and Human review receives the complete evidence package. The existing PDF fixture and all legacy publication/training tests still pass.
+
+The production build passed after the final code and documentation pass, producing the static `/` route and dynamic AI routes. No live OpenRouter call or full browser walkthrough was performed for this change.
 
 ## Observed browser results
 

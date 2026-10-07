@@ -6,8 +6,8 @@ This workflow evaluates alignment with a creator-provided rubric. It does not pe
 
 Keep Faculty Name (required text), Content File (required PDF) and Topic Name (required text).
 
-1. Add Action → Extract document information. Map Document PDF to Content File. Leave Optional labelled fields empty unless you also need specific `Label: value` matches.
-2. Add Action → AI assistance. Map AI input to Extract document information → Full document text.
+1. Add Action → Extract evidence. Map Evidence file to Content File and choose Full content (or Both when you also need `Label: value` fields).
+2. Add Action → AI evaluation. Map Primary input to Extract evidence → Full content.
 3. Click Add context input. Name it Topic Name and map its source above to Form: Topic Name. Repeat for Faculty Name if needed.
 4. Paste your criteria into Rubric / reference material. For a reference PDF instead, add a second input and extraction step before AI; connect its Full document text as additional context.
 5. Enter your task in System instructions; choose OpenRouter mode.

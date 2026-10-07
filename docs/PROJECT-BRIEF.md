@@ -28,7 +28,7 @@ There are no accounts, permission checks, authenticated reviewer identities, or 
 | FS-05 | Typed sources from form values or earlier outputs | Node settings |
 | FS-06 | Executable branching and review continuation | Workflow engine |
 | FS-07 | Conditions, points, multipliers, caps and versions | Scoring policy |
-| FS-08 | Creator-written AI instructions and input mapping | AI assistance |
+| FS-08 | Multi-input AI evaluation, rubric, instructions and optional structured output | AI evaluation |
 | FS-09 | Evidence, calculation and review trace | Test & review |
 | FS-10 | Draft recovery and confirmed reset | Browser autosave |
 

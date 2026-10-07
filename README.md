@@ -2,7 +2,7 @@
 
 A desktop proof of concept for creating configurable KPI forms, verification workflows, and scoring policies. The aim is to let different institutions compose their own KPIs from shared tools. Publication verification is the first worked example, not the only supported workflow.
 
-Documentation baseline: **6 October 2026**. This is a PoC, not a production appraisal platform.
+Documentation baseline: **7 October 2026**. This is a PoC, not a production appraisal platform.
 
 ## Run locally
 
@@ -37,8 +37,9 @@ See [setup](docs/SETUP.md) for environment configuration, the production server,
 
 - Dynamic input fields, typed mappings, and a tree workflow canvas.
 - Reusable Action, Condition, Human review, and Result blocks.
-- Browser PDF extraction and live Crossref metadata lookup.
-- Configurable AI inputs and system instructions, using OpenRouter or explicit simulation.
+- Local PDF, PPTX, XLS and XLSX evidence extraction with page/slide/sheet references.
+- Typed form-value mapping and multi-pair evidence comparison with match/mismatch/unknown states.
+- Configurable multi-input AI evaluation, optional JSON-schema validation, and human-review evidence packages.
 - Publication scoring and a separate, versioned general scoring builder.
 - Execution traces, session review decisions, and browser-local draft autosave.
 - A collapsible sidebar and confirmed Clear saved draft action.
@@ -49,10 +50,10 @@ Indexing is mocked, not verified against Scopus/WOS. Only first-listed authors a
 
 AI can summarize findings but does not itself mutate recorded evidence or scores. Creator-authored policies can consume exposed text values; the PoC does not enforce a production evidence-trust model.
 
-The application now uses Next.js App Router and is ready to import into Vercel, but it has not been pushed or deployed. The most recent automated baseline was **90 passing tests** and a passing production build. Migration checks covered the rendered interface, PDF worker, AI status and a live OpenRouter response through the Next.js route. See [testing](docs/TESTING.md). Historical results are retained in [Phase 6 verification](PHASE-6-VERIFICATION.md).
+The application uses Next.js App Router and is ready to import into Vercel, but it has not been pushed or deployed. The most recent automated baseline is recorded in [testing](docs/TESTING.md). Historical results are retained in [Phase 6 verification](PHASE-6-VERIFICATION.md).
 
 The included PRISMA PDF is an attributed, unmodified fixture. See [sample attribution](public/samples/README.txt) and [security and data](docs/SECURITY-AND-DATA.md).
 
-Publication is available through the built-in Plugin picker. General Actions include configurable document extraction, comparisons, date range, duplicate checks, public JSON lookup, AI and saved-policy scoring. See [tool capabilities and limitations](docs/TOOLS-AND-EXTENSIONS.md).
+Publication is available through the built-in Plugin picker. New general workflows use Use form value, Extract evidence, Compare evidence, AI evaluation, date/duplicate checks, and saved-policy scoring. Generic External lookup is no longer offered for new MVP workflows; authenticated connectors remain planned. See [tool capabilities and limitations](docs/TOOLS-AND-EXTENSIONS.md).
 
 [Content relevance KPI guide](docs/CONTENT-RELEVANCE-KPI.md): evaluate full PDF text against your reference rubric with named AI context inputs.

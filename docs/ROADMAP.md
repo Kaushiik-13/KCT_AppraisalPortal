@@ -11,6 +11,15 @@
 | 5 | Standalone scoring rules, caps, saved versions |
 | 6 | Publication/training acceptance checks and setup guidance |
 
+## Delivered 7 October 2026 — Framework Studio evidence workflow
+
+- Replaced creator-facing typed Read tools with Use form value.
+- Added common PDF/PPTX/XLS/XLSX extraction modes and source locations.
+- Added multi-pair Compare evidence with match/mismatch/unknown semantics.
+- Renamed and extended AI evaluation with multi-input context and optional validated JSON-schema outputs.
+- Expanded generic review to show and preserve the evidence package and reasoned score overrides.
+- Removed generic External lookup from the new MVP catalogue while retaining old-draft compatibility.
+
 Subsequent delivered improvements: configurable AI instructions and any-path inputs, live free-model check, compact whiteboard layout, sidebar toggle, removal of extra sidebar cards, confirmed Clear saved draft, and the AI response-budget fix with safe diagnostics.
 
 Delivered on 5 October: built-in Publication plugin picker and reusable verification Actions, including explicit saved-policy scoring. General OCR, authenticated integrations and installable plugins remain planned.
@@ -20,7 +29,7 @@ Delivered on 6 October: migrated the PoC from Vite to Next.js 16 App Router, ret
 ## Next priorities — planned, not implemented
 
 1. **Creator usability review.** Have the project owner build a KPI from scratch and record confusing steps. Do not assume seeded test workflows prove independent authoring is easy.
-2. **Unify scoring and approval.** Allow generic workflows to compute a provisional score before review, preserve it, and finalize an approved score after review. Decide how pending score facts are resolved.
+2. **Persist final scoring and approval.** Generic review now preserves provisional calculations and reasoned overrides in session history. Define the canonical durable final-score record and how pending facts are resolved before production.
 3. **Agree institutional rules.** Resolve co-author conflict, corresponding-author precedence, SAE treatment, date precedence, caps, and journal-versus-paper indexing evidence.
 4. **Real verification adapters.** Add authorized index sources and reliable identity/duplicate data, with explicit coverage and failure semantics.
 5. **Portable draft lifecycle.** Add validated import, multiple drafts, schema migrations, and cross-tab conflict handling.

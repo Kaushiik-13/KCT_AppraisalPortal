@@ -1,25 +1,623 @@
-import ReusableSettings from './ReusableSettings';
-import {DEFAULT_AI_INSTRUCTIONS,MAX_AI_INSTRUCTIONS,MAX_AI_REFERENCE} from './aiContext';
-import React from 'react';
-import BlockSettings from './BlockSettings';
-import {definition,nodeDefinition,sourceChoices,FACTS} from './workflowModel';
-export function PolicyEditor({policy,onChange}){
- const update=(i,p)=>onChange({...policy,rules:policy.rules.map((r,k)=>i===k?{...r,...p}:r)});
- return <div><h3>Scoring policy</h3><p>First matching rule wins. First authors only. Uncertain findings stay pending; confirmed outside-period findings receive zero.</p><label>Policy version<input value={policy.version} onChange={e=>onChange({...policy,version:e.target.value})}/></label>{policy.rules.map((r,i)=><fieldset key={r.id}><legend>Rule {i+1}</legend><label>Rule name<input value={r.name} onChange={e=>update(i,{name:e.target.value})}/></label><label>Match<select value={r.match} onChange={e=>update(i,{match:e.target.value})}><option value="all">All conditions</option><option value="any">Any condition</option></select></label>{r.conditions.map((c,j)=>{const condition=p=>update(i,{conditions:r.conditions.map((x,k)=>k===j?{...x,...p}:x)});return <div className="condition" key={j}><select aria-label={`Rule ${i+1} condition ${j+1} finding`} value={c.fact} onChange={e=>condition({fact:e.target.value,value:FACTS[e.target.value][0]})}>{Object.keys(FACTS).map(f=><option key={f}>{f}</option>)}</select><select aria-label={`Rule ${i+1} condition ${j+1} comparison`} value={c.op} onChange={e=>condition({op:e.target.value})}><option value="eq">is</option><option value="ne">is not</option></select><select aria-label={`Rule ${i+1} condition ${j+1} value`} value={c.value} onChange={e=>condition({value:e.target.value})}>{FACTS[c.fact].map(v=><option key={v}>{v}</option>)}</select><button className="mini" aria-label={`Remove condition ${j+1} from rule ${i+1}`} onClick={()=>update(i,{conditions:r.conditions.filter((_,k)=>k!==j)})}>×</button></div>;})}<button className="mini" onClick={()=>update(i,{conditions:[...r.conditions,{fact:'scopus',op:'eq',value:'yes'}]})}>+ Condition</button><div className="two-columns"><label>Base points<input type="number" min="0" step="any" value={r.points} onChange={e=>update(i,{points:e.target.value})}/></label><label>Multiplier<input type="number" min="0" step="any" value={r.multiplier} onChange={e=>update(i,{multiplier:e.target.value})}/></label></div><div className="button-row"><button className="mini" disabled={!i} onClick={()=>{const rules=[...policy.rules];[rules[i-1],rules[i]]=[rules[i],rules[i-1]];onChange({...policy,rules});}}>Move up</button><button className="mini danger" onClick={()=>onChange({...policy,rules:policy.rules.filter((_,k)=>k!==i)})}>Remove rule</button></div></fieldset>)}<button className="btn" onClick={()=>onChange({...policy,rules:[...policy.rules,{id:crypto.randomUUID(),name:'New rule',match:'all',conditions:[{fact:'scopus',op:'eq',value:'yes'}],points:12,multiplier:1}]})}>+ Add scoring rule</button><p>No matching rule → pending review. SAE scoring is undecided.</p></div>;
+import ReusableSettings from "./ReusableSettings";
+import {
+  DEFAULT_AI_INSTRUCTIONS,
+  MAX_AI_INSTRUCTIONS,
+  MAX_AI_REFERENCE,
+} from "./aiContext";
+import React from "react";
+import BlockSettings from "./BlockSettings";
+import {
+  definition,
+  nodeDefinition,
+  sourceChoices,
+  FACTS,
+} from "./workflowModel";
+export function PolicyEditor({ policy, onChange }) {
+  const update = (i, p) =>
+    onChange({
+      ...policy,
+      rules: policy.rules.map((r, k) => (i === k ? { ...r, ...p } : r)),
+    });
+  return (
+    <div>
+      <h3>Scoring policy</h3>
+      <p>
+        First matching rule wins. First authors only. Uncertain findings stay
+        pending; confirmed outside-period findings receive zero.
+      </p>
+      <label>
+        Policy version
+        <input
+          value={policy.version}
+          onChange={(e) => onChange({ ...policy, version: e.target.value })}
+        />
+      </label>
+      {policy.rules.map((r, i) => (
+        <fieldset key={r.id}>
+          <legend>Rule {i + 1}</legend>
+          <label>
+            Rule name
+            <input
+              value={r.name}
+              onChange={(e) => update(i, { name: e.target.value })}
+            />
+          </label>
+          <label>
+            Match
+            <select
+              value={r.match}
+              onChange={(e) => update(i, { match: e.target.value })}
+            >
+              <option value="all">All conditions</option>
+              <option value="any">Any condition</option>
+            </select>
+          </label>
+          {r.conditions.map((c, j) => {
+            const condition = (p) =>
+              update(i, {
+                conditions: r.conditions.map((x, k) =>
+                  k === j ? { ...x, ...p } : x,
+                ),
+              });
+            return (
+              <div className="condition" key={j}>
+                <select
+                  aria-label={`Rule ${i + 1} condition ${j + 1} finding`}
+                  value={c.fact}
+                  onChange={(e) =>
+                    condition({
+                      fact: e.target.value,
+                      value: FACTS[e.target.value][0],
+                    })
+                  }
+                >
+                  {Object.keys(FACTS).map((f) => (
+                    <option key={f}>{f}</option>
+                  ))}
+                </select>
+                <select
+                  aria-label={`Rule ${i + 1} condition ${j + 1} comparison`}
+                  value={c.op}
+                  onChange={(e) => condition({ op: e.target.value })}
+                >
+                  <option value="eq">is</option>
+                  <option value="ne">is not</option>
+                </select>
+                <select
+                  aria-label={`Rule ${i + 1} condition ${j + 1} value`}
+                  value={c.value}
+                  onChange={(e) => condition({ value: e.target.value })}
+                >
+                  {FACTS[c.fact].map((v) => (
+                    <option key={v}>{v}</option>
+                  ))}
+                </select>
+                <button
+                  className="mini"
+                  aria-label={`Remove condition ${j + 1} from rule ${i + 1}`}
+                  onClick={() =>
+                    update(i, {
+                      conditions: r.conditions.filter((_, k) => k !== j),
+                    })
+                  }
+                >
+                  ×
+                </button>
+              </div>
+            );
+          })}
+          <button
+            className="mini"
+            onClick={() =>
+              update(i, {
+                conditions: [
+                  ...r.conditions,
+                  { fact: "scopus", op: "eq", value: "yes" },
+                ],
+              })
+            }
+          >
+            + Condition
+          </button>
+          <div className="two-columns">
+            <label>
+              Base points
+              <input
+                type="number"
+                min="0"
+                step="any"
+                value={r.points}
+                onChange={(e) => update(i, { points: e.target.value })}
+              />
+            </label>
+            <label>
+              Multiplier
+              <input
+                type="number"
+                min="0"
+                step="any"
+                value={r.multiplier}
+                onChange={(e) => update(i, { multiplier: e.target.value })}
+              />
+            </label>
+          </div>
+          <div className="button-row">
+            <button
+              className="mini"
+              disabled={!i}
+              onClick={() => {
+                const rules = [...policy.rules];
+                [rules[i - 1], rules[i]] = [rules[i], rules[i - 1]];
+                onChange({ ...policy, rules });
+              }}
+            >
+              Move up
+            </button>
+            <button
+              className="mini danger"
+              onClick={() =>
+                onChange({
+                  ...policy,
+                  rules: policy.rules.filter((_, k) => k !== i),
+                })
+              }
+            >
+              Remove rule
+            </button>
+          </div>
+        </fieldset>
+      ))}
+      <button
+        className="btn"
+        onClick={() =>
+          onChange({
+            ...policy,
+            rules: [
+              ...policy.rules,
+              {
+                id: crypto.randomUUID(),
+                name: "New rule",
+                match: "all",
+                conditions: [{ fact: "scopus", op: "eq", value: "yes" }],
+                points: 12,
+                multiplier: 1,
+              },
+            ],
+          })
+        }
+      >
+        + Add scoring rule
+      </button>
+      <p>No matching rule → pending review. SAE scoring is undecided.</p>
+    </div>
+  );
 }
-function RegistryEditor({records,onChange,duplicate=false}){
- const patch=(i,p)=>onChange(records.map((r,j)=>i===j?{...r,...p}:r));
- return <div><h3>{duplicate?'Seed prior submissions':'Mock index registry'}</h3><p>{duplicate?'Approved submissions in this session are checked automatically. Seeds are optional.':'Every entry is simulated paper-level evidence. Missing coverage means unknown, never “not indexed”.'}</p>{records.map((r,i)=><fieldset key={i}><legend>Record {i+1}</legend><label>DOI<input value={r.doi} onChange={e=>patch(i,{doi:e.target.value})}/></label>{duplicate?<label>Faculty name<input value={r.faculty} onChange={e=>patch(i,{faculty:e.target.value})}/></label>:<><div className="three-columns">{['scopus','wos','sae'].map(k=><label key={k}>{k==='sae'?'SAE publisher':k.toUpperCase()}<select value={r[k]} onChange={e=>patch(i,{[k]:e.target.value})}>{['yes','no','unknown'].map(s=><option key={s}>{s}</option>)}</select></label>)}</div><label>Coverage from<input type="date" value={r.start} onChange={e=>patch(i,{start:e.target.value})}/></label><label>Coverage until<input type="date" value={r.end} onChange={e=>patch(i,{end:e.target.value})}/></label><label>Source / test assumption<textarea value={r.source} onChange={e=>patch(i,{source:e.target.value})}/></label></>}<button className="mini danger" onClick={()=>onChange(records.filter((_,j)=>j!==i))}>Remove record</button></fieldset>)}<button className="btn" onClick={()=>onChange([...records,duplicate?{doi:'',faculty:''}:{doi:'',scopus:'unknown',wos:'unknown',sae:'unknown',start:'',end:'',source:'Simulated test assumption'}])}>+ Add record</button></div>;
+function RegistryEditor({ records, onChange, duplicate = false }) {
+  const patch = (i, p) =>
+    onChange(records.map((r, j) => (i === j ? { ...r, ...p } : r)));
+  return (
+    <div>
+      <h3>{duplicate ? "Seed prior submissions" : "Mock index registry"}</h3>
+      <p>
+        {duplicate
+          ? "Approved submissions in this session are checked automatically. Seeds are optional."
+          : "Every entry is simulated paper-level evidence. Missing coverage means unknown, never “not indexed”."}
+      </p>
+      {records.map((r, i) => (
+        <fieldset key={i}>
+          <legend>Record {i + 1}</legend>
+          <label>
+            DOI
+            <input
+              value={r.doi}
+              onChange={(e) => patch(i, { doi: e.target.value })}
+            />
+          </label>
+          {duplicate ? (
+            <label>
+              Faculty name
+              <input
+                value={r.faculty}
+                onChange={(e) => patch(i, { faculty: e.target.value })}
+              />
+            </label>
+          ) : (
+            <>
+              <div className="three-columns">
+                {["scopus", "wos", "sae"].map((k) => (
+                  <label key={k}>
+                    {k === "sae" ? "SAE publisher" : k.toUpperCase()}
+                    <select
+                      value={r[k]}
+                      onChange={(e) => patch(i, { [k]: e.target.value })}
+                    >
+                      {["yes", "no", "unknown"].map((s) => (
+                        <option key={s}>{s}</option>
+                      ))}
+                    </select>
+                  </label>
+                ))}
+              </div>
+              <label>
+                Coverage from
+                <input
+                  type="date"
+                  value={r.start}
+                  onChange={(e) => patch(i, { start: e.target.value })}
+                />
+              </label>
+              <label>
+                Coverage until
+                <input
+                  type="date"
+                  value={r.end}
+                  onChange={(e) => patch(i, { end: e.target.value })}
+                />
+              </label>
+              <label>
+                Source / test assumption
+                <textarea
+                  value={r.source}
+                  onChange={(e) => patch(i, { source: e.target.value })}
+                />
+              </label>
+            </>
+          )}
+          <button
+            className="mini danger"
+            onClick={() => onChange(records.filter((_, j) => j !== i))}
+          >
+            Remove record
+          </button>
+        </fieldset>
+      ))}
+      <button
+        className="btn"
+        onClick={() =>
+          onChange([
+            ...records,
+            duplicate
+              ? { doi: "", faculty: "" }
+              : {
+                  doi: "",
+                  scopus: "unknown",
+                  wos: "unknown",
+                  sae: "unknown",
+                  start: "",
+                  end: "",
+                  source: "Simulated test assumption",
+                },
+          ])
+        }
+      >
+        + Add record
+      </button>
+    </div>
+  );
 }
-export default function NodeSettings({node,nodes,fields,onChange,onRemove,embedded=false,policy}){
- if(node&&['plugin','action','condition','human_review','result'].includes(node.kind))return <BlockSettings {...{node,nodes,fields,onChange,onRemove,policy}}/>;
- if(!node)return <aside className="studio-settings"><h2>Choose a step</h2><p>Add a node from the catalogue, then configure it here.</p></aside>;
- const d=embedded?{...nodeDefinition(node),routes:Object.keys(node.routes)}:nodeDefinition(node);const config=p=>onChange({...node,config:{...node.config,...p}});
- return <aside className={embedded?"embedded-tool-settings":"studio-settings"}>{!embedded&&<><div className="eyebrow">STEP SETTINGS</div><h2>{d.name}</h2><p>{d.description}</p></>}<label>Step name<input value={node.name} onChange={e=>onChange({...node,name:e.target.value})}/></label>{node.kind==='submit'?<p>Uses all {fields.length} fields from your form. Required fields are checked before execution.</p>:<><h3>Where information comes from</h3>{d.inputs.map(p=>{const choices=sourceChoices(node,p,nodes,fields);return <label key={p.key}>{p.label}<select value={node.mappings[p.key]||''} onChange={e=>onChange({...node,mappings:{...node.mappings,[p.key]:e.target.value}})}><option value="">{p.optional?'Not connected (optional)':'Choose a source'}</option>{['Earlier steps','Submission form'].map(g=><optgroup label={g} key={g}>{choices.filter(c=>c.group===g).map(c=><option key={c.value} value={c.value}>{c.label}</option>)}</optgroup>)}</select>{!choices.length&&<small>Add a compatible earlier step or input field first.</small>}{node.mappings[p.key]&&!choices.some(c=>c.value===node.mappings[p.key])&&<small className="error">Source is no longer compatible. Select another.</small>}</label>;})}</>}
- {node.kind==='period'&&<><h3>Assessment period</h3><label>Start date<input type="date" value={node.config.start} onChange={e=>config({start:e.target.value})}/></label><label>End date<input type="date" value={node.config.end} onChange={e=>config({end:e.target.value})}/></label><label>Date to use<select value={node.config.dateRule} onChange={e=>config({dateRule:e.target.value})}><option value="published">Published date</option><option value="published-online">Online publication date</option><option value="published-print">Print publication date</option></select></label><p>Missing or partial dates stay uncertain. PDF/lookup conflicts still require review.</p></>}
- {node.kind==='index'&&<RegistryEditor records={node.config.registry} onChange={registry=>config({registry})}/>}
- {node.kind==='duplicate'&&<RegistryEditor duplicate records={node.config.records} onChange={records=>config({records})}/>}
- {node.kind==='ai'&&<><h3>Additional context</h3><p>Add Topic Name, Faculty Name, or another extracted reference document alongside the main AI input.</p>{(node.config.contextInputs||[]).map(f=><div key={f.id}><label>Context name<input value={f.name} onChange={e=>config({contextInputs:node.config.contextInputs.map(x=>x.id===f.id?{...x,name:e.target.value}:x)})}/></label><button className="mini" onClick={()=>{const mappings={...node.mappings};delete mappings[f.id];onChange({...node,mappings,config:{...node.config,contextInputs:node.config.contextInputs.filter(x=>x.id!==f.id)}});}}>Remove context</button></div>)}<button className="btn" disabled={(node.config.contextInputs||[]).length>=8} onClick={()=>config({contextInputs:[...(node.config.contextInputs||[]),{id:crypto.randomUUID(),name:`Context ${(node.config.contextInputs||[]).length+1}`}]})}>Add context input</button><label>Rubric / reference material (optional)<textarea rows={5} maxLength={MAX_AI_REFERENCE} value={node.config.referenceText||''} onChange={e=>config({referenceText:e.target.value})} placeholder="Paste the industry requirements or reference criteria to evaluate against."/><small>Your instructions describe the task. This reference material supplies the criteria. You can also connect reference text from an earlier extraction node.</small></label><label>Assistance mode<select value={node.config.mode} onChange={e=>config({mode:e.target.value})}><option value="openrouter">OpenRouter free models</option><option value="disabled">No AI connection · pass findings to appraiser</option><option value="simulated">Simulated assistance · no model call</option></select><small>AI responses do not automatically change findings, marks, or approvals. OpenRouter uses your server key and receives your instructions and the selected inputs and reference material. Free-model availability varies.</small></label><label>System instructions<textarea rows={7} maxLength={MAX_AI_INSTRUCTIONS} value={node.config.instructions??DEFAULT_AI_INSTRUCTIONS} onChange={e=>config({instructions:e.target.value})} placeholder="Describe what this AI step should do with its input."/><small>Example: Evaluate the supplied document against my reference criteria. Cite page evidence, identify gaps, and state what cannot be determined. Do not claim live market research. Inputs above 100,000 text characters are blocked; automatic chunking is not available.</small></label></>}
- {node.kind==='score'&&<PolicyEditor policy={node.config.policy} onChange={policy=>config({policy})}/>}
- <ReusableSettings node={node} onChange={onChange} policy={policy}/><h3>Produces</h3><div className="output-tags">{d.outputs.map(p=><span key={p.key}>{p.label}</span>)}</div>{d.routes.length>0&&<><h3>What happens next?</h3>{d.routes.map(r=><label key={r}>{r==='next'?'Continue to':`When ${r}`}<select value={node.routes[r]||''} onChange={e=>onChange({...node,routes:{...node.routes,[r]:e.target.value}})}><option value="">Choose next step</option>{nodes.filter(n=>n.id!==node.id).map(n=><option value={n.id} key={n.id}>{n.name}</option>)}</select></label>)}</>}<button className="btn danger" onClick={onRemove}>Remove this step</button></aside>;
+export default function NodeSettings({
+  node,
+  nodes,
+  fields,
+  onChange,
+  onRemove,
+  embedded = false,
+  policy,
+}) {
+  if (
+    node &&
+    ["plugin", "action", "condition", "human_review", "result"].includes(
+      node.kind,
+    )
+  )
+    return (
+      <BlockSettings {...{ node, nodes, fields, onChange, onRemove, policy }} />
+    );
+  if (!node)
+    return (
+      <aside className="studio-settings">
+        <h2>Choose a step</h2>
+        <p>Add a node from the catalogue, then configure it here.</p>
+      </aside>
+    );
+  const d = embedded
+    ? { ...nodeDefinition(node), routes: Object.keys(node.routes) }
+    : nodeDefinition(node);
+  const config = (p) => onChange({ ...node, config: { ...node.config, ...p } });
+  return (
+    <aside className={embedded ? "embedded-tool-settings" : "studio-settings"}>
+      {!embedded && (
+        <>
+          <div className="eyebrow">STEP SETTINGS</div>
+          <h2>{d.name}</h2>
+          <p>{d.description}</p>
+        </>
+      )}
+      <label>
+        Step name
+        <input
+          value={node.name}
+          onChange={(e) => onChange({ ...node, name: e.target.value })}
+        />
+      </label>
+      {node.kind === "submit" ? (
+        <p>
+          Uses all {fields.length} fields from your form. Required fields are
+          checked before execution.
+        </p>
+      ) : (
+        <>
+          <h3>Where information comes from</h3>
+          {d.inputs.map((p) => {
+            const choices = sourceChoices(node, p, nodes, fields);
+            return (
+              <label key={p.key}>
+                {p.label}
+                <select
+                  value={node.mappings[p.key] || ""}
+                  onChange={(e) =>
+                    onChange({
+                      ...node,
+                      mappings: { ...node.mappings, [p.key]: e.target.value },
+                    })
+                  }
+                >
+                  <option value="">
+                    {p.optional
+                      ? "Not connected (optional)"
+                      : "Choose a source"}
+                  </option>
+                  {["Earlier steps", "Submission form"].map((g) => (
+                    <optgroup label={g} key={g}>
+                      {choices
+                        .filter((c) => c.group === g)
+                        .map((c) => (
+                          <option key={c.value} value={c.value}>
+                            {c.label}
+                          </option>
+                        ))}
+                    </optgroup>
+                  ))}
+                </select>
+                {!choices.length && (
+                  <small>
+                    Add a compatible earlier step or input field first.
+                  </small>
+                )}
+                {node.mappings[p.key] &&
+                  !choices.some((c) => c.value === node.mappings[p.key]) && (
+                    <small className="error">
+                      Source is no longer compatible. Select another.
+                    </small>
+                  )}
+              </label>
+            );
+          })}
+        </>
+      )}
+      {node.kind === "period" && (
+        <>
+          <h3>Assessment period</h3>
+          <label>
+            Start date
+            <input
+              type="date"
+              value={node.config.start}
+              onChange={(e) => config({ start: e.target.value })}
+            />
+          </label>
+          <label>
+            End date
+            <input
+              type="date"
+              value={node.config.end}
+              onChange={(e) => config({ end: e.target.value })}
+            />
+          </label>
+          <label>
+            Date to use
+            <select
+              value={node.config.dateRule}
+              onChange={(e) => config({ dateRule: e.target.value })}
+            >
+              <option value="published">Published date</option>
+              <option value="published-online">Online publication date</option>
+              <option value="published-print">Print publication date</option>
+            </select>
+          </label>
+          <p>
+            Missing or partial dates stay uncertain. PDF/lookup conflicts still
+            require review.
+          </p>
+        </>
+      )}
+      {node.kind === "index" && (
+        <RegistryEditor
+          records={node.config.registry}
+          onChange={(registry) => config({ registry })}
+        />
+      )}
+      {node.kind === "duplicate" && (
+        <RegistryEditor
+          duplicate
+          records={node.config.records}
+          onChange={(records) => config({ records })}
+        />
+      )}
+      {node.kind === "ai" && (
+        <>
+          <h3>Additional inputs</h3>
+          <p>
+            Add form values, comparison findings, earlier AI results, or another
+            extracted document alongside the primary input.
+          </p>
+          {(node.config.contextInputs || []).map((f) => (
+            <div key={f.id}>
+              <label>
+                Input name
+                <input
+                  value={f.name}
+                  onChange={(e) =>
+                    config({
+                      contextInputs: node.config.contextInputs.map((x) =>
+                        x.id === f.id ? { ...x, name: e.target.value } : x,
+                      ),
+                    })
+                  }
+                />
+              </label>
+              <button
+                className="mini"
+                onClick={() => {
+                  const mappings = { ...node.mappings };
+                  delete mappings[f.id];
+                  onChange({
+                    ...node,
+                    mappings,
+                    config: {
+                      ...node.config,
+                      contextInputs: node.config.contextInputs.filter(
+                        (x) => x.id !== f.id,
+                      ),
+                    },
+                  });
+                }}
+              >
+                Remove input
+              </button>
+            </div>
+          ))}
+          <button
+            className="btn"
+            disabled={(node.config.contextInputs || []).length >= 8}
+            onClick={() =>
+              config({
+                contextInputs: [
+                  ...(node.config.contextInputs || []),
+                  {
+                    id: crypto.randomUUID(),
+                    name: `Input ${(node.config.contextInputs || []).length + 1}`,
+                  },
+                ],
+              })
+            }
+          >
+            Add input
+          </button>
+          <label>
+            Rubric / policy (optional)
+            <textarea
+              rows={5}
+              maxLength={MAX_AI_REFERENCE}
+              value={node.config.referenceText || ""}
+              onChange={(e) => config({ referenceText: e.target.value })}
+              placeholder="Paste the evaluation criteria or KPI policy."
+            />
+            <small>
+              The run trace keeps this rubric with the recommendation.
+            </small>
+          </label>
+          <label>
+            Expected JSON schema (optional)
+                <textarea
+                  rows={7}
+                  maxLength={3000}
+                  value={node.config.outputSchema || ""}
+              onChange={(e) => config({ outputSchema: e.target.value })}
+              placeholder={
+                '{"type":"object","properties":{"decision":{"type":"string"}},"required":["decision"]}'
+              }
+            />
+            <small>
+              Invalid JSON or a response missing required fields is rejected as
+              unavailable.
+            </small>
+          </label>
+          <label>
+            Evaluation mode
+            <select
+              value={node.config.mode}
+              onChange={(e) => config({ mode: e.target.value })}
+            >
+              <option value="openrouter">OpenRouter free models</option>
+              <option value="disabled">
+                No AI connection · pass evidence to reviewer
+              </option>
+              <option value="simulated">
+                Simulated evaluation · no model call
+              </option>
+            </select>
+            <small>
+              AI recommendations never approve, reject or score automatically.
+              OpenRouter receives the selected inputs, rubric, schema and
+              instructions.
+            </small>
+          </label>
+          <label>
+            System instructions
+            <textarea
+              rows={7}
+              maxLength={MAX_AI_INSTRUCTIONS}
+              value={node.config.instructions ?? DEFAULT_AI_INSTRUCTIONS}
+              onChange={(e) => config({ instructions: e.target.value })}
+              placeholder="Describe how the AI should evaluate the evidence."
+            />
+            <small>
+              Ask for structured findings, cite page/slide/sheet evidence,
+              identify missing information, and prohibit invented evidence.
+            </small>
+          </label>
+        </>
+      )}
+      {node.kind === "score" && (
+        <PolicyEditor
+          policy={node.config.policy}
+          onChange={(policy) => config({ policy })}
+        />
+      )}
+      <ReusableSettings
+        node={node}
+        onChange={onChange}
+        policy={policy}
+        fields={fields}
+      />
+      <h3>Produces</h3>
+      <div className="output-tags">
+        {d.outputs.map((p) => (
+          <span key={p.key}>{p.label}</span>
+        ))}
+      </div>
+      {d.routes.length > 0 && (
+        <>
+          <h3>What happens next?</h3>
+          {d.routes.map((r) => (
+            <label key={r}>
+              {r === "next" ? "Continue to" : `When ${r}`}
+              <select
+                value={node.routes[r] || ""}
+                onChange={(e) =>
+                  onChange({
+                    ...node,
+                    routes: { ...node.routes, [r]: e.target.value },
+                  })
+                }
+              >
+                <option value="">Choose next step</option>
+                {nodes
+                  .filter((n) => n.id !== node.id)
+                  .map((n) => (
+                    <option value={n.id} key={n.id}>
+                      {n.name}
+                    </option>
+                  ))}
+              </select>
+            </label>
+          ))}
+        </>
+      )}
+      <button className="btn danger" onClick={onRemove}>
+        Remove this step
+      </button>
+    </aside>
+  );
 }

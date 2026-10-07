@@ -2,9 +2,11 @@
 
 ## Configure an AI step
 
-Add Action → AI assistance on any path. Choose AI input from a supported form value or earlier output. Binary file fields and the whole submission record are excluded; use extracted document text instead. Enter System instructions, up to 6,000 characters, and choose the next step.
+Add Action → AI evaluation on any path. Choose a primary input from a supported form value or earlier output, then add up to eight named inputs. Binary file fields and the whole submission record are excluded; use Extract evidence content instead. Enter System instructions, up to 6,000 characters, and choose the next step.
 
-Each instance has independent instructions. A clear-path node can summarize accepted findings; an uncertain-path node can ask for discrepancies. Outputs are `assistance` (details) and `response` (text). The trace shows instructions used, provider/model when available, and response. AI does not automatically modify recorded facts, marks, or approvals.
+Each instance has independent instructions. A clear-path node can summarize accepted findings; an uncertain-path node can ask for discrepancies. Outputs always include `assistance` (details) and `response` (text). When an object JSON schema is configured, its top-level properties also become typed outputs after validation. The trace preserves instructions, rubric, schema, provider/model when available, raw response, and parsed structure. AI does not automatically modify recorded facts, marks, or approvals.
+
+Schema validation checks valid JSON, required fields, primitive property types, and configured enums. Schemas are limited to 3,000 characters and the schema plus system instructions must fit the existing 6,000-character instruction allowance. Invalid structured output stops that workflow step with an explicit error; it is never treated as a successful evaluation. Conditions should use exposed structured fields such as `decision`, `confidence`, or `requiresReview`, not interpret response prose.
 
 | Mode | Behavior |
 |---|---|
@@ -85,8 +87,8 @@ Response diagnostics retain the selected model and finish reason for empty or le
 
 ## Document evaluation inputs
 
-Generic extraction always exposes Full document text and Text by page. Select one as AI input. Add context inputs (up to eight) for Topic Name, Faculty Name or an earlier reference extraction. Name each context and map its source. Missing configured context stops AI generation.
+Extract evidence exposes a Full content object with location-bearing sections for PDF, PPTX, XLS, and XLSX. Select it as the primary input. Add named inputs (up to eight) for Topic Name, Faculty Name, comparison findings, earlier AI results, or a reference extraction. Missing configured input stops AI generation.
 
-Rubric / reference material accepts up to 12,000 characters saved with the node. System instructions (6,000 characters) specify how to evaluate. The combined user-role payload contains primaryInput, additionalInputs (name/value pairs), and referenceMaterial. Existing single-input nodes retain their original payload. Context selection/rubric autosave; uploaded documents and test values do not.
+Rubric / policy material accepts up to 12,000 characters saved with the node. System instructions (6,000 characters) specify how to evaluate. The combined user-role payload contains primaryInput, additionalInputs (name/value pairs), referenceMaterial, and optional outputSchema. Existing single-input nodes retain their original payload. Input selection, rubric, schema, and instructions autosave; uploaded documents and test values do not.
 
 This supports alignment with supplied requirements. No web search is performed; instructions cannot establish current market demand without dated external evidence. See [content relevance walkthrough](CONTENT-RELEVANCE-KPI.md).

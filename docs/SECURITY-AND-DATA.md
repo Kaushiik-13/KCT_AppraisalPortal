@@ -5,7 +5,7 @@
 | Data | Location / transfer |
 |---|---|
 | KPI fields, graph, policies, AI instructions | Browser localStorage |
-| Uploaded PDFs and parsed text | Browser session memory |
+| Uploaded PDF/PPTX/XLS/XLSX files and parsed content | Browser session memory |
 | Submitted values, traces, reviews | Browser session memory |
 | Approved duplicate records | Current workflow session |
 | DOI | Browser to Crossref for lookup |
@@ -19,7 +19,7 @@ The PDF binary is not uploaded by the app's AI path, but selected extracted text
 - Keys remain server-side and are not included in draft exports or status responses.
 - The AI POST endpoint requires a same-origin host/protocol in production, including forwarded Vercel headers; it also bounds requests and has timeouts/concurrency control.
 - Context is bounded and evidence is separated from system instructions.
-- PDF extraction disables PDF.js eval support and enforces size/page limits.
+- PDF extraction disables PDF.js eval support and enforces size/page limits. All evidence formats have a 20 MB client-side limit; Office extraction stays local.
 - Models do not directly mutate evidence or approve scores; deterministic engine/review actions own those operations.
 - Corrupt drafts are protected against automatic overwrite; clearing requires confirmation.
 
@@ -41,6 +41,8 @@ The included PRISMA paper retains its original attribution and license notice; s
 
 AI adapter diagnostic logs include only selected model, finish reason and answer-presence boolean. They do not log instructions, evidence, keys or internal reasoning.
 
-General External lookup sends the selected lookup value to the creator-configured HTTPS public API from the browser, without cookies. CORS must permit it. URLs/settings are saved in the draft: never include credentials or keys. JSON responses are limited to 1 MB after reading; timeout is 18 seconds. Generic PDF extraction is local and produces unverified candidates.
+Generic External lookup is removed from the new MVP catalogue. Its legacy handler remains readable only for existing saved drafts and still sends selected values to creator-configured public endpoints. Do not create new dependencies on it. A future connector/MCP layer needs explicit authentication, secret storage, permissions, response contracts, retry/timeout policy and allowlisting.
+
+Evidence extraction is local and produces unverified candidates. PDF parsing uses PDF.js; PPTX uses ZIP/XML text runs; XLS/XLSX use the SheetJS-compatible parser. These are content parsers, not malware scanners or sandbox boundaries. Production use still requires file-type verification, malware controls, resource isolation, and stricter decompression limits.
 
 When Full document text is selected for live AI, the extracted text (plus selected context and creator reference material) is sent to OpenRouter. The binary PDF remains local. The AI text budget is 100,000 characters; oversize/structurally truncated inputs are rejected without provider calls. Reference material is saved in browser draft configuration, so do not paste secrets into it.

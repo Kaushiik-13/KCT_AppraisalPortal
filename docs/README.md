@@ -1,6 +1,6 @@
 # Documentation index
 
-Baseline: **6 October 2026**. These documents describe the Next.js PoC implementation. Planned features are explicitly distinguished from implemented features.
+Baseline: **7 October 2026**. These documents describe the Next.js PoC implementation. Planned features are explicitly distinguished from implemented features.
 
 ## Product and user guides
 

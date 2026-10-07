@@ -16,7 +16,7 @@ Use an empty draft or a separate browser profile. Do not clear a draft you want 
 8. In its Connect to existing steps section, send Approved to Eligible and Rejected to Rejected.
 9. On Clarification, add a Result named **Pending clarification**, with the same Outcome name.
 
-Alternatively insert an Action / Read number value before the Condition and map the Condition to its Selected value output. This extra step is useful for learning output chaining but is not required to read a form field.
+Alternatively insert Action → Use form value before the Condition, select Training hours, and map the Condition to its Form value output. This explicit mapping step is useful for learning output chaining but is not required when a Condition can use the form field directly.
 
 ## Build the scoring policy
 
@@ -47,4 +47,4 @@ To test versioning, copy/edit a rule, use version `v2`, and save it. Changing on
 
 ## Optional certificate verification
 
-Add Action → Extract document information and map a PDF input. Add output Hours (number), printed label Hours, to read a line such as `Hours: 8`. Use the output in Compare values or in a saved scoring rule. Add Apply scoring policy and select the saved version to calculate before a Result. Extraction outputs are unverified candidates; missing labels remain uncertain. Use Human review where evidence requires confirmation.
+Add Action → Extract evidence, map a PDF/PPTX/XLS/XLSX input, and choose Fields or Both. Add output Hours (number), printed label Hours, to read a line such as `Hours: 8`. Use the output in Compare evidence or in a saved scoring rule. Add Apply scoring policy and select the saved version to calculate before a Result. Extraction outputs are unverified candidates; missing labels remain unknown. Use Human review where evidence requires confirmation.

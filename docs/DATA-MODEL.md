@@ -27,7 +27,7 @@ Older drafts without top-level policy remain supported; the hook adds an empty o
 ```json
 {
   "id": "hours", "label": "Training hours", "type": "number",
-  "required": false, "help": "Enter attended hours.",
+  "required": false, "help": "Enter attended hours.", "example": "8",
   "options": "", "accept": "", "multiple": false
 }
 ```
@@ -47,7 +47,7 @@ Types: `text`, `textarea`, `number`, `integer`, `date`, `datetime`, `email`, `ur
 
 Actions store a tool ID in `config.tool` and tool configuration in `config.settings`. Their own route is `next`, even if the selected specialized tool originally had branching routes. For example, the verification-decision tool inside an Action exposes a status; add a Condition to branch on it.
 
-AI retains the internal input mapping key `decision` for compatibility. It now accepts `ai_context`, not only publication decisions. Old AI configurations without `instructions` use default instructions.
+AI retains the internal primary-input mapping key `decision` for compatibility. It accepts `ai_context`, not only publication decisions. Optional `contextInputs`, `referenceText`, and stringified object `outputSchema` configure additional inputs, rubric, and structured output. Schema properties become top-level node outputs after validation. Old AI configurations without these fields remain valid.
 
 ## Source references
 
@@ -77,7 +77,7 @@ Version snapshots contain `version`, `maxPoints`, `fallback`, and `rules`. A sel
 
 Runs may contain `status`, `trace`, `outputs`, `snapshot`, `issues`, `review`, `reviewNode`, `genericReview`, `decisions`, `result`, and `scoring`. Fields vary by status. A paused generic run carries an execution `context` with values and handler references; it is not a portable serialized job.
 
-Trace entries include node identity, name/kind, timestamps, output, and optional error. Action trace kinds identify the executed tool. Generic decisions record action, reviewer, reason, and time. Publication decisions also record original/final scores, run identity, and mock-evidence status.
+Trace entries include node identity, name/kind, timestamps, output, and optional error. Action trace kinds identify the executed tool. Generic review packages contain the submission values, extraction packages, comparison findings, AI recommendations, scoring calculations, and policy versions available on the executed path. Decisions record action, reviewer, reason, final status, optional override score, package snapshot, and time. Publication decisions also record original/final scores, run identity, and mock-evidence status.
 
 ## Other storage and exports
 
@@ -90,6 +90,6 @@ Exports exclude test files/results and server keys. There is no import UI. New s
 
 ## Plugin and reusable configuration
 
-Plugin nodes use kind `plugin`, with config `{plugin: "publication", tool: <operation ID>, settings: <operation config>}`. Existing legacy kinds/Action wrappers remain readable. General extraction and lookup store `fields` entries with stable `id`, `name`, `type`, `label` (printed label or JSON path). These IDs are output keys in ordinary node mappings. Apply-policy stores `policyVersion`; the runner snapshots saved versions for review continuation.
+Plugin nodes use kind `plugin`, with config `{plugin: "publication", tool: <operation ID>, settings: <operation config>}`. Existing legacy kinds/Action wrappers remain readable. `use_form_value` stores `fieldId` and a cached `valueType`; execution resolves the current field and emits source metadata. `extract_evidence` stores `mode` (`fields`, `content`, or `both`) and stable field entries `{id,name,type,label}`. `compare_evidence` stores one or more `{id,name,valueType,operator,ignoreCase}` pairs; each pair creates left/right mapping ports. Apply-policy stores `policyVersion`; the runner snapshots saved versions for review continuation.
 
-Document extraction adds reserved outputs `fullText` (page-labelled string or null) and `textByPage` (note/pages object or null), preserving `finding` and configured field IDs. Empty `fields` is valid for whole-document extraction. AI configuration optionally adds `contextInputs: [{id, name}]` and `referenceText`. Context IDs become required ai_context mapping keys. Old AI configurations remain valid.
+Extract evidence emits reserved `evidence`, `content`, and `status` outputs plus configured field IDs. The evidence package preserves format, filename, candidates, confidence, `verified:false`, warnings, and page/slide/sheet locations. Legacy `document_extract`, `compare_values`, `external_lookup`, and `read_*` shapes remain valid for restored drafts but are not offered to new workflows.

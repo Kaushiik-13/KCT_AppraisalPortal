@@ -10,7 +10,7 @@ Within Workflow, **Build workflow** edits the graph and **Test & review** runs a
 
 1. Enter a KPI name in Inputs.
 2. Click Add field. Give the field a meaningful name and supported data type.
-3. Set required status and help text. For choices, enter one option per line. For files, set allowed formats and whether multiple files are accepted.
+3. Set required status, field description, and an optional example value. For choices, enter one option per line. For evidence files, allow `.pdf`, `.pptx`, `.xls`, and/or `.xlsx` and choose whether multiple files are accepted.
 4. Reorder with arrows, duplicate if useful, or remove a field.
 5. Use Submission preview to check the generated form. Its Test submission button validates fields only; it does not run verification tools.
 
@@ -33,14 +33,14 @@ Use **Connect to existing steps** in Condition/Human review settings to share a 
 
 For generic Result workflows, use [Scoring policy](SCORING.md), enable it, save a named version, and select that version. Draft edits alone do not change test scoring. Existing publication Calculate marks policies remain editable under Existing publication policies.
 
-AI is an Action tool usable on any path. Select an earlier output or supported form value, write System instructions, select a mode, and connect the next step. Live mode generates a response; simulated mode does not execute instructions. See [AI and API](AI-AND-API.md).
+AI evaluation is an Action tool usable on any path. Select a primary input and up to eight named additional inputs, supply a rubric and system instructions, and optionally define an object JSON schema. Validated schema fields become typed outputs that Conditions can use. Live mode generates a recommendation; simulated mode does not execute instructions. AI never records approval or a score by itself. See [AI and API](AI-AND-API.md).
 
 ## Test and review
 
 1. Open Test & review. Resolve Finish setup items; Edit step opens the affected settings.
 2. Enter values and attach files once. Later tools reuse the mapped values.
 3. Run this submission. Inspect executed steps and the paths not taken.
-4. If paused for review, enter reviewer identity and a decision. Rejection/clarification need a reason.
+4. If paused for review, inspect the package containing the original submission, extracted evidence, comparisons, AI recommendation, scoring, and policy versions. Enter reviewer identity and a decision. Rejection, clarification, and score override need a reason.
 5. Generic review continues down the chosen route. Original publication review finalizes a recommendation and permits reasoned score overrides.
 
 Changing inputs, workflow, or policy makes the old review stale. Run again. Clarification does not edit the original evidence; correct inputs and start a fresh test.
@@ -55,6 +55,8 @@ When storage fails, follow Retry save or Download draft. An unreadable draft is 
 
 ## Add a plugin or reusable tool
 
-Click a + on the tree, then Plugin (below Result). Choose Publication and its operation. Configure sources in the drawer. For other KPIs, choose Action and a general tool. Extract document information lets you add named typed output fields and printed labels. Use Condition to route a comparison result. Save scoring rules in Scoring policy, then select the version in Apply scoring policy.
+Click a + on the tree, then Plugin (below Result). Choose Publication and its operation. Configure sources in the drawer. For other KPIs, choose Action and a general tool.
 
-For a document-content KPI, leave optional labelled fields empty, choose Full document text as AI input, use Add context input for topic/faculty, and provide the rubric plus system instructions. See [Content relevance KPI](CONTENT-RELEVANCE-KPI.md) for exact steps.
+Use **Use form value** when an explicit mapping step helps the workflow remain readable. Choose the field; its type is inherited automatically. Use **Extract evidence** for selected `Label: value` fields, full content, or both. Use **Compare evidence** for one or more submitted-versus-extracted pairs. Missing evidence becomes `unknown`, never `mismatch`. Route its status with a Condition. Save scoring rules in Scoring policy, then select the version in Apply scoring policy.
+
+For a document-content KPI, choose Full content or Both in Extract evidence, map its Full content object to AI evaluation, add named topic/faculty inputs, and provide the rubric plus system instructions. See [Content relevance KPI](CONTENT-RELEVANCE-KPI.md) for exact steps.

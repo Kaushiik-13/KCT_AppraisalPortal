@@ -26,7 +26,7 @@ The same preflight feeds Test & review's Finish setup list and the runner. Named
 | Submission / ordinary Action | `next` | Continue |
 | Generic Condition | `clear`, `failed`, `uncertain` | UI: Met, Not met, Needs review |
 | Original publication decision | `clear`, `uncertain`, `ineligible` | Domain findings select route |
-| Generic Human review | `approved`, `rejected`, `clarification` | Pause, then follow recorded action |
+| Generic Human review | `approved`, `rejected`, `clarification` | Pause, inspect the evidence package, then follow the recorded action; a score override follows Approved |
 | Result | None | Complete and optionally score |
 | Original Appraiser review | None | Pause for terminal score decision |
 
@@ -36,7 +36,7 @@ When the publication decision tool is placed inside a generic Action, that Actio
 
 ## Review and resumption
 
-`resumeWorkflow` resumes generic reviews from the captured context without rerunning completed tools. Reviewer name is required; rejection and clarification require reasons. Repeated resumption of the same run object is blocked within the current runtime. Recorded decisions remain in the trace/history even when a following tool fails.
+`resumeWorkflow` resumes generic reviews from the captured context without rerunning completed tools. The paused review contains the original submission, extracted evidence, comparisons, AI recommendations, provisional scoring, and policy versions produced on the executed path. Reviewer name is required; rejection, clarification, and score override require reasons. Override also requires a non-negative score and continues through Approved. Repeated resumption of the same run object is blocked within the current runtime. Recorded decisions and the evidence-package snapshot remain in history even when a following tool fails.
 
 `finalizeReview` handles the original publication review: approve, reject, clarify, or override. Ordinary approval requires a resolved score. Overrides require a reason and a non-negative score; the original recommendation is preserved. The UI prevents duplicate recording and stale review decisions.
 
@@ -50,4 +50,6 @@ No parallel execution, retry scheduler, durable pause, looping clarification rou
 
 ## Reusable execution and plugin wrappers
 
-Plugin nodes unwrap `config.tool` and `config.settings` for execution and retain the operation routes. Publication decision and terminal review use their existing execution semantics. General Actions call reusableTools.js. Dynamic output ports use stable field IDs. Apply scoring policy evaluates an immutable captured version against submission values and completed outputs; preflight rejects final-outcome and later-output dependencies. Missing facts remain pending.
+Plugin nodes unwrap `config.tool` and `config.settings` for execution and retain the operation routes. Publication decision and terminal review use their existing execution semantics. General Actions call `reusableTools.js`; format adapters are dispatched by `documentReader.js`. Dynamic extraction/comparison/schema ports use stable IDs. Apply scoring policy evaluates an immutable captured version against submission values and completed outputs; preflight rejects final-outcome and later-output dependencies. Missing facts remain pending.
+
+Extraction returns candidates and locations, never verified facts. Compare evidence converts missing or unparsable values to `unknown`; it only returns `mismatch` when two usable values disagree. AI schema outputs are parsed and validated before entering the output map. This keeps Conditions and scoring tied to structured values rather than raw model prose.

@@ -31,7 +31,7 @@ These records summarize accepted conversation choices and implemented behavior; 
 
 ## Unresolved product/technical decisions
 
-Generic provisional scoring before approval; policy release governance; reviewer permissions; evidence trust levels; multi-tenant model; durable review/job infrastructure; integration provider contracts; import/migration behavior; plugin installation/security.
+Canonical durable final-score records; policy release governance; reviewer permissions; evidence trust levels; multi-tenant model; durable review/job infrastructure; integration provider contracts; import/migration behavior; plugin installation/security.
 
 Resolve these with the project owner and institutional stakeholders before presenting the PoC's defaults as policy authority.
 
@@ -50,3 +50,9 @@ Expose extracted PDF text and pages without requiring labelled fields. Preserve 
 ## D-16 — Next.js migration and Vercel boundary
 
 Use Next.js 16 App Router as the application host. Keep the existing Framework Studio, workflow engine, PDF processing and autosave in a client-only boundary because they depend on browser APIs and browser-owned state. Use Node route handlers for AI status and provider calls. Copy the PDF.js worker into `public/` during development/build instead of relying on a bundler URL import. This establishes deployment compatibility; it does not add a database, authentication, distributed rate limiting or a production deployment.
+
+## D-17 — Evidence-first Framework Studio vocabulary
+
+Replace the four creator-facing typed Read actions with one `use_form_value` mapping action. Replace the PDF-only generic extractor and single-pair comparator with `extract_evidence` and `compare_evidence`; preserve legacy IDs only for saved-draft compatibility. Remove generic External lookup from the new catalogue until a connector/MCP contract can own authentication, secrets, permissions, schemas, retries and timeouts.
+
+Extraction produces candidates, not verification. Common evidence output carries format-specific page/slide/sheet locations, warnings, confidence and `verified:false`. Missing comparison operands produce `unknown`, not `mismatch`. AI is named evaluation, accepts multiple inputs plus rubric, and may expose validated JSON-schema fields. It remains advisory. Generic human review receives the executed submission/evidence/comparison/AI/scoring/policy package and can approve, reject, clarify, or record a reasoned score override; the policy calculation remains preserved separately.

@@ -5,7 +5,7 @@ Two scoring paths coexist. They must not be presented as interchangeable.
 | Path | Configuration | Executes | Review behavior |
 |---|---|---|---|
 | Original publication policy | Calculate marks or Existing publication policies | Before original Appraiser review | Reviewer approves/rejects/overrides recommendation |
-| Standalone policy | Scoring policy draft + saved version | At a generic Result | Earlier generic reviews decide routing, not the final numeric score |
+| Standalone policy | Scoring policy draft + saved version or explicit Apply scoring policy | At a generic Result / explicit step | Generic review sees provisional scoring and may record a reasoned override before following Approved |
 
 An enabled standalone policy requires Result endings and is rejected when the graph contains the legacy terminal review. Leave it off for the original publication template.
 
@@ -37,7 +37,7 @@ Original review permits a reasoned override, retaining original and final scores
 
 ## Remaining work
 
-Generic workflows need a way to calculate a provisional score before approval and then finalize the approved score without losing policy/evidence snapshots. Also pending: institution-authorized rule resolution, assessment-cycle caps, policy activation dates, approval permissions, and durable audit records.
+Generic review now preserves the available scoring calculation, policy versions, evidence, AI recommendation, and a reasoned override score in session history. Result-time automatic scoring still runs after review when configured, so the override is an auditable reviewer decision rather than a mutation of the immutable policy calculation. Durable persistence and a single canonical production final-score record remain pending, along with institution-authorized rule resolution, assessment-cycle caps, policy activation dates, and approval permissions.
 
 ## Explicit scoring step
 

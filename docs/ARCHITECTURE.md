@@ -8,7 +8,7 @@ flowchart LR
   Draft --> Storage[(Browser localStorage)]
   Draft --> Engine[Browser workflow engine]
   Form[Test submission] --> Engine
-  PDF[Local PDF] --> Extract[PDF.js extraction]
+  Evidence[Local PDF / PPTX / XLS / XLSX] --> Extract[Format adapters]
   Extract --> Engine
   Engine --> Crossref[Crossref API]
   Engine --> NextAPI[Next.js route handler]
@@ -32,6 +32,7 @@ Next.js App Router serves the application. `app/studio-client.jsx` loads the exi
 | Settings | `src/BlockSettings.jsx`, `src/NodeSettings.jsx` | Generic blocks and tool configuration |
 | Definitions | `src/workflowModel.js` | Ports, defaults, mappings, publication example |
 | Execution | `src/workflowEngine.js` | Validation, handlers, traversal, reviews |
+| Evidence adapters | `src/documentReader.js`, `src/pdfReader.js` | Local PDF, presentation and spreadsheet extraction |
 | Results | `src/WorkflowTest.jsx`, `src/ResultSummary.jsx` | Submission form, trace, decision forms |
 | Scoring | `src/ScoringStudio.jsx`, `src/scoringPolicy.js` | Standalone rules and saved versions |
 | Documents | `src/pdfReader.js`, `src/paperFindings.js`, `scripts/copy-pdf-worker.mjs` | PDF text, candidates, browser-worker preparation |
@@ -49,10 +50,10 @@ Canvas selection, zoom, library visibility, and undo are transient. Sidebar coll
 
 Nodes and route IDs form a directed acyclic graph. The visual hierarchy can share a later node across paths. Layout derives from connections; execution follows one selected route at a time, not every visible branch.
 
-The original publication template keeps its specialized decision/scoring/review handlers. Generic Actions reuse tool handlers without forcing every KPI to use twelve steps. Standalone scoring runs at a Result; publication scoring runs before terminal Appraiser review. Unifying generic scoring and approval remains [planned](ROADMAP.md).
+The original publication template keeps its specialized decision/scoring/review handlers. Generic Actions reuse tool handlers without forcing every KPI to use twelve steps. New workflows use typed form mapping, common evidence extraction, multi-pair comparison, structured AI evaluation, human review, and versioned scoring. Legacy Read/External lookup/PDF-only steps remain loadable for saved-draft compatibility but are hidden from the new catalogue.
 
 ## Reusable tool layer
 
 `reusableTools.js` defines generic tool ports, defaults, validation and execution. `ReusableSettings.jsx` exposes creator configuration. `PluginPicker.jsx` presents the built-in Publication catalogue; plugin wrappers retain legacy operation IDs and route contracts. No third-party package execution or runtime plugin installation is introduced.
 
-PDF page text is now exposed by the reusable extractor without requiring label matches. AI combines a primary input, named mapped contexts and creator reference material before the shared input-bound checks; provider calls are blocked when those checks indicate truncation.
+Evidence sections carry PDF page, PPTX slide, or spreadsheet sheet/range locations. AI combines a primary input, named mapped contexts, creator rubric and optional output schema before the shared input-bound checks; provider calls are blocked when those checks indicate truncation. Parsed schema fields are validated before Conditions can consume them. Generic review assembles the complete executed evidence package and preserves it with the session decision.

@@ -43,7 +43,7 @@ Open Workflow → Build workflow. On an empty canvas, click **Explore the public
 | Check indexing | Publication record + mock registry |
 | Check duplicates | Publication record + faculty name; optional seed records |
 | Decide verification outcome | Comparison, author, dates, indexing, duplicate findings |
-| AI assistance | Decision output; instructions and mode |
+| AI evaluation | Decision output; instructions, mode, and optional schema |
 | Calculate marks | Decision output; publication scoring rules |
 | Appraiser review | Decision; optional score and AI details |
 
@@ -62,7 +62,7 @@ flowchart TD
   Index --> Duplicate[Check duplicates]
   Duplicate --> Decision{Verification outcome}
   Decision -->|Clear| Score[Calculate marks]
-  Decision -->|Uncertain| AI[AI assistance]
+  Decision -->|Uncertain| AI[AI evaluation]
   Decision -->|Ineligible| Review[Appraiser review]
   Score --> Review
   AI --> Review
@@ -98,7 +98,7 @@ Without reloading, submit again: the same DOI/faculty pair should become a dupli
 
 ## Add a clear-path AI summary
 
-Insert Action → AI assistance on the Clear path. Name it Appraiser summary; map the verification decision object to AI input. Suggested instructions:
+Insert Action → AI evaluation on the Clear path. Name it Appraiser summary; map the verification decision object to its primary input. Suggested instructions:
 
 > Summarize the verified findings for the appraiser in five bullets. Include authorship, assessment eligibility, indexing evidence, and limitations. Clearly label mock evidence. Do not invent missing facts.
 
@@ -106,4 +106,4 @@ Continue to Calculate marks or the next intended step. The existing Needs review
 
 ## Publication plugin
 
-To add these operations manually, click a workflow + → Plugin → Publication → the desired operation. The example loader now wraps publication operations as plugin steps; older saved workflows still work. AI assistance stays in general Actions. Publication decision preserves Clear / Needs review / Ineligible routes.
+To add these operations manually, click a workflow + → Plugin → Publication → the desired operation. The example loader wraps publication operations as plugin steps; older saved workflows still work. AI evaluation stays in general Actions. Publication decision preserves Clear / Needs review / Ineligible routes.
