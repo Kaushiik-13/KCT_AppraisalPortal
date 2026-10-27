@@ -204,12 +204,16 @@ export const blocks = [
 blocks.push({
   kind: "plugin",
   name: "Plugin",
-  description: "Add a tool from an available plugin.",
+  description: "Add a complete workflow from a built-in plugin.",
   inputs: [],
   outputs: [],
   routes: ["next"],
 });
 export const publicationTools = tools.filter(
+  (t) => !["submit", "ai", "index", "score"].includes(t.kind),
+);
+// Keep old operations available to restored plugin nodes; new pickers use publicationTools.
+export const legacyPublicationTools = tools.filter(
   (t) => !["submit", "ai"].includes(t.kind),
 );
 export const plugins = [
@@ -217,7 +221,7 @@ export const plugins = [
     id: "publication",
     name: "Publication",
     description:
-      "Paper extraction, Crossref lookup, authorship, indexing and publication scoring.",
+      "Check paper details against Crossref, match the first author, and review the assessment date.",
     tools: publicationTools,
   },
 ];
@@ -493,4 +497,42 @@ export function exampleWorkflow(fields) {
     dateRule: "published",
   };
   return nodes;
+}
+export function publicationWorkflow(fields) {
+  const kinds = tools
+    .map((tool) => tool.kind)
+    .filter((kind) => !["index", "score"].includes(kind));
+  const ids = Object.fromEntries(kinds.map((kind) => [kind, crypto.randomUUID()]));
+  let nodes = kinds.map((kind) => ({ ...createNode(kind), id: ids[kind] }));
+  nodes = nodes.map((node, index) => {
+    const next = kinds[index + 1];
+    if (node.kind === "decision")
+      node.routes = {
+        clear: ids.review,
+        uncertain: ids.ai,
+        ineligible: ids.review,
+      };
+    else if (node.kind === "ai") node.routes = { next: ids.review };
+    else if (next) node.routes = { next: ids[next] };
+    return node;
+  });
+  nodes = nodes.map((node) => suggestMappings(node, nodes, fields));
+  nodes.find((node) => node.kind === "period").config = {
+    start: "2021-01-01",
+    end: "2021-12-31",
+    dateRule: "published",
+  };
+  return nodes.map((node) =>
+    ["submit", "ai"].includes(node.kind)
+      ? node
+      : {
+          ...node,
+          kind: "plugin",
+          config: {
+            plugin: "publication",
+            tool: node.kind,
+            settings: node.config,
+          },
+        },
+  );
 }

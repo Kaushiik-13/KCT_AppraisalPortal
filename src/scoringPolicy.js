@@ -63,7 +63,13 @@ export function policySources(fields, nodes) {
     const kind = ["action", "plugin"].includes(n.kind) ? n.config.tool : n.kind;
     const paths =
       kind === "decision"
-        ? Object.keys(FACTS).map((k) => `decision.facts.${k}`)
+        ? Object.keys(FACTS)
+            .filter(
+              (key) =>
+                !["scopus", "wos", "sae"].includes(key) ||
+                Boolean(n.mappings?.index),
+            )
+            .map((k) => `decision.facts.${k}`)
         : kind === "index"
           ? ["index.scopus", "index.wos", "index.sae"]
           : kind === "author"

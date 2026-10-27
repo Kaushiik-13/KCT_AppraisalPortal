@@ -122,10 +122,11 @@ export default function ScoringStudio({
           </div>
           {legacy.length > 0 && (
             <details className="policy-card">
-              <summary>Existing publication policies ({legacy.length})</summary>
+              <summary>Legacy publication policies ({legacy.length})</summary>
               <p>
-                These specialized policies remain compatible with the
-                publication example.
+                These older workflows use simulated index findings and
+                index-based scoring. They remain editable for compatibility;
+                new Publication workflows do not include them.
               </p>
               {legacy.map((n) => (
                 <div key={n.id}>

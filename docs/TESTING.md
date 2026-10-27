@@ -7,9 +7,19 @@ npm.cmd test
 npm.cmd run build
 ```
 
+## Publication simplification — implementation status
+
+The new Publication plugin factory now defines ten steps and omits simulated index checks and automatic scoring. The workflow test assertions were updated to expect the smaller graph and verify that no index or score node is included. These checks have not been run for this change yet; see the historical reports below for verification of the earlier twelve-step version.
+
 Tests use Node's built-in test runner over `src/*.test.js` and `server/*.test.js`. A passing build verifies bundling, not browser behavior. There is no lint script or committed full browser automation suite.
 
-Most recent automated baseline: **101 passing tests** on 7 October 2026 after the policy-first composition update. The earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) records 67 tests at that checkpoint; it is historical, not the latest count.
+Most recent automated baseline: **102 passing tests** on 27 October 2026 after the Publication workflow picker update. The 101-test report from 7 October and earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) remain historical checkpoints.
+
+## Publication workflow picker verification — 27 October 2026
+
+All 102 automated tests passed, including a new case that verifies the complete Publication plugin workflow has twelve nodes, wraps all ten publication operations, suggests mappings for the sample form fields, retains the simulated index record, and remains a valid saved draft. `npm.cmd run build` passed.
+
+An isolated local browser origin verified that Plugin → Publication workflow adds all twelve steps at once. With the publication example inputs loaded, every step showed configured. The populated-workflow confirmation appeared; cancelling retained the current graph, and confirming replacement followed by Undo restored the prior named trigger. Running the included PRISMA sample completed eleven of twelve steps (AI evaluation was correctly skipped on the clear path) and reached Appraiser review with 24 provisional points using mock index evidence. This was an internal sample run, not a factual Scopus/Web of Science check.
 
 ## Prediction Framework planning verification — 27 October 2026
 
@@ -23,6 +33,7 @@ Validated local links in the new Prediction Framework plan and all documentation
 | `treeModel.test.js` | Insert, move, remove, cycles, branch/shared layout |
 | `blocks.test.js` | Generic block configuration and compatibility |
 | `blockExecution.test.js` | Branch values, review continuation, preflight, post-review failure |
+| `reusableTools.test.js` | Generic tools, Publication plugin compatibility, full Publication workflow creation and suggested mappings |
 | `workflowEngine.test.js` | Publication checks, scores, errors, review restrictions |
 | `paperFindings.test.js` | Extraction candidate analysis and PDF fixture cases |
 | `scoringPolicy.test.js` | Version snapshots, conditional rules, arbitrary formula components, aggregations, caps, missing evidence, and manual workflow mappings |
@@ -41,7 +52,7 @@ Use an isolated profile/session so testing does not replace a user's only draft.
 2. **Builder:** add by + and drag/drop; open/close settings; move a linear action; connect a shared result; reject a cycle; inspect orphaned work after removal.
 3. **Preflight:** leave a required mapping or comparison blank; verify the test is blocked and Edit step opens its settings.
 4. **Training:** follow [the walkthrough](TRAINING-KPI.md); test 8, 7, zero, blank, and the optional terminal review handoff.
-5. **Publication:** follow [the walkthrough](PUBLICATION-KPI.md); verify sample extraction, Crossref response, 24 mock-index points, approval, and repeat-submission uncertainty.
+5. **Publication:** follow [the walkthrough](PUBLICATION-KPI.md); verify one-click 10-step workflow insertion, replacement confirmation/undo, sample extraction, Crossref response, first-author/date findings, appraiser review without automatic points, and repeat-submission uncertainty. Confirm no Scopus/Web of Science node appears for new workflows.
 6. **Scoring:** save v1, edit only its draft, verify v1 unchanged; save v2; switch back; test cap and pending fallback.
 7. **AI:** test simulation, missing input, and live custom instructions if configured; check an ordinary/clear-path input and response chaining. Never treat simulated output as generation.
 8. **Persistence:** reload fields, mappings, instructions and versions; verify file/value/review loss is explicit.

@@ -25,6 +25,8 @@ Subsequent delivered improvements: configurable AI instructions and any-path inp
 
 Delivered on 5 October: built-in Publication plugin picker and reusable verification Actions, including explicit saved-policy scoring. General OCR, authenticated integrations and installable plugins remain planned.
 
+Delivered 27 October: selecting the Publication plugin added a complete twelve-step workflow automatically, with confirmation and Undo on replacement. A later simplification supersedes that template for new workflows: it omits simulated index evidence and automatic index-based marks. The old nodes remain available to restored drafts. The creator-usability review below remains planned for testing broader authoring flows with the project owner.
+
 Delivered on 6 October: migrated the PoC from Vite to Next.js 16 App Router, retained the browser-owned studio through a client boundary, moved AI access to Node route handlers, and prepared the PDF worker during development/build. Local production build and runtime checks pass. The application has not been pushed or deployed.
 
 ## Next priorities — planned, not implemented
@@ -32,7 +34,7 @@ Delivered on 6 October: migrated the PoC from Vite to Next.js 16 App Router, ret
 1. **Creator usability review.** Have the project owner build a KPI from scratch and record confusing steps. Do not assume seeded test workflows prove independent authoring is easy.
 2. **Persist final scoring and review handoffs.** Define the canonical durable final-score record, how pending facts are resolved, and the separate Human Review module's assignment and outcome contract before production.
 3. **Agree institutional rules.** Resolve co-author conflict, corresponding-author precedence, SAE treatment, date precedence, caps, and journal-versus-paper indexing evidence.
-4. **Real verification adapters.** Add authorized index sources and reliable identity/duplicate data, with explicit coverage and failure semantics.
+4. **Optional live index verification.** Only pursue Scopus/Web of Science adapters after the institution confirms API entitlement, authorized credentials, and approved use. Coverage gaps and failures must remain explicit; DOI lookup alone cannot establish index status.
 5. **Portable draft lifecycle.** Add validated import, multiple drafts, schema migrations, and cross-tab conflict handling.
 
 ## Prediction Framework — planned 27 October 2026

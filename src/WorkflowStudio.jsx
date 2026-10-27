@@ -1,6 +1,6 @@
 import React, { useState, useRef, useMemo } from "react";
 import { Play } from "lucide-react";
-import { exampleWorkflow } from "./workflowModel";
+import { publicationWorkflow } from "./workflowModel";
 import {
   runWorkflow,
   finalizeReview,
@@ -58,18 +58,10 @@ export default function WorkflowStudio({
       );
       return;
     }
-    const next = exampleWorkflow(fields).map((n) =>
-      ["submit", "ai"].includes(n.kind)
-        ? n
-        : {
-            ...n,
-            kind: "plugin",
-            config: { plugin: "publication", tool: n.kind, settings: n.config },
-          },
-    );
+    const next = publicationWorkflow(fields);
     change(next);
     setNotice(
-      "Editable example loaded. Indexing is simulated; AI uses OpenRouter when a local key is configured. Review the dates, connections, and scoring rules.",
+      "Editable Publication workflow loaded. Review its field mappings and assessment dates; scoring must follow your institution's approved policy.",
     );
   };
   const test = async () => {
@@ -257,8 +249,8 @@ export default function WorkflowStudio({
           Test & review
         </button>
         <span>
-          {publication ? "Mock indexing" : "Session testing"} · {records.length}{" "}
-          approved records
+          {publication ? "Publication checks" : "Session testing"} · {records.length}{" "}
+          session records
         </span>
       </div>
       {notice && (

@@ -27,6 +27,8 @@ Renaming/reordering preserves field identity. Removing a field or changing its t
 
 Click a card to configure it. Only compatible earlier sources appear. Automatic suggestions are a starting point, not proof that the intended evidence is mapped.
 
+To create the publication flow, choose Plugin → Publication workflow. The complete 10-step workflow is added at once. It checks the DOI and Crossref record, compares the PDF, checks first authorship and the assessment period, looks for duplicate candidates in local session records, and sends findings to appraiser review. It does not check Scopus/Web of Science or award marks automatically. Configure scoring separately using the institution's approved rules. If steps already exist, confirm replacement; the previous canvas can be restored with Undo. On an empty canvas, the same workflow is available from **Add full Publication workflow**.
+
 Use **Connect to existing steps** in Condition settings to share a later node. Old saved Human Review nodes may also retain this control for compatibility. Cycles are rejected. Single-route, non-shared actions can be moved using the grip; click the grip and then a + as an alternative to dragging. Removing a linear step bypasses it. Removing a branch leaves child work visible as unconnected rather than deleting it.
 
 ## Configure scoring and AI
@@ -55,7 +57,7 @@ When storage fails, follow Retry save or Download draft. An unreadable draft is 
 
 ## Add a plugin or reusable tool
 
-Click a + on the tree, then Plugin (below Result). Choose Publication and its operation. Configure sources in the drawer. For other KPIs, choose Action and a general tool.
+Click a + on the tree, then Plugin (below Result), then Publication workflow. The complete publication verification flow is added automatically; you no longer need to add its operations one by one. If the chart already has steps, the picker asks before replacing them. Use the workflow Undo control to restore the previous chart. Existing publication operation nodes can still be edited individually in their settings. For other KPIs, choose Action and a general tool.
 
 Use **Use form value** when an explicit mapping step helps the workflow remain readable. Choose the field; its type is inherited automatically. Use **Extract evidence** for selected `Label: value` fields, full content, or both. Use **Compare evidence** for one or more submitted-versus-extracted pairs. Missing evidence becomes `unknown`, never `mismatch`. Route its status with a Condition. Save scoring rules in Scoring policy, then select the version in Apply scoring policy.
 

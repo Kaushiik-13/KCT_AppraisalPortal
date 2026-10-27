@@ -13,7 +13,7 @@ import {
   definition,
   nodeDefinition,
   actionTools,
-  publicationTools,
+  legacyPublicationTools,
   sourceChoices,
   FACTS,
 } from "./workflowModel.js";
@@ -199,7 +199,7 @@ export function validateWorkflow(nodes, fields) {
       : original;
     if (
       original.kind === "plugin" &&
-      !publicationTools.some((t) => t.kind === n.kind)
+      !legacyPublicationTools.some((t) => t.kind === n.kind)
     ) {
       errors.push(`${n.name}: choose a publication plugin tool.`);
       continue;
@@ -569,13 +569,16 @@ export function checkDuplicates(metadata, faculty, records) {
 }
 export function decide(checks) {
   const facts = {
-    scopus: checks.index?.scopus || "unknown",
-    wos: checks.index?.wos || "unknown",
-    sae: checks.index?.sae || "unknown",
     primary: checks.author?.primary || "unknown",
     period: checks.period?.status || "uncertain",
     duplicate: checks.duplicate?.status || "uncertain",
   };
+  // Preserve index facts only for restored workflows that still run the mock-index step.
+  if (checks.index) {
+    facts.scopus = checks.index.scopus || "unknown";
+    facts.wos = checks.index.wos || "unknown";
+    facts.sae = checks.index.sae || "unknown";
+  }
   const reasons = [];
   if (checks.comparison?.status !== "clear")
     reasons.push("PDF and external metadata need reconciliation.");
@@ -585,9 +588,9 @@ export function decide(checks) {
     reasons.push("Assessment eligibility is uncertain.");
   if (facts.duplicate !== "clear")
     reasons.push("Duplicate finding needs review.");
-  if (facts.scopus === "unknown" || facts.wos === "unknown")
+  if (checks.index && (facts.scopus === "unknown" || facts.wos === "unknown"))
     reasons.push("Scopus or WOS evidence is missing.");
-  if (facts.scopus === "no" && facts.wos === "no")
+  if (checks.index && facts.scopus === "no" && facts.wos === "no")
     reasons.push(
       facts.sae === "yes"
         ? "SAE scoring has not been agreed."
@@ -609,7 +612,7 @@ export function decide(checks) {
           ]
         : reasons,
     checks,
-    simulated: !!checks.index?.simulated,
+    ...(checks.index ? { simulated: !!checks.index.simulated } : {}),
   };
 }
 export function calculateScore(decision, policy) {
@@ -632,7 +635,8 @@ export function calculateScore(decision, policy) {
     decision.facts.primary !== "yes" ||
     decision.facts.period !== "eligible" ||
     decision.facts.duplicate !== "clear" ||
-    ["scopus", "wos"].some((k) => !["yes", "no"].includes(decision.facts[k]))
+    ("scopus" in decision.facts &&
+      ["scopus", "wos"].some((k) => !["yes", "no"].includes(decision.facts[k])))
   )
     return {
       ...base,

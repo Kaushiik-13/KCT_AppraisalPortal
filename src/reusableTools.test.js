@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createNode,nodeDefinition,reusableActionTools,publicationTools,sourceChoices} from './workflowModel.js';
+import {createNode,nodeDefinition,reusableActionTools,publicationTools,sourceChoices,publicationWorkflow} from './workflowModel.js';
 import {executeNode,runWorkflow,validateRunConfiguration,finalizeReview} from './workflowEngine.js';
 import {executeReusable} from './reusableTools.js';
 import {validDraft} from './draftStorage.js';
@@ -9,6 +9,27 @@ const wrap=n=>({...n,kind:'plugin',config:{plugin:'publication',tool:n.kind,sett
 test('publication is a separate plugin catalogue; old action configurations remain compatible',()=>{
  assert(!reusableActionTools.some(t=>t.kind==='author'));assert(publicationTools.some(t=>t.kind==='author'));
  for(const tool of publicationTools){const n=wrap(createNode(tool.kind));assert.equal(validDraft({name:'KPI',fields:[],nodes:[n]}),true);assert.deepEqual(nodeDefinition(n).outputs,nodeDefinition(createNode(tool.kind)).outputs);}
+});
+test('the Publication plugin workflow installs simple verification steps without index scoring',()=>{
+ const fields=[
+  {id:'paper',label:'Research paper',type:'file',required:true,help:'',options:'',accept:'.pdf',multiple:false},
+  {id:'doi',label:'DOI',type:'text',required:false,help:'',options:'',accept:'',multiple:false},
+  {id:'url',label:'Publication URL',type:'url',required:false,help:'',options:'',accept:'',multiple:false},
+  {id:'faculty',label:'Faculty name',type:'text',required:true,help:'',options:'',accept:'',multiple:false},
+ ];
+ const nodes=publicationWorkflow(fields);
+ assert.equal(nodes.length,10);
+ assert.equal(nodes.filter(n=>n.kind==='plugin').length,8);
+ assert.equal(nodes[0].kind,'submit');
+ assert.equal(nodes[0].routes.next,nodes[1].id);
+ assert.equal(nodes.find(n=>n.config?.tool==='extract').mappings.file,'field|paper');
+ assert.equal(nodes.find(n=>n.config?.tool==='author').mappings.faculty,'field|faculty');
+ assert.equal(nodes.find(n=>n.config?.tool==='lookup').mappings.claimedDoi,'field|doi');
+ assert.equal(nodes.find(n=>n.config?.tool==='lookup').mappings.url,'field|url');
+ assert.equal(nodes.some(n=>n.config?.tool==='index'||n.config?.tool==='score'),false);
+ assert.equal(nodes.find(n=>n.config?.tool==='decision').routes.clear,nodes.find(n=>n.config?.tool==='review').id);
+ assert.equal(nodes.find(n=>n.config?.tool==='decision').routes.uncertain,nodes.find(n=>n.kind==='ai').id);
+ assert.equal(validDraft({name:'Publication',fields,nodes}),true);
 });
 test('document extraction emits configured typed candidates, page evidence and ambiguity',async()=>{
  const n=createNode('document_extract');n.config.fields=[{id:'name',name:'Participant',type:'text',label:'Participant'},{id:'hours',name:'Hours',type:'number',label:'Hours'},{id:'date',name:'Completion',type:'date',label:'Completed'}];
