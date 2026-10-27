@@ -1,6 +1,6 @@
 # Documentation index
 
-Baseline: **7 October 2026**. These documents describe the Next.js PoC implementation. Planned features are explicitly distinguished from implemented features.
+Application baseline: **7 October 2026**. Prediction Framework planning was added on **27 October 2026**. These documents distinguish planned features from the implemented Next.js PoC.
 
 ## Product and user guides
 
@@ -19,6 +19,7 @@ Baseline: **7 October 2026**. These documents describe the Next.js PoC implement
 - [Scoring](SCORING.md): formula and conditional models, versions, mappings, and review boundaries.
 - [AI and API](AI-AND-API.md): instructions, provider adapter, endpoints, and limits.
 - [Security and data](SECURITY-AND-DATA.md): storage, external transfers, and production gaps.
+- [Prediction Framework implementation plan](PREDICTION-FRAMEWORK-IMPLEMENTATION-PLAN.md): planned organization-specific final-score prediction, synthetic KCT data, three readiness scenarios, screens, architecture, and delivery phases.
 
 ## Engineering and planning
 
@@ -33,7 +34,7 @@ Baseline: **7 October 2026**. These documents describe the Next.js PoC implement
 
 **KPI creator:** User guide → Training KPI → Publication KPI → Scoring → AI and API.
 
-**Developer:** Setup → Architecture → Data model → Workflow engine → Tools and extensions → Testing.
+**Developer:** Setup → Architecture → Data model → Workflow engine → Tools and extensions → Prediction Framework plan → Testing.
 
 **Project reviewer:** Project brief → Decisions → Security and data → Roadmap.
 

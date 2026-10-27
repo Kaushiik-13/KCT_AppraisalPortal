@@ -57,3 +57,9 @@ The original publication template keeps its specialized decision/scoring/review 
 `reusableTools.js` defines generic tool ports, defaults, validation and execution. `ReusableSettings.jsx` exposes creator configuration. `PluginPicker.jsx` presents the built-in Publication catalogue; plugin wrappers retain legacy operation IDs and route contracts. No third-party package execution or runtime plugin installation is introduced.
 
 Evidence sections carry PDF page, PPTX slide, or spreadsheet sheet/range locations. AI combines a primary input, named mapped contexts, creator rubric and optional output schema before the shared input-bound checks; provider calls are blocked when those checks indicate truncation. Parsed numeric schema fields can feed formula policy components. Generic Human review assembles the complete executed package and terminates automation for transfer to the separate review module; it does not create decision branches.
+
+## Planned Prediction Framework boundary
+
+Prediction is not implemented in the current PoC. The planned [Prediction Framework](PREDICTION-FRAMEWORK-IMPLEMENTATION-PLAN.md) consumes versioned, verified progress snapshots and predicts only the final overall score in its first iteration. It remains downstream of Framework Studio and deterministic scoring and cannot mutate evidence, policy calculations, reviews, or the official score.
+
+The planned architecture separates model preparation from live inference. Completed cycles and checkpoint snapshots feed readiness, training, time-based evaluation, approval, and an organization-scoped model registry. Dashboard access uses the current verified snapshot with either a rule-based estimate, an approved limited-data model, or an approved organization model. It does not retrain a model during login or dashboard access.

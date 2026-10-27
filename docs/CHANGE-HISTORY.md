@@ -2,6 +2,12 @@
 
 This is a development summary through 7 October 2026, not a version-control commit log. The package remains `0.1.0`; no release/deployment is implied.
 
+## 27 October 2026 — Prediction Framework planning
+
+Added a detailed, explicitly unimplemented plan for an organization-scoped final-overall-score Prediction Framework. The plan aligns model preparation and live inference with the review architecture, defines no-history, limited-history, and sufficient-history behavior, and specifies synthetic KCT data, screens, data contracts, project structure, algorithm evaluation, approval, publishing, dashboard integration, monitoring, retraining, testing, and phased delivery.
+
+Recorded the decision to build AFPI's configurable prediction lifecycle while evaluating established algorithms instead of inventing a custom ML algorithm. No prediction code, dataset, model, screen, API, or runtime behavior was delivered by this documentation change.
+
 ## 7 October 2026 — Evidence-first Framework Studio
 
 Replaced the four typed Read catalogue entries with Use form value and removed generic External lookup from new workflows. Added common PDF/PPTX/XLS/XLSX evidence extraction with fields/content/both modes, format-specific locations, warnings and explicitly unverified candidates. Added multi-pair Compare evidence with match/mismatch/unknown results.

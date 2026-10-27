@@ -35,6 +35,20 @@ Delivered on 6 October: migrated the PoC from Vite to Next.js 16 App Router, ret
 4. **Real verification adapters.** Add authorized index sources and reliable identity/duplicate data, with explicit coverage and failure semantics.
 5. **Portable draft lifecycle.** Add validated import, multiple drafts, schema migrations, and cross-tab conflict handling.
 
+## Prediction Framework — planned 27 October 2026
+
+The detailed [Prediction Framework implementation plan](PREDICTION-FRAMEWORK-IMPLEMENTATION-PLAN.md) defines a new organization-scoped module for predicting the final approved overall score. It is planned work and no prediction screen, dataset, model, API, or employee dashboard is implemented yet.
+
+The planned sequence is:
+
+1. Obtain KCT KRA/KPI, scoring, role, cycle, and checkpoint definitions.
+2. Create reproducible synthetic KCT fixtures for no-history, limited-history, sufficient-history, and invalid-data cases.
+3. Build configuration, data mapping, readiness, rule-based estimate, training, evaluation, approval, test, publication, employee dashboard, and basic retraining screens.
+4. Evaluate established candidate algorithms through time-based holdout testing rather than selecting one before the data contract exists.
+5. Stabilize prediction before beginning the Recommendation Framework.
+
+The three runtime modes are a transparent rule-based estimate when history is unavailable, an evaluated low-confidence baseline when history is limited, and an approved organization-specific model when sufficient compatible history passes quality gates.
+
 ## Production track — requires a separate design
 
 - Database-backed KPI definitions, immutable policy releases, submissions, evidence references, runs and audit events.

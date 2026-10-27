@@ -2,7 +2,7 @@
 
 A desktop proof of concept for creating configurable KPI forms, verification workflows, and scoring policies. The aim is to let different institutions compose their own KPIs from shared tools. Publication verification is the first worked example, not the only supported workflow.
 
-Documentation baseline: **7 October 2026**. This is a PoC, not a production appraisal platform.
+Application baseline: **7 October 2026**. Prediction Framework planning was added on **27 October 2026**. This is a PoC, not a production appraisal platform.
 
 ## Run locally
 
@@ -30,6 +30,7 @@ See [setup](docs/SETUP.md) for environment configuration, the production server,
 | Test publication verification | [Publication walkthrough](docs/PUBLICATION-KPI.md) |
 | Build a second KPI | [Training walkthrough](docs/TRAINING-KPI.md) |
 | Understand the implementation | [Architecture](docs/ARCHITECTURE.md) |
+| Plan the Prediction Framework | [Prediction Framework implementation plan](docs/PREDICTION-FRAMEWORK-IMPLEMENTATION-PLAN.md) |
 | Work on the code | [Contributing](CONTRIBUTING.md) |
 | See remaining work | [Roadmap](docs/ROADMAP.md) |
 

@@ -62,3 +62,11 @@ Extraction produces candidates, not verification. Common evidence output carries
 Order KPI creation as Inputs → Scoring policy → Workflow. Add formula policies composed of arbitrary organization-defined numeric components, required/optional status, weights, sum/average/weighted-average aggregation, and an optional cap. Save the source-independent policy first; Apply scoring policy then exposes those component IDs as numeric ports so the creator can manually map any earlier workflow outputs. This supports repeated evidence evaluation without embedding a two-document or faculty-specific assumption.
 
 For new generic workflows, Human review is an optional terminal handoff rather than an approval branch. It ends automation and sends the complete execution package to a separate module. Keep routed generic review resumption only for old saved drafts and keep the specialized publication review unchanged for compatibility.
+
+## D-19 — Organization-scoped Prediction Framework
+
+Plan prediction as a framework that organizations configure around their own versioned appraisal cycles, roles, scoring policies, and verified checkpoint data. The first target is only the final approved overall score. Prediction remains advisory and cannot change verified evidence or the official score.
+
+Use three readiness modes: a transparent rule-based estimate when usable completed history is absent, an evaluated limited-data model with explicit low confidence when evidence is sparse, and an approved organization-specific model when sufficient compatible data passes time-based accuracy, interval, stability, and subgroup checks. Current-cycle data is used for inference and checkpoint capture; it becomes labelled training data only after cycle closure and final approval.
+
+AFPI owns ingestion, readiness, feature safety, candidate comparison, approval, publication, monitoring, and fallback. Do not invent a custom ML algorithm for the prototype. Evaluate established baseline, linear, and tree candidates after the KCT data contract and synthetic fixtures exist, then choose the simplest candidate that beats transparent baselines. Model publication and future retraining require explicit administrator approval.

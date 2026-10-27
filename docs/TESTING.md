@@ -11,6 +11,10 @@ Tests use Node's built-in test runner over `src/*.test.js` and `server/*.test.js
 
 Most recent automated baseline: **101 passing tests** on 7 October 2026 after the policy-first composition update. The earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) records 67 tests at that checkpoint; it is historical, not the latest count.
 
+## Prediction Framework planning verification — 27 October 2026
+
+Validated local links in the new Prediction Framework plan and all documentation files changed by that planning update. Both JSON examples in the plan parsed successfully, and `git diff --check` reported no whitespace errors. No application code, synthetic dataset, model, API, or screen was implemented, so the automated test and production-build baselines were not rerun for this documentation-only change.
+
 ## Coverage map
 
 | Suite | Main coverage |
