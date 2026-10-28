@@ -1,0 +1,28 @@
+{
+  "generatorVersion": "kct-synthetic-v1",
+  "seed": 20261029,
+  "generatedAt": "2026-10-29T00:00:00.000Z",
+  "frameworkVersion": "afpi-framework-prototype-v1",
+  "checkpointFractions": [0.25, 0.5, 0.75, 1],
+  "activeElapsedFraction": 0.33,
+  "activeEmployeeCount": 40,
+  "limitedHistory": {
+    "employees": 30,
+    "cycleStartYears": [2024, 2025]
+  },
+  "sufficientHistory": {
+    "employees": 60,
+    "cycleStartYears": [2022, 2023, 2024, 2025]
+  },
+  "activeCycleStartYear": 2026,
+  "patterns": [
+    { "id": "steady", "weight": 22 },
+    { "id": "early_fast", "weight": 12 },
+    { "id": "late_improvement", "weight": 14 },
+    { "id": "stalled", "weight": 10 },
+    { "id": "irregular", "weight": 12 },
+    { "id": "high_consistent", "weight": 12 },
+    { "id": "low_consistent", "weight": 10 },
+    { "id": "evidence_delayed", "weight": 8 }
+  ]
+}

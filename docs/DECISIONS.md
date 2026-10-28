@@ -82,3 +82,9 @@ For new workflows, check DOI/Crossref metadata, PDF consistency, first authorshi
 ## D-22 — Route Publication outcomes through scoring and one review node
 
 Remove AI evaluation from the new Publication template. The Clear branch applies the selected saved scoring policy and passes its provisional score to Appraiser review. Needs review and Ineligible skip scoring and join that same review node, with the outcome and reasons shown to the appraiser. Do not invent point values; a missing or unmatched saved policy remains setup-required or pending.
+
+## D-23 — End-to-end synthetic prediction review prototype
+
+Deliver the first Prediction Framework review as a complete local demonstration rather than configuration-only screens. The path covers eight synthetic-dataset decisions, seeded PADS-aware generation, readiness, time-based splitting, established candidate training, held-out testing, simulated approval/publication, a prediction sandbox, and a simulated employee view.
+
+Use generic configuration and stable IDs so KCT/PADS remains the first fixture rather than hard-coded application behavior. Generate final targets through the configured scoring policy and future synthetic achievements. Use established scikit-learn regressors behind a local prototype service instead of implementing new ML mathematics. Treat every resulting metric and model as synthetic demonstration evidence, not real institutional accuracy.

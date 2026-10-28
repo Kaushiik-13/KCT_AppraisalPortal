@@ -2,6 +2,12 @@
 
 This is a development summary, not a version-control commit log. The package remains `0.1.0`; no release/deployment is implied.
 
+## 29 October 2026 — Prediction prototype delivery planning
+
+Added an implementation-ready plan for the KCT/PADS synthetic prediction review prototype. It refines the eight dataset decisions, policy-aware seeded generation, scenario sizes, canonical fields, time-based split, established scikit-learn candidates, model gates, ten-screen review flow, local prototype service boundary, project structure, API contracts, phases, verification and demonstration script. No dataset, application code, model or prediction screen was implemented by this documentation change.
+
+Implemented the first dataset foundation after that plan: a versioned KCT/PADS reference configuration, deterministic generator, 40 active snapshots, 60 limited-history faculty-cycles, 240 sufficient-history faculty-cycles, controlled invalid cases, generation metadata/checksums and a review workbook. Added the canonical data dictionary and seven automated generator tests. The fixtures operate at KRA level; detailed current KPI scoring-band conversion, readiness, model training and prediction remain unimplemented.
+
 ## 28 October 2026 — Publication scoring and shared review routes
 
 Removed AI evaluation from the new Publication template. Clear now runs the selected saved scoring policy and passes its provisional score into Appraiser review. Needs review and Ineligible bypass scoring; all three outcomes converge on the same review node, where the outcome and reasons are displayed. An unconfigured scoring Action requires a saved policy selection; no institutional point values are supplied by the template.

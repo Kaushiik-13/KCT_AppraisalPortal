@@ -1,9 +1,14 @@
 # Prediction Framework implementation plan
 
-Status: **planned, not implemented**  
-Planning branch: `codex/prediction-framework-plan`  
-Initial prototype organization: KCT  
+Status: **synthetic dataset foundation implemented; prediction runtime not implemented**
+
+Active prototype branch: `codex/prediction-prototype`
+
+Initial prototype organization: KCT
+
 Initial prediction target: final approved overall appraisal score
+
+The implementation-ready Saturday review slice, synthetic-data decisions and refined project structure are maintained in the [Prediction prototype implementation plan](PREDICTION-PROTOTYPE-IMPLEMENTATION-PLAN.md).
 
 ## 1. Purpose
 

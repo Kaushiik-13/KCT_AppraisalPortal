@@ -13,7 +13,19 @@ The current Publication plugin has ten steps, no simulated index or AI node, a C
 
 Tests use Node's built-in test runner over `src/*.test.js` and `server/*.test.js`. A passing build verifies bundling, not browser behavior. There is no lint script or committed full browser automation suite.
 
-Most recent automated baseline: **102 passing tests** on 28 October 2026 after the Publication scoring and route update. The 27 October picker report, 101-test report from 7 October, and earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) remain historical checkpoints.
+Most recent automated baseline: **109 passing tests** on 29 October 2026 after the synthetic prediction dataset foundation. The 102-test reports from 27–28 October, 101-test report from 7 October, and earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) remain historical checkpoints.
+
+## Synthetic prediction dataset foundation — 29 October 2026
+
+`npm.cmd run generate:prediction-data` created the no-history, limited-history, sufficient-history and invalid CSV fixtures plus active-snapshot and generation-report JSON. The clean fixtures contain 40 current rows, 240 limited-history checkpoint rows (60 completed faculty-cycles) and 960 sufficient-history checkpoint rows (240 completed faculty-cycles). The invalid fixture contains 12 controlled rows covering ten named defect types.
+
+Seven new automated tests verify PADS role/KRA cap completeness, seed determinism, planned scenario sizes, cumulative/capped progress, absence of active-cycle targets, clean canonical-key uniqueness, invalid-case coverage and CSV shape. `npm.cmd test` passed all **109 tests**. `npm.cmd run build` completed successfully with Next.js 16.3.8. Generated-file SHA-256 values matched `generation-report.json`; the combined review workbook's Overview and each dataset sheet were rendered and inspected.
+
+These checks validate fixture and software behavior only. They do not validate real KCT prediction accuracy or the complete current KPI policy.
+
+## Prediction prototype planning verification — 29 October 2026
+
+The implementation-ready prototype plan was checked for local Markdown links, project-boundary consistency and whitespace. This was a documentation-only change: no synthetic dataset, application code, Python service, trained model, API or screen was implemented, so automated application tests and the production build were not rerun for this planning update.
 
 ## Publication workflow picker verification — 27 October 2026
 

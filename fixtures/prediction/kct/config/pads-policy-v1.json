@@ -1,0 +1,75 @@
+{
+  "id": "kct-pads-prototype",
+  "version": "pads-2021-reference-v1",
+  "status": "reference-policy-pending-current-kct-confirmation",
+  "source": "PADS workbook supplied for prototype planning",
+  "overallScoreCap": 200,
+  "mandatoryCriterion": {
+    "description": "Qualifying research paper or seven days of faculty development/certified equivalent",
+    "scoreImpact": "represented-as-status-only",
+    "note": "The source reviewed for planning does not justify inventing an automatic score penalty."
+  },
+  "kras": [
+    { "id": "teaching_learning", "name": "Teaching & Learning" },
+    { "id": "research_development", "name": "Research & Development" },
+    { "id": "external_interface", "name": "External Interface" },
+    { "id": "operations", "name": "Operations" },
+    { "id": "student_development", "name": "Student Development" },
+    { "id": "extra_cocurricular", "name": "Extra & Co-Curricular" },
+    { "id": "optional_contributions", "name": "Optional Institutional/Department Contributions and Outcomes" }
+  ],
+  "roles": [
+    {
+      "code": "assistant_professor",
+      "name": "Assistant Professor",
+      "kraCaps": {
+        "teaching_learning": 60,
+        "research_development": 50,
+        "external_interface": 40,
+        "operations": 35,
+        "student_development": 10,
+        "extra_cocurricular": 5,
+        "optional_contributions": 10
+      }
+    },
+    {
+      "code": "associate_professor",
+      "name": "Associate Professor",
+      "kraCaps": {
+        "teaching_learning": 60,
+        "research_development": 50,
+        "external_interface": 40,
+        "operations": 35,
+        "student_development": 10,
+        "extra_cocurricular": 5,
+        "optional_contributions": 10
+      }
+    },
+    {
+      "code": "professor",
+      "name": "Professor",
+      "kraCaps": {
+        "teaching_learning": 50,
+        "research_development": 60,
+        "external_interface": 40,
+        "operations": 35,
+        "student_development": 10,
+        "extra_cocurricular": 5,
+        "optional_contributions": 10
+      }
+    },
+    {
+      "code": "professor_hod",
+      "name": "Professor & HOD/In-charge",
+      "kraCaps": {
+        "teaching_learning": 40,
+        "research_development": 60,
+        "external_interface": 40,
+        "operations": 45,
+        "student_development": 10,
+        "extra_cocurricular": 5,
+        "optional_contributions": 10
+      }
+    }
+  ]
+}
