@@ -786,7 +786,19 @@ export async function executeNode(node, input, ctx) {
       result: {},
       componentValues: input,
     });
-    return { scoring, points: scoring.points, status: scoring.status };
+    return {
+      scoring,
+      score: {
+        status: scoring.status,
+        points: scoring.points,
+        policyVersion: scoring.version,
+        outcome: scoring.outcome,
+        trace: scoring.trace,
+        policy: scoring.policy,
+      },
+      points: scoring.points,
+      status: scoring.status,
+    };
   }
   const reusable = await executeReusable(node, input, ctx);
   if (reusable) return reusable;

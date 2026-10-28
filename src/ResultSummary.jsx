@@ -68,6 +68,23 @@ export default function ResultSummary({ kind, result }) {
         </details>
       </>
     );
+  if (kind === "apply_policy")
+    return (
+      <>
+        <p>
+          {result.points === null
+            ? "Scoring is pending review."
+            : `${result.points} provisional points · policy ${result.score?.policyVersion || "unknown"}`}
+        </p>
+        {(result.score?.trace || []).map((entry, index) => (
+          <p key={index}>{typeof entry === "string" ? entry : JSON.stringify(entry)}</p>
+        ))}
+        <details>
+          <summary>Policy calculation details</summary>
+          <pre>{JSON.stringify(result.scoring, null, 2)}</pre>
+        </details>
+      </>
+    );
   if (kind === "document_extract")
     return (
       <>

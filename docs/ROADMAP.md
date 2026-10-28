@@ -25,7 +25,7 @@ Subsequent delivered improvements: configurable AI instructions and any-path inp
 
 Delivered on 5 October: built-in Publication plugin picker and reusable verification Actions, including explicit saved-policy scoring. General OCR, authenticated integrations and installable plugins remain planned.
 
-Delivered 27 October: selecting the Publication plugin added a complete twelve-step workflow automatically, with confirmation and Undo on replacement. A later simplification supersedes that template for new workflows: it omits simulated index evidence and automatic index-based marks. The old nodes remain available to restored drafts. The creator-usability review below remains planned for testing broader authoring flows with the project owner.
+Delivered 27 October: selecting the Publication plugin added a complete twelve-step workflow automatically, with confirmation and Undo on replacement. Later updates supersede that template for new workflows: no simulated index checks or AI; Clear runs the selected conditional scoring policy, while Needs review and Ineligible bypass scoring. All three outcomes converge on one Appraiser review node. The old nodes remain available to restored drafts. The creator-usability review below remains planned for testing broader authoring flows with the project owner.
 
 Delivered on 6 October: migrated the PoC from Vite to Next.js 16 App Router, retained the browser-owned studio through a client boundary, moved AI access to Node route handlers, and prepared the PDF worker during development/build. Local production build and runtime checks pass. The application has not been pushed or deployed.
 

@@ -77,4 +77,8 @@ The original complete template added twelve connected steps, including simulated
 
 ## D-21 — Keep Publication usable without index-provider access
 
-For new workflows, check DOI/Crossref metadata, PDF consistency, first authorship, assessment period, and local duplicate candidates, then send findings to review. Exclude mock Scopus/Web of Science results and automatic index-based points. Keep older index/scoring nodes readable for saved-draft compatibility. Consider live index adapters only after institutional entitlement and approved use are confirmed.
+For new workflows, check DOI/Crossref metadata, PDF consistency, first authorship, assessment period, and local duplicate candidates. Clear findings run the selected saved scoring policy; Needs review and Ineligible bypass scoring. All three routes converge at one Appraiser review node. Exclude mock Scopus/Web of Science results and AI evaluation from the template. Keep older index/AI/scoring nodes readable for saved-draft compatibility. Consider live index adapters only after institutional entitlement and approved use are confirmed.
+
+## D-22 — Route Publication outcomes through scoring and one review node
+
+Remove AI evaluation from the new Publication template. The Clear branch applies the selected saved scoring policy and passes its provisional score to Appraiser review. Needs review and Ineligible skip scoring and join that same review node, with the outcome and reasons shown to the appraiser. Do not invent point values; a missing or unmatched saved policy remains setup-required or pending.

@@ -2,7 +2,7 @@
 
 ## Policy scope
 
-The Publication workflow checks a paper's DOI and Crossref record, compares PDF details with that record, checks whether the faculty member is the first author, checks the assessment period, and looks for duplicate candidates in local test/session records. It sends the findings to an appraiser. It does not check Scopus/Web of Science or award marks automatically.
+The Publication workflow checks a paper's DOI and Crossref record, compares PDF details with that record, checks first authorship and the assessment period, and looks for duplicate candidates in local test/session records. A clear result goes through the selected saved scoring policy; clear, needs-review, and ineligible paths all converge on the same appraiser review node. Needs-review and ineligible paths skip scoring. The workflow does not check Scopus/Web of Science.
 
 This workflow supports many DOI-bearing papers with readable PDFs and Crossref records, but it cannot verify every paper. Missing DOI/metadata, scans, ambiguous author names, and conflicting evidence need human review. Crossref lookup is metadata lookup, not proof that a paper meets an institution's KPI.
 
@@ -33,10 +33,10 @@ Open Workflow → Build workflow. On an empty canvas, click **Explore the public
 | Check assessment dates | Publication record + configured dates/date rule |
 | Check duplicates | Publication record + faculty name; optional seed records |
 | Decide verification outcome | Comparison, author, dates, duplicate findings |
-| AI evaluation | Decision output; instructions, mode, and optional schema |
-| Appraiser review | Decision and optional AI details |
+| Apply scoring policy | Clear decision path only; selected saved policy version |
+| Appraiser review | Decision and optional score; all three decision paths converge here |
 
-Use start `2021-01-01`, end `2021-12-31`, and Published date for the included sample. Keep the simulated registry entry for the first test. Use Simulated assistance for a deterministic offline AI rehearsal, or OpenRouter to generate actual advice.
+Use start `2021-01-01`, end `2021-12-31`, and Published date for the included sample. Save a conditional scoring policy with the institution's approved rules. If a saved version is selected, the template preselects it; otherwise, choose a version in the Apply scoring policy step before running.
 
 The default routes are:
 
@@ -49,15 +49,15 @@ flowchart TD
   Author --> Dates[Check period]
   Dates --> Duplicate[Check duplicates]
   Duplicate --> Decision{Verification outcome}
-  Decision -->|Clear| Review[Appraiser review]
-  Decision -->|Uncertain| AI[AI evaluation]
+  Decision -->|Clear| Score[Apply scoring policy]
+  Decision -->|Needs review| Review[Appraiser review]
   Decision -->|Ineligible| Review
-  AI --> Review
+  Score --> Review
 ```
 
 ## 3. Scoring
 
-The Publication workflow does not choose an institution's point values. Create or select the institution's scoring policy separately, then add an appropriate scoring step and map verified workflow findings to it. Do not use the former 24/12 mock-index example as an institutional rule. A reviewer can inspect the evidence package before marks are finalized.
+The Publication workflow does not choose an institution's point values. Save an institution-approved conditional scoring policy, then select it in the Apply scoring policy step. That step runs only on the Clear branch and passes the provisional score to Appraiser review. Needs-review and ineligible findings bypass scoring but still reach the same review node. A missing or unmatched rule remains pending; do not use the former 24/12 mock-index example as an institutional rule.
 
 ## 4. Sample submission
 
@@ -73,7 +73,7 @@ Open Test & review, fix setup items, and click **Fill sample submission**.
 
 The PDF is in `public/samples/prisma-2020-paper.pdf`; Download sample paper is also available in the test view. [Attribution](../public/samples/README.txt) is retained. A methodology guideline used as a fixture is not automatically eligible under a real institution's policy.
 
-Run this submission. With consistent Crossref metadata and the configured period, the workflow should identify a first-author match and send the evidence to review. It does not recommend points. A network failure, mismatch, or ambiguous extraction can require review.
+Run this submission. With consistent Crossref metadata, first-author match and an eligible date, the Clear path applies the selected scoring policy before Appraiser review. If there is no selected policy or no rule matches, scoring remains pending. A network failure, mismatch or ambiguous extraction follows Needs review directly to Appraiser review.
 
 ## 5. Review and edge cases
 
@@ -81,16 +81,8 @@ Enter an appraiser name, approve, and record the decision. The score and origina
 
 Without reloading, submit again: the same DOI/faculty pair should become a duplicate candidate. Change the period to 2022 to test ineligibility. A different first-author name should produce uncertainty. Duplicate detection is limited to seed records and approved records in this browser session; it is not an institution-wide database.
 
-## Add a clear-path AI summary
-
-Insert Action → AI evaluation on the Clear path. Name it Appraiser summary; map the verification decision object to its primary input. Suggested instructions:
-
-> Summarize the evidence for the appraiser in five bullets. Include DOI/record consistency, first-author match, assessment eligibility, duplicate findings, and limitations. Do not invent missing facts.
-
-Continue to Calculate marks or the next intended step. The existing Needs review AI can have different instructions. Inspect each executed AI response in the trace. A shared legacy review has one optional assistance mapping; it does not automatically merge responses from different branches.
-
 ## Publication plugin
 
-To add the complete flow, click a workflow + → Plugin → **Publication workflow**. The builder inserts all ten connected steps at once, with publication operations represented as Publication plugin nodes. Suggested mappings use matching form fields and earlier outputs. AI evaluation remains a general Action. The decision step preserves Clear / Needs review / Ineligible routes. Scopus/Web of Science checks and automatic publication scoring are excluded; scoring rules remain institution-specific.
+To add the complete flow, click a workflow + → Plugin → **Publication workflow**. The builder inserts ten connected steps at once, including the generic Apply scoring policy Action. Clear goes through scoring; Needs review and Ineligible bypass scoring; all paths reach Appraiser review. AI evaluation is not part of this plugin template. Scopus/Web of Science checks remain excluded, and institutions supply their own saved scoring rules.
 
 If the workflow already contains steps, the picker asks before replacing the chart. Confirm only when you want the complete Publication flow to replace it; Undo restores the previous chart. Existing saved operation nodes remain individually editable from their settings.

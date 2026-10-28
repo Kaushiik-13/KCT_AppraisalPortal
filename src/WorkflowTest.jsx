@@ -293,9 +293,15 @@ function StepResult({ step }) {
   );
 }
 export function ReviewForm({ run, onDecide, disabled }) {
+  const decision = run.review.decision;
+  const outcome = {
+    clear: "Clear",
+    uncertain: "Needs review",
+    ineligible: "Ineligible",
+  }[decision.status] || decision.status;
   const score =
     run.review.score?.points ??
-    (run.review.decision.status === "ineligible" ? 0 : null);
+    (decision.status === "ineligible" ? 0 : null);
   const [action, setAction] = useState(score === null ? "clarify" : "approve");
   const [reason, setReason] = useState("");
   const [points, setPoints] = useState("");
@@ -313,6 +319,16 @@ export function ReviewForm({ run, onDecide, disabled }) {
   return (
     <form className="review-form" onSubmit={submit}>
       <h2>Appraiser review</h2>
+      <p>
+        Verification outcome: <strong>{outcome}</strong>
+      </p>
+      {decision.reasons?.length > 0 && (
+        <ul>
+          {decision.reasons.map((reason, index) => (
+            <li key={index}>{reason}</li>
+          ))}
+        </ul>
+      )}
       <p>
         {score === null
           ? "The recommendation is pending. Resolve the evidence with a new test, or record a reasoned override."

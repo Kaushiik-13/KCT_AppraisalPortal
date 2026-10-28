@@ -58,7 +58,7 @@ export default function WorkflowStudio({
       );
       return;
     }
-    const next = publicationWorkflow(fields);
+    const next = publicationWorkflow(fields, policy);
     change(next);
     setNotice(
       "Editable Publication workflow loaded. Review its field mappings and assessment dates; scoring must follow your institution's approved policy.",

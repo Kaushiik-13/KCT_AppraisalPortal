@@ -10,14 +10,16 @@ test('publication is a separate plugin catalogue; old action configurations rema
  assert(!reusableActionTools.some(t=>t.kind==='author'));assert(publicationTools.some(t=>t.kind==='author'));
  for(const tool of publicationTools){const n=wrap(createNode(tool.kind));assert.equal(validDraft({name:'KPI',fields:[],nodes:[n]}),true);assert.deepEqual(nodeDefinition(n).outputs,nodeDefinition(createNode(tool.kind)).outputs);}
 });
-test('the Publication plugin workflow installs simple verification steps without index scoring',()=>{
+test('Publication workflow removes AI, scores only clear outcomes, and converges at review',()=>{
  const fields=[
   {id:'paper',label:'Research paper',type:'file',required:true,help:'',options:'',accept:'.pdf',multiple:false},
   {id:'doi',label:'DOI',type:'text',required:false,help:'',options:'',accept:'',multiple:false},
   {id:'url',label:'Publication URL',type:'url',required:false,help:'',options:'',accept:'',multiple:false},
   {id:'faculty',label:'Faculty name',type:'text',required:true,help:'',options:'',accept:'',multiple:false},
  ];
- const nodes=publicationWorkflow(fields);
+ const policy={enabled:false,activeVersion:'publication-v1',versions:[{version:'publication-v1',mode:'rules',maxPoints:'',fallback:'pending',aggregation:'sum',components:[],rules:[{id:'primary-rule',name:'Primary author',match:'all',points:'17',multiplier:'1',outcome:'Eligible',conditions:[{source:'',type:'text',operator:'eq',expected:'yes'}]}]}]};
+ const nodes=publicationWorkflow(fields,policy);
+ policy.versions[0].rules[0].conditions[0].source=`node|${nodes.find(n=>n.config?.tool==='decision').id}|decision.facts.primary`;
  assert.equal(nodes.length,10);
  assert.equal(nodes.filter(n=>n.kind==='plugin').length,8);
  assert.equal(nodes[0].kind,'submit');
@@ -26,10 +28,17 @@ test('the Publication plugin workflow installs simple verification steps without
  assert.equal(nodes.find(n=>n.config?.tool==='author').mappings.faculty,'field|faculty');
  assert.equal(nodes.find(n=>n.config?.tool==='lookup').mappings.claimedDoi,'field|doi');
  assert.equal(nodes.find(n=>n.config?.tool==='lookup').mappings.url,'field|url');
- assert.equal(nodes.some(n=>n.config?.tool==='index'||n.config?.tool==='score'),false);
- assert.equal(nodes.find(n=>n.config?.tool==='decision').routes.clear,nodes.find(n=>n.config?.tool==='review').id);
- assert.equal(nodes.find(n=>n.config?.tool==='decision').routes.uncertain,nodes.find(n=>n.kind==='ai').id);
+ assert.equal(nodes.some(n=>n.kind==='index'||n.kind==='score'||n.config?.tool==='index'||n.config?.tool==='score'||n.kind==='ai'),false);
+ const scoring=nodes.find(n=>n.kind==='action'&&n.config.tool==='apply_policy');
+ const review=nodes.find(n=>n.config?.tool==='review');
+ assert.equal(scoring.config.settings.policyVersion,'publication-v1');
+ assert.equal(nodes.find(n=>n.config?.tool==='decision').routes.clear,scoring.id);
+ assert.equal(nodes.find(n=>n.config?.tool==='decision').routes.uncertain,review.id);
+ assert.equal(nodes.find(n=>n.config?.tool==='decision').routes.ineligible,review.id);
+ assert.equal(scoring.routes.next,review.id);
+ assert.equal(review.mappings.score,`node|${scoring.id}|score`);
  assert.deepEqual(validateWorkflow(nodes,fields),[]);
+ assert.deepEqual(validateRunConfiguration({nodes,fields,policy}),[]);
  assert.equal(validDraft({name:'Publication',fields,nodes}),true);
 });
 test('document extraction emits configured typed candidates, page evidence and ambiguity',async()=>{

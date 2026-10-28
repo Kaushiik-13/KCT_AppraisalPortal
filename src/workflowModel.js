@@ -221,7 +221,7 @@ export const plugins = [
     id: "publication",
     name: "Publication",
     description:
-      "Check paper details against Crossref, match the first author, and review the assessment date.",
+      "Check the paper, apply your saved scoring policy when evidence is clear, and send every outcome to appraiser review.",
     tools: publicationTools,
   },
 ];
@@ -505,21 +505,52 @@ export function exampleWorkflow(fields) {
   };
   return nodes;
 }
-export function publicationWorkflow(fields) {
-  const kinds = tools
-    .map((tool) => tool.kind)
-    .filter((kind) => !["index", "score"].includes(kind));
+export function publicationWorkflow(fields, policy = {}) {
+  const kinds = [
+    "submit",
+    "extract",
+    "lookup",
+    "compare",
+    "author",
+    "period",
+    "duplicate",
+    "decision",
+    "apply_policy",
+    "review",
+  ];
   const ids = Object.fromEntries(kinds.map((kind) => [kind, crypto.randomUUID()]));
-  let nodes = kinds.map((kind) => ({ ...createNode(kind), id: ids[kind] }));
+  const selectedPolicy = (policy.versions || []).find(
+    (version) => version.version === policy.activeVersion,
+  );
+  let nodes = kinds.map((kind) => {
+    if (kind !== "apply_policy") return { ...createNode(kind), id: ids[kind] };
+    const action = chooseActionTool(createNode("action"), "apply_policy");
+    return {
+      ...action,
+      id: ids[kind],
+      name: "Apply scoring policy",
+      config: {
+        ...action.config,
+        settings: {
+          ...action.config.settings,
+          policyVersion: selectedPolicy?.version || "",
+          components:
+            selectedPolicy?.mode === "formula"
+              ? structuredClone(selectedPolicy.components || [])
+              : [],
+        },
+      },
+    };
+  });
   nodes = nodes.map((node, index) => {
     const next = kinds[index + 1];
     if (node.kind === "decision")
       node.routes = {
-        clear: ids.review,
-        uncertain: ids.ai,
+        clear: ids.apply_policy,
+        uncertain: ids.review,
         ineligible: ids.review,
       };
-    else if (node.kind === "ai") node.routes = { next: ids.review };
+    else if (node.kind === "action") node.routes = { next: ids.review };
     else if (next) node.routes = { next: ids[next] };
     return node;
   });
@@ -530,7 +561,7 @@ export function publicationWorkflow(fields) {
     dateRule: "published",
   };
   return nodes.map((node) =>
-    ["submit", "ai"].includes(node.kind)
+    ["submit", "action"].includes(node.kind)
       ? node
       : {
           ...node,

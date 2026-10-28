@@ -24,12 +24,12 @@ export default function TreeBuilder({nodes,fields,onChange,disabled,onExample,to
    setPluginTarget(null);
    return;
   }
-  commit(publicationWorkflow(fields));
+  commit(publicationWorkflow(fields, policy));
   setSelected("");
   setPluginTarget(null);
   setLibrary(false);
   setSlot(null);
-  setMessage("Publication checks added. Review the fields and assessment dates before running.");
+  setMessage("Publication workflow added. Review the fields and assessment dates, and select a saved scoring policy before running.");
  };
  return <div className="tree-builder">{pluginTarget&&<PluginPicker mode="workflow" hasExistingWorkflow={nodes.length>0} onClose={()=>setPluginTarget(null)} onChoose={addPluginWorkflow}/>}<div className="tree-toolbar">{toolbarStart}<button className={`btn ${library?'primary':''}`} onClick={()=>{setLibrary(!library);setSelected('');}} disabled={disabled}><Library size={16}/>Blocks</button><span>{nodes.length?`${nodes.length} steps`:'Start your workflow'}</span>{nodes.length>0&&!nodes.some(n=>n.kind==='submit')&&<button className="btn" disabled={disabled} onClick={()=>{const root={...createNode('submit'),name:'Submission received'};root.routes.next=orderedNodes(nodes)[0].id;commit([root,...nodes]);}}>Add starting trigger</button>}<div className="tree-toolbar-right"><button aria-label="Undo last edit" disabled={disabled||!undo.length} onClick={()=>{onChange(undo.at(-1));setUndo(undo.slice(0,-1));setSelected('');setMessage('Last edit undone.');}}><Undo2 size={16}/></button><button aria-label="Zoom out" onClick={()=>setZoom(z=>Math.max(.3,z-.1))}><Minus size={16}/></button><span>{Math.round(zoom*100)}%</span><button aria-label="Zoom in" onClick={()=>setZoom(z=>Math.min(1.3,z+.1))}><Plus size={16}/></button><button aria-label="Fit tree width" onClick={fit}><Maximize2 size={16}/></button></div></div>
  {message&&<div className="tree-message" role="status">{message}<button aria-label="Dismiss canvas message" onClick={()=>setMessage('')}><X size={14}/></button></div>}{moving&&<div className="tree-message">Choose a + to move this step.<button onClick={()=>setMoving(null)}>Cancel move</button></div>}

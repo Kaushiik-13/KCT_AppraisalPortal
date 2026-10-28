@@ -67,8 +67,8 @@ export default function PluginPicker({
               <button key={item.id} onClick={() => choosePlugin(item.id)}>
                 <strong>{item.name} workflow</strong>
                 <small>
-                  Checks the PDF against Crossref, matches the first author,
-                  checks the assessment date, and sends uncertain findings to review.
+                  Checks the paper and dates. Clear results use your saved
+                  scoring policy; all three outcomes end at appraiser review.
                 </small>
               </button>
             ))}

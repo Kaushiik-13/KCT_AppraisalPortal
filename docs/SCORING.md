@@ -41,7 +41,7 @@ Draft edits autosave but do not change the selected saved version. Saving under 
 
 ## Legacy publication policy
 
-Older saved publication workflows may still contain the simulated-index check and the former 24/12 Scopus/WOS rules. They are retained only for compatibility and must not be presented as live index verification. New Publication workflows do not include an index step or automatic marks. They send DOI/record comparison, first-author, assessment-date, and duplicate findings to appraiser review. Institutions must define and configure their own scoring rules separately.
+Older saved publication workflows may still contain the simulated-index check and the former 24/12 Scopus/WOS rules. They are retained only for compatibility and must not be presented as live index verification. New Publication workflows have no index step and no AI evaluation. Their Clear route applies the selected saved scoring policy and passes its provisional score to Appraiser review. Needs review and Ineligible bypass scoring; all three paths converge on that review node. Institutions define and configure their own scoring rules; if no rule matches, the result remains pending.
 
 The legacy eligibility guards in `calculateScore` remain publication-specific. Changing a multiplier does not implement third-author or corresponding-author eligibility. SAE-only treatment remains unresolved.
 
