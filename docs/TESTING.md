@@ -7,9 +7,19 @@ npm.cmd test
 npm.cmd run build
 ```
 
+## Publication simplification — implementation status
+
+The current Publication plugin has ten steps, no simulated index or AI node, a Clear-only scoring Action, and one shared Appraiser review target for all three outcomes. Regression assertions check route convergence, saved-policy selection, score mapping into review, and setup validation. All 102 automated tests and the production build passed on 28 October 2026. `git diff --check` passed; historical reports below cover earlier versions.
+
 Tests use Node's built-in test runner over `src/*.test.js` and `server/*.test.js`. A passing build verifies bundling, not browser behavior. There is no lint script or committed full browser automation suite.
 
-Most recent automated baseline: **101 passing tests** on 7 October 2026 after the policy-first composition update. The earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) records 67 tests at that checkpoint; it is historical, not the latest count.
+Most recent automated baseline: **102 passing tests** on 28 October 2026 after the Publication scoring and route update. The 27 October picker report, 101-test report from 7 October, and earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) remain historical checkpoints.
+
+## Publication workflow picker verification — 27 October 2026
+
+All 102 automated tests passed, including a new case that verifies the complete Publication plugin workflow has twelve nodes, wraps all ten publication operations, suggests mappings for the sample form fields, retains the simulated index record, and remains a valid saved draft. `npm.cmd run build` passed.
+
+An isolated local browser origin verified that Plugin → Publication workflow adds all twelve steps at once. With the publication example inputs loaded, every step showed configured. The populated-workflow confirmation appeared; cancelling retained the current graph, and confirming replacement followed by Undo restored the prior named trigger. Running the included PRISMA sample completed eleven of twelve steps (AI evaluation was correctly skipped on the clear path) and reached Appraiser review with 24 provisional points using mock index evidence. This was an internal sample run, not a factual Scopus/Web of Science check.
 
 ## Prediction Framework planning verification — 27 October 2026
 
@@ -23,6 +33,7 @@ Validated local links in the new Prediction Framework plan and all documentation
 | `treeModel.test.js` | Insert, move, remove, cycles, branch/shared layout |
 | `blocks.test.js` | Generic block configuration and compatibility |
 | `blockExecution.test.js` | Branch values, review continuation, preflight, post-review failure |
+| `reusableTools.test.js` | Generic tools, Publication plugin compatibility, full Publication workflow creation and suggested mappings |
 | `workflowEngine.test.js` | Publication checks, scores, errors, review restrictions |
 | `paperFindings.test.js` | Extraction candidate analysis and PDF fixture cases |
 | `scoringPolicy.test.js` | Version snapshots, conditional rules, arbitrary formula components, aggregations, caps, missing evidence, and manual workflow mappings |
@@ -41,7 +52,7 @@ Use an isolated profile/session so testing does not replace a user's only draft.
 2. **Builder:** add by + and drag/drop; open/close settings; move a linear action; connect a shared result; reject a cycle; inspect orphaned work after removal.
 3. **Preflight:** leave a required mapping or comparison blank; verify the test is blocked and Edit step opens its settings.
 4. **Training:** follow [the walkthrough](TRAINING-KPI.md); test 8, 7, zero, blank, and the optional terminal review handoff.
-5. **Publication:** follow [the walkthrough](PUBLICATION-KPI.md); verify sample extraction, Crossref response, 24 mock-index points, approval, and repeat-submission uncertainty.
+5. **Publication:** follow [the walkthrough](PUBLICATION-KPI.md); verify one-click 10-step workflow insertion, replacement confirmation/undo, sample extraction, Crossref response, first-author/date findings, clear → saved policy → shared review, needs-review/ineligible → shared review without scoring, and repeat-submission uncertainty. Confirm no AI or Scopus/Web of Science step appears in the new plugin.
 6. **Scoring:** save v1, edit only its draft, verify v1 unchanged; save v2; switch back; test cap and pending fallback.
 7. **AI:** test simulation, missing input, and live custom instructions if configured; check an ordinary/clear-path input and response chaining. Never treat simulated output as generation.
 8. **Persistence:** reload fields, mappings, instructions and versions; verify file/value/review loss is explicit.

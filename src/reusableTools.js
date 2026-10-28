@@ -70,6 +70,7 @@ export const reusableTools = [
     inputs: [],
     outputs: [
       port("scoring", "Policy calculation", "finding"),
+      port("score", "Score for appraiser review", "score"),
       port("points", "Provisional points", "number"),
       port("status", "Scoring status", "text"),
     ],

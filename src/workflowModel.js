@@ -204,12 +204,16 @@ export const blocks = [
 blocks.push({
   kind: "plugin",
   name: "Plugin",
-  description: "Add a tool from an available plugin.",
+  description: "Add a complete workflow from a built-in plugin.",
   inputs: [],
   outputs: [],
   routes: ["next"],
 });
 export const publicationTools = tools.filter(
+  (t) => !["submit", "ai", "index", "score"].includes(t.kind),
+);
+// Keep old operations available to restored plugin nodes; new pickers use publicationTools.
+export const legacyPublicationTools = tools.filter(
   (t) => !["submit", "ai"].includes(t.kind),
 );
 export const plugins = [
@@ -217,7 +221,7 @@ export const plugins = [
     id: "publication",
     name: "Publication",
     description:
-      "Paper extraction, Crossref lookup, authorship, indexing and publication scoring.",
+      "Check the paper, apply your saved scoring policy when evidence is clear, and send every outcome to appraiser review.",
     tools: publicationTools,
   },
 ];
@@ -252,17 +256,24 @@ export const reusableActionTools = [
 export const valueTypes = ["text", "number", "date", "boolean"];
 export function nodeDefinition(node) {
   const base = definition(node.kind);
-  if (node.kind === "plugin")
-    return node.config.tool
-      ? {
-          ...definition(node.config.tool),
-          ...reusableDefinition({
-            ...node,
-            kind: node.config.tool,
-            config: node.config.settings,
-          }),
-        }
-      : base;
+  if (node.kind === "plugin") {
+    if (!node.config.tool) return base;
+    const toolDefinition = definition(node.config.tool);
+    const configured = {
+      ...toolDefinition,
+      ...reusableDefinition({
+        ...node,
+        kind: node.config.tool,
+        config: node.config.settings,
+      }),
+    };
+    if (
+      node.config.tool === "decision" &&
+      node.config.settings?.requireIndexCheck === false
+    )
+      configured.inputs = configured.inputs.filter((input) => input.key !== "index");
+    return configured;
+  }
   if (node.kind === "action")
     return {
       ...base,
@@ -493,4 +504,76 @@ export function exampleWorkflow(fields) {
     dateRule: "published",
   };
   return nodes;
+}
+export function publicationWorkflow(fields, policy = {}) {
+  const kinds = [
+    "submit",
+    "extract",
+    "lookup",
+    "compare",
+    "author",
+    "period",
+    "duplicate",
+    "decision",
+    "apply_policy",
+    "review",
+  ];
+  const ids = Object.fromEntries(kinds.map((kind) => [kind, crypto.randomUUID()]));
+  const selectedPolicy = (policy.versions || []).find(
+    (version) => version.version === policy.activeVersion,
+  );
+  let nodes = kinds.map((kind) => {
+    if (kind !== "apply_policy") return { ...createNode(kind), id: ids[kind] };
+    const action = chooseActionTool(createNode("action"), "apply_policy");
+    return {
+      ...action,
+      id: ids[kind],
+      name: "Apply scoring policy",
+      config: {
+        ...action.config,
+        settings: {
+          ...action.config.settings,
+          policyVersion: selectedPolicy?.version || "",
+          components:
+            selectedPolicy?.mode === "formula"
+              ? structuredClone(selectedPolicy.components || [])
+              : [],
+        },
+      },
+    };
+  });
+  nodes = nodes.map((node, index) => {
+    const next = kinds[index + 1];
+    if (node.kind === "decision")
+      node.routes = {
+        clear: ids.apply_policy,
+        uncertain: ids.review,
+        ineligible: ids.review,
+      };
+    else if (node.kind === "action") node.routes = { next: ids.review };
+    else if (next) node.routes = { next: ids[next] };
+    return node;
+  });
+  nodes = nodes.map((node) => suggestMappings(node, nodes, fields));
+  nodes.find((node) => node.kind === "period").config = {
+    start: "2021-01-01",
+    end: "2021-12-31",
+    dateRule: "published",
+  };
+  return nodes.map((node) =>
+    ["submit", "action"].includes(node.kind)
+      ? node
+      : {
+          ...node,
+          kind: "plugin",
+          config: {
+            plugin: "publication",
+            tool: node.kind,
+            settings:
+              node.kind === "decision"
+                ? { ...node.config, requireIndexCheck: false }
+                : node.config,
+          },
+        },
+  );
 }

@@ -60,7 +60,7 @@ AI retains the internal primary-input mapping key `decision` for compatibility. 
 | `node|lookup-id|metadata` | Declared earlier output |
 | `node|ai-id|response` | AI response text |
 | `result|outcome` | Final outcome in standalone policy conditions |
-| `node|decision-id|decision.facts.scopus` | Explicit nested policy source |
+| `node|decision-id|decision.facts.scopus` | Legacy explicit nested policy source; new Publication workflows do not produce index facts |
 
 Ordinary workflow mappings resolve top-level declared output keys. Nested paths are supported by the standalone policy resolver, not arbitrary workflow mappings. Labels may change; IDs provide identity.
 
@@ -94,5 +94,7 @@ Exports exclude test files/results and server keys. There is no import UI. New s
 ## Plugin and reusable configuration
 
 Plugin nodes use kind `plugin`, with config `{plugin: "publication", tool: <operation ID>, settings: <operation config>}`. Existing legacy kinds/Action wrappers remain readable. `use_form_value` stores `fieldId` and a cached `valueType`; execution resolves the current field and emits source metadata. `extract_evidence` stores `mode` (`fields`, `content`, or `both`) and stable field entries `{id,name,type,label}`. `compare_evidence` stores one or more `{id,name,valueType,operator,ignoreCase}` pairs; each pair creates left/right mapping ports. Apply-policy stores `policyVersion` and a snapshot of formula component definitions; each component ID becomes a numeric mapping port. The runner resolves the saved policy version and records its calculation snapshot.
+
+Choosing the complete Publication workflow creates a 10-node graph through `publicationWorkflow(fields, policy)`: submission, PDF extraction, Crossref lookup, evidence comparison, first-author check, assessment-period check, duplicate check, decision, Apply scoring policy Action, and appraiser review. Its decision node excludes the index input, and its template contains no AI node. Clear routes through the saved policy; Needs review and Ineligible bypass scoring. All three routes converge on the same review node. The active policy version is preselected when one exists; otherwise the scoring Action needs configuration. Older drafts retain their 12-node graph, required index mapping, index settings, and scoring policy and remain loadable. Publication operations are wrapped as plugin nodes; submission and scoring Action keep their specialized/generic kinds. This does not change the persisted draft schema. On a populated canvas, replacement is confirmed before the new graph is saved, and the canvas Undo stack retains the previous graph.
 
 Extract evidence emits reserved `evidence`, `content`, and `status` outputs plus configured field IDs. The evidence package preserves format, filename, candidates, confidence, `verified:false`, warnings, and page/slide/sheet locations. Legacy `document_extract`, `compare_values`, `external_lookup`, and `read_*` shapes remain valid for restored drafts but are not offered to new workflows.

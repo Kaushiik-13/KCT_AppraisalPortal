@@ -93,7 +93,9 @@ export default function BlockSettings({
             <>
               <p>Plugin: Publication</p>
               <button className="btn" onClick={() => setPicker(true)}>
-                Choose publication tool
+                {node.config.tool
+                  ? "Change this operation"
+                  : "Choose publication operation"}
               </button>
               {picker && (
                 <PluginPicker

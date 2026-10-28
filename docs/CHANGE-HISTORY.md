@@ -1,6 +1,20 @@
 # Feature history
 
-This is a development summary through 7 October 2026, not a version-control commit log. The package remains `0.1.0`; no release/deployment is implied.
+This is a development summary, not a version-control commit log. The package remains `0.1.0`; no release/deployment is implied.
+
+## 28 October 2026 — Publication scoring and shared review routes
+
+Removed AI evaluation from the new Publication template. Clear now runs the selected saved scoring policy and passes its provisional score into Appraiser review. Needs review and Ineligible bypass scoring; all three outcomes converge on the same review node, where the outcome and reasons are displayed. An unconfigured scoring Action requires a saved policy selection; no institutional point values are supplied by the template.
+
+## 27 October 2026 — Simplified Publication verification
+
+Removed the simulated Scopus/Web of Science check and automatic index-based points from the new Publication plugin flow. The new 10-step flow checks DOI/Crossref data, PDF consistency, first authorship, assessment dates, and local duplicate candidates. Clear outcomes run the institution's selected saved scoring policy; Needs review and Ineligible bypass scoring. All three routes converge at one Appraiser review node. The former 12-step template remains available to restored drafts. Live index integrations remain deferred until authorized institutional access and approved use are available.
+
+The first local setup screen exposed one leftover required Index mapping on the decision node. The new template now excludes that input from its decision contract while retaining it for older workflows.
+
+## 27 October 2026 — One-click Publication workflow
+
+Updated the Plugin picker so choosing Publication adds the complete connected twelve-step workflow, with publication operations represented as plugin nodes. Form fields and earlier outputs are mapped when available. Replacing a populated workflow requires confirmation, and canvas Undo restores the previous graph. Added coverage for generated plugin wrappers and suggested mappings, plus user and technical guidance. The local UI run with the included PRISMA paper reached appraiser review with 24 provisional points from simulated index evidence.
 
 ## 27 October 2026 — Prediction Framework planning
 

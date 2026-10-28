@@ -14,11 +14,11 @@ Blocks describe workflow structure. Tools describe an Action's capability. The c
 | `compare` | Paper and metadata | `comparison` | Conservative agreement/conflict checks |
 | `author` | Faculty name, metadata | `author` | Unique normalized first-author match |
 | `period` | Metadata, configured dates | `period` | Complete selected date, inclusive boundaries |
-| `index` | Metadata, registry | `index` | Mock paper-level coverage, never live indexing |
+| `index` | Metadata, registry | `index` | Legacy mock-index operation for restored workflows; excluded from the new Publication picker |
 | `duplicate` | Metadata, faculty, seed/session records | `duplicate` | DOI plus normalized faculty name |
-| `decision` | Five publication findings | `decision`, `status` | Domain aggregation |
+| `decision` | Publication findings | `decision`, `status` | Domain aggregation; legacy index fields are read only when present |
 | `ai` | Primary and additional inputs, rubric, instructions, optional schema | `assistance`, `response`, configured structured fields | Advisory evaluation; schema output is validated before exposure |
-| `score` | Publication decision and policy | `score`, `points` | Existing primary-author scoring |
+| `score` | Publication decision and policy | `score`, `points` | Legacy index-based publication scoring; excluded from the new Publication picker |
 
 Submission and original Appraiser review are specialized template nodes rather than selectable Action tools. Generic Human review and Result are separate blocks.
 
@@ -32,7 +32,7 @@ Submission and original Appraiser review are specialized template nodes rather t
 6. If useful for policy, expose appropriate scalar outputs or add explicit policy source paths. Nested workflow paths are not automatically supported.
 7. Document data transfers and update this catalogue.
 
-`exampleWorkflow` constructs the twelve-step publication template from the legacy `tools` array and uses positional routing. Do not casually append an unrelated tool there: update the template builder or place general capabilities in the separate catalogue. Verify the twelve-step example after catalogue changes.
+`exampleWorkflow` retains the twelve-step legacy publication graph for compatibility. The current `publicationWorkflow(fields)` builds a separate 10-step graph without index checks or automatic marks. Update and verify that builder when its operations change.
 
 ## Contract guidance
 
@@ -40,9 +40,9 @@ Separate a claim from verification. A provider timeout is unknown, not a negativ
 
 Installable third-party plugin support still needs a manifest/schema, adapter registration, permissions, secret management, versions, compatibility checks, and failure behavior. The built-in Publication picker does not provide third-party installation or credentials.
 
-## Reusable Actions and Publication plugin — 5 October 2026
+## Reusable Actions and Publication plugin
 
-Action now lists general tools only; existing publication Actions remain editable for compatibility. Add **Plugin** (below Result), choose **Publication**, then choose a tool. One plugin step invokes one operation. Publication decision steps retain three routes; Appraiser review remains terminal. AI is a general Action.
+Action now lists general tools only; existing publication Actions remain editable for compatibility. Add **Plugin** (below Result), then choose **Publication workflow** to add the 10-step DOI/authorship/date verification flow. It uses Crossref, compares PDF details, checks first authorship and assessment dates, and checks local duplicate candidates. Clear applies the selected saved scoring policy; Needs review and Ineligible bypass scoring. Every outcome reaches the same Appraiser review node, which receives the decision and any provisional score. The template contains no AI or index check and does not choose institutional point values. The builder wraps publication operations as plugin nodes; Submit and Apply scoring policy keep their own node kinds. If a workflow already contains steps, the picker requires confirmation before replacement, and the canvas Undo restores the prior graph. The former index and legacy score operations remain available to old saved workflows.
 
 | General tool | Creator settings | Behavior |
 |---|---|---|
