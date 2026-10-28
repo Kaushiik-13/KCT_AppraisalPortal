@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createNode,nodeDefinition,reusableActionTools,publicationTools,sourceChoices,publicationWorkflow} from './workflowModel.js';
-import {executeNode,runWorkflow,validateRunConfiguration,finalizeReview} from './workflowEngine.js';
+import {executeNode,runWorkflow,validateRunConfiguration,validateWorkflow,finalizeReview} from './workflowEngine.js';
 import {executeReusable} from './reusableTools.js';
 import {validDraft} from './draftStorage.js';
 const field={id:'certificate',label:'Certificate',type:'file',required:true,help:'',options:'',accept:'.pdf',multiple:false};
@@ -29,6 +29,7 @@ test('the Publication plugin workflow installs simple verification steps without
  assert.equal(nodes.some(n=>n.config?.tool==='index'||n.config?.tool==='score'),false);
  assert.equal(nodes.find(n=>n.config?.tool==='decision').routes.clear,nodes.find(n=>n.config?.tool==='review').id);
  assert.equal(nodes.find(n=>n.config?.tool==='decision').routes.uncertain,nodes.find(n=>n.kind==='ai').id);
+ assert.deepEqual(validateWorkflow(nodes,fields),[]);
  assert.equal(validDraft({name:'Publication',fields,nodes}),true);
 });
 test('document extraction emits configured typed candidates, page evidence and ambiguity',async()=>{

@@ -256,17 +256,24 @@ export const reusableActionTools = [
 export const valueTypes = ["text", "number", "date", "boolean"];
 export function nodeDefinition(node) {
   const base = definition(node.kind);
-  if (node.kind === "plugin")
-    return node.config.tool
-      ? {
-          ...definition(node.config.tool),
-          ...reusableDefinition({
-            ...node,
-            kind: node.config.tool,
-            config: node.config.settings,
-          }),
-        }
-      : base;
+  if (node.kind === "plugin") {
+    if (!node.config.tool) return base;
+    const toolDefinition = definition(node.config.tool);
+    const configured = {
+      ...toolDefinition,
+      ...reusableDefinition({
+        ...node,
+        kind: node.config.tool,
+        config: node.config.settings,
+      }),
+    };
+    if (
+      node.config.tool === "decision" &&
+      node.config.settings?.requireIndexCheck === false
+    )
+      configured.inputs = configured.inputs.filter((input) => input.key !== "index");
+    return configured;
+  }
   if (node.kind === "action")
     return {
       ...base,
@@ -531,7 +538,10 @@ export function publicationWorkflow(fields) {
           config: {
             plugin: "publication",
             tool: node.kind,
-            settings: node.config,
+            settings:
+              node.kind === "decision"
+                ? { ...node.config, requireIndexCheck: false }
+                : node.config,
           },
         },
   );

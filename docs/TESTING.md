@@ -9,7 +9,7 @@ npm.cmd run build
 
 ## Publication simplification — implementation status
 
-The new Publication plugin factory now defines ten steps and omits simulated index checks and automatic scoring. The workflow test assertions were updated to expect the smaller graph and verify that no index or score node is included. These checks have not been run for this change yet; see the historical reports below for verification of the earlier twelve-step version.
+The new Publication plugin factory defines ten steps and omits simulated index checks and automatic scoring. A regression assertion checks that the generated graph passes workflow setup validation without an Index mapping. All 102 automated tests and the production build passed after correcting the missing-Index preflight issue. `git diff --check` also passed; see the historical reports below for the earlier twelve-step version's results.
 
 Tests use Node's built-in test runner over `src/*.test.js` and `server/*.test.js`. A passing build verifies bundling, not browser behavior. There is no lint script or committed full browser automation suite.
 
