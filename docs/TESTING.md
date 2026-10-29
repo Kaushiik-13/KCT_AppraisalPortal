@@ -4,6 +4,7 @@
 
 ```powershell
 npm.cmd test
+npm.cmd run test:prediction-ml
 npm.cmd run build
 ```
 
@@ -13,7 +14,17 @@ The current Publication plugin has ten steps, no simulated index or AI node, a C
 
 Tests use Node's built-in test runner over `src/*.test.js` and `server/*.test.js`. A passing build verifies bundling, not browser behavior. There is no lint script or committed full browser automation suite.
 
-Most recent automated baseline: **124 passing tests** on 29 October 2026 after Prediction Studio screens 1–3 and the generation endpoint. The 120-test readiness result, 110-test dataset-integration result, 109-test dataset-foundation result, 102-test reports from 27–28 October, 101-test report from 7 October, and earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) remain historical checkpoints.
+Most recent automated baseline: **131 passing JavaScript tests plus 4 passing Python tests** on 29 October 2026 after Prediction Studio screens 4–5 and the local training provider. The 124-test screens 1–3 result, 120-test readiness result, 110-test dataset-integration result, 109-test dataset-foundation result, 102-test reports from 27–28 October, 101-test report from 7 October, and earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) remain historical checkpoints.
+
+## Prediction model configuration and comparison — 29 October 2026
+
+Seven new JavaScript tests cover fixed-target/configuration validation, leakage rejection, candidate/seed/readiness/split guards, server-side readiness recomputation, completed-only time-split matrix construction, deterministic run identity, safe provider errors, output parsing and a real Node-to-Python Ridge integration. Four Python tests cover both baselines and all three candidate metrics, baseline-only inputs, configured-range evidence, deterministic metrics/recommendation for the same seed, and unsupported-candidate rejection.
+
+`npm.cmd test` passed all **131 JavaScript tests**. `npm.cmd run test:prediction-ml` passed all **4 Python tests**. `npm.cmd run build` passed with Next.js 16.3.8 and included dynamic `/api/prediction/training`. The React quality review found components declared at module scope, no new effects or dependency arrays, labelled controls/fieldsets, disabled-state guards and no large new client library.
+
+A local browser walkthrough generated the default 1,252 synthetic rows, confirmed Scenario C and its 2022–25 training/2025–26 holdout split, opened Screen 4, reviewed ten selected checkpoint-safe inputs plus three candidates, and completed Screen 5. The default synthetic run recommended Random Forest with MAE 9.60 after it beat pace MAE 20.83 and grouped-median MAE 24.38; Ridge and Gradient Boosting also completed. The screen showed RMSE, nMAE, R², residual ranges, seed, counts and parameters. This is one deterministic synthetic demonstration, not evidence of real KCT performance.
+
+The local provider requires Python/scikit-learn and is not packaged as a production Vercel training service. No approval, model artifact persistence, inference endpoint, subgroup/fairness validation, real employee data, download click or deployed training run was tested.
 
 ## Prediction Studio screens 1–3 — 29 October 2026
 

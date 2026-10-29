@@ -2,7 +2,7 @@
 
 A desktop proof of concept for creating configurable KPI forms, verification workflows, and scoring policies. The aim is to let different institutions compose their own KPIs from shared tools. Publication verification is the first worked example, not the only supported workflow.
 
-Application baseline: **29 October 2026**. The first three Prediction Framework prototype screens are implemented. This is a PoC, not a production appraisal platform.
+Application baseline: **29 October 2026**. Prediction Framework screens 1–5 are implemented through local synthetic model comparison. This is a PoC, not a production appraisal platform.
 
 ## Run locally
 
@@ -33,6 +33,7 @@ See [setup](docs/SETUP.md) for environment configuration, the production server,
 | Plan the Prediction Framework | [Prediction Framework implementation plan](docs/PREDICTION-FRAMEWORK-IMPLEMENTATION-PLAN.md) |
 | Build the prediction review prototype | [Prediction prototype implementation plan](docs/PREDICTION-PROTOTYPE-IMPLEMENTATION-PLAN.md) |
 | Understand prediction readiness | [Prediction readiness contract](docs/PREDICTION-READINESS.md) |
+| Understand model training and comparison | [Prediction training contract](docs/PREDICTION-TRAINING.md) |
 | Review the synthetic dataset audit | [Prediction dataset audit](docs/PREDICTION-DATASET-AUDIT-2026-10-29.md) |
 | Work on the code | [Contributing](CONTRIBUTING.md) |
 | See remaining work | [Roadmap](docs/ROADMAP.md) |
@@ -47,7 +48,7 @@ See [setup](docs/SETUP.md) for environment configuration, the production server,
 - Organization-defined formula and conditional scoring policies with immutable local versions.
 - Execution traces, terminal review packages, legacy publication review decisions, and browser-local draft autosave.
 - A collapsible sidebar and confirmed Clear saved draft action.
-- A Prediction Framework prototype at `/prediction` with overview, eight-decision synthetic dataset setup, deterministic generation, preview/download, Scenario A/B/C readiness, time-based split and leakage-safe feature contracts. No trained model or live prediction exists yet.
+- A Prediction Framework prototype at `/prediction` with overview, eight-decision synthetic dataset setup, deterministic generation, preview/download, Scenario A/B/C readiness, time-based split, leakage-safe model configuration, local scikit-learn training and held-out baseline comparison. Training results are in-memory synthetic demonstrations; no approved/published model or live prediction exists yet.
 
 ## Boundaries
 

@@ -19,6 +19,7 @@ These records summarize accepted conversation choices and implemented behavior; 
 | D-13 | Desktop first, compact canvas | Mobile excluded; collapsible navigation and reduced chrome |
 | D-16 | Use Next.js App Router for deployment readiness | Preserve the browser workflow engine behind a client-only boundary; expose AI through Node route handlers and keep secrets server-side |
 | D-24 | Make prediction readiness a strict, configurable gate | Select Scenario A/B/C from compatible completed cases and cycles; block invalid/leaking data before training |
+| D-26 | Keep prototype training local, reproducible and baseline-gated | Compare established candidates on the latest-cycle holdout; do not persist or publish a model yet |
 
 ## Unresolved domain questions
 
@@ -103,3 +104,9 @@ Hold out the latest completed cycle, keep each employee-cycle in one partition, 
 Implement the first three prototype screens as a separate `/prediction` module linked from Framework Studio. The browser owns only editable generation choices, the current generated response, preview filters and the latest readiness result. Server routes own bounded generation and the canonical readiness decision; React components must not copy validation or scenario-selection rules.
 
 Generate all four scenarios together, keep them in memory, and allow complete CSV plus metadata download. Preview filters never alter the frozen snapshot evaluated by readiness. Keep KCT/PADS organization and policy terms in versioned configuration rather than UI components. This is a demonstrable data-preparation layer, not model training, approval or real-data ingestion.
+
+## D-26 — Local established-candidate training with transparent gates
+
+Implement screens 4–5 with a Node route that reruns canonical readiness and creates the checkpoint-safe matrix before invoking an isolated local Python/scikit-learn provider. Fit imputation, encoding and scaling only on earlier-cycle training rows; evaluate the latest completed cycle. Compare Ridge, Random Forest and Gradient Boosting with pace projection and role-plus-checkpoint median baselines using a fixed seed.
+
+Recommend a candidate only when its held-out MAE beats both baselines and its clamped outputs remain in the configured score range. Record metrics, parameters, counts, feature/split contracts and checksums in the in-memory response. Do not persist, approve, publish or use the fitted pipeline for inference in this phase. Every metric remains synthetic demonstration evidence.

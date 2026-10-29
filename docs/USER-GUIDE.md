@@ -65,7 +65,7 @@ For a document-content KPI, choose Full content or Both in Extract evidence, map
 
 ## Use the Prediction Framework prototype
 
-Open **Prediction framework** from the Framework Studio sidebar, or visit `/prediction`. The current prototype covers data preparation only; it does not train a model or produce an employee prediction.
+Open **Prediction framework** from the Framework Studio sidebar, or visit `/prediction`. The current prototype covers synthetic data preparation, readiness, model configuration, local training and held-out comparison. It does not approve/publish a model or produce an employee prediction.
 
 ### Overview
 
@@ -105,3 +105,20 @@ The table shows at most 25 matching rows. **Download CSV** exports the complete 
 - **Blocked:** invalid rows or unsafe features prevent both training and a misleading fallback.
 
 Warnings describe limitations that do not invalidate all rows. Blocking findings show the code, explanation and affected-row count. A readiness result permits a later action; it does not approve a model or claim real KCT accuracy.
+
+### Model configuration
+
+For an eligible Scenario B or C dataset, choose **Configure model**. The target remains locked to `final_approved_score` in the configured 0–200 range. Review the earlier training cycles and latest held-out test cycle, then:
+
+- Select one or more permitted checkpoint-safe features. Target, identity, split, active-target and generator-only fields remain excluded.
+- Select Ridge regression, Random Forest and/or Gradient Boosting. These are established scikit-learn candidates, not AFPI-created algorithms.
+- Keep or change the reproducibility seed.
+- Review the always-included pace and role-plus-checkpoint median baselines.
+
+Choose **Train and compare**. The server reruns readiness and reconstructs the feature matrix; browser controls cannot bypass the leakage and split rules.
+
+### Training comparison
+
+The comparison shows MAE, RMSE, normalized MAE, R², a held-out residual range, parameters, row counts and seed. Lower MAE/RMSE/nMAE is better; higher R² is better. A candidate is recommended only when its held-out MAE beats both transparent baselines and its final predictions remain inside the configured range.
+
+**Change configuration** returns to feature/model choices. **Run again** repeats the same frozen snapshot and settings. Results remain in memory and are labelled synthetic-only; there is no approval, registry, publication or inference step yet.

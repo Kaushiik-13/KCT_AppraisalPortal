@@ -14,6 +14,8 @@ Implemented the prediction readiness backend: canonical row validation, stable b
 
 Implemented Prediction Studio screens 1–3 at `/prediction`: lifecycle overview, the eight synthetic-data decisions, deterministic generation/regeneration, four-scenario tabs, table filters, complete CSV/metadata downloads and the shared readiness report. Added a bounded same-origin generation route and kept KCT/PADS terms in fixture configuration. Browser verification covered Scenario A, Scenario C, blocked invalid data and role filtering. Model training, approval and inference remain planned.
 
+Implemented Prediction Studio screens 4–5 and Phase 3: fixed-target model configuration, checkpoint-safe feature/candidate selection, reproducibility seed, server-side readiness recheck, local Python/scikit-learn provider, train-only preprocessing, pace and grouped-median baselines, Ridge/Random Forest/Gradient Boosting candidates, held-out MAE/RMSE/nMAE/R²/range evidence, and a recommendation gate that must beat both baselines. Results are synthetic and in memory; approval, persistence, publication and inference remain planned.
+
 ## 28 October 2026 — Publication scoring and shared review routes
 
 Removed AI evaluation from the new Publication template. Clear now runs the selected saved scoring policy and passes its provisional score into Appraiser review. Needs review and Ineligible bypass scoring; all three outcomes converge on the same review node, where the outcome and reasons are displayed. An unconfigured scoring Action requires a saved policy selection; no institutional point values are supplied by the template.

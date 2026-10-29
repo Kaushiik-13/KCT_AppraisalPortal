@@ -14,6 +14,7 @@
 | Synthetic prediction fixtures | Committed CSV/JSON files under `fixtures/prediction/kct/generated/`; no real employee identity or evidence |
 | Generated prediction preview | Same-origin generation request; KCT/PADS-shaped synthetic rows returned to browser memory and not persisted |
 | Synthetic readiness request/result | Same-origin JSON request to the Next.js readiness route; evaluated in memory and not persisted |
+| Synthetic training request/result | Same-origin JSON to the Next.js training route, then local Python stdin/stdout; matrices, metrics and results remain in memory and are not persisted |
 
 The PDF binary is not uploaded by the app's AI path, but selected extracted text may be sent externally. A local draft is not encrypted storage, a cloud backup, or an audit log. Saved policies/instructions can contain personal text if the creator enters it.
 
@@ -44,7 +45,7 @@ The included PRISMA paper retains its original attribution and license notice; s
 
 The prediction fixtures use pseudonymous `SYN-KCT-*` keys and an explicit synthetic flag. They are generated from a reference PADS role/KRA configuration and contain no names, email addresses, submissions or uploaded evidence. Synthetic model metrics must not be represented as real KCT accuracy. Real appraisal data must not be placed in these fixture paths; production ingestion requires institutional authorization, tenant isolation, retention rules and an approved security design.
 
-The prototype generation and readiness endpoints enforce same-origin requests in production, JSON input, request-size limits and no-store responses. Readiness also requires explicit synthetic flags. The generation endpoint resolves the committed reference organization and policy on the server; browser settings can change only bounded seed, volume, timing, pattern and invalid-case choices. These controls do not provide authentication, tenant authorization or durable audit storage. Readiness accepts rows and a policy contract in the request only for the synthetic prototype; a production service must resolve immutable organization-scoped snapshots and policy releases server-side.
+The prototype generation, readiness and training endpoints enforce same-origin requests in production, JSON input, request-size limits and no-store responses. Training reruns readiness, rejects target/future/identity leakage, excludes active rows, enforces the time split and returns bounded provider failures without exposing raw stderr. The local child process has a timeout and output limit. These controls do not provide authentication, tenant authorization, resource quotas, sandboxing or durable audit storage. Requests carry rows and a policy contract only for the synthetic prototype; production must resolve immutable organization-scoped snapshots and policy releases server-side and run training in an isolated durable service.
 
 AI adapter diagnostic logs include only selected model, finish reason and answer-presence boolean. They do not log instructions, evidence, keys or internal reasoning.
 

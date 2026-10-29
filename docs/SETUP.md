@@ -18,6 +18,18 @@ npm.cmd test
 npm.cmd run build
 ```
 
+### Local prediction training
+
+Screens 4–5 also require Python 3 with the packages listed in `ml/prediction_service/requirements.txt`. Create an isolated environment and install those pinned/compatible dependencies before using **Train and compare**. The local verification environment used Python 3.12.3, scikit-learn 1.8.0, NumPy 2.4.4 and pandas 3.0.2.
+
+If `python` is not the correct executable, set the server-side `PREDICTION_PYTHON` environment variable to the Python command or absolute executable path. Run the provider tests with:
+
+```powershell
+npm.cmd run test:prediction-ml
+```
+
+The Python provider is for the local synthetic prototype. The current Vercel configuration does not package this runtime or persist model artifacts, so model training is not claimed as deployable there.
+
 The production build is written to `.next/`. Stop development before starting the production server on the same port:
 
 ```powershell
