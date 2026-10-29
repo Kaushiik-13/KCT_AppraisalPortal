@@ -13,7 +13,15 @@ The current Publication plugin has ten steps, no simulated index or AI node, a C
 
 Tests use Node's built-in test runner over `src/*.test.js` and `server/*.test.js`. A passing build verifies bundling, not browser behavior. There is no lint script or committed full browser automation suite.
 
-Most recent automated baseline: **120 passing tests** on 29 October 2026 after the prediction readiness backend. The 110-test dataset-integration result, 109-test dataset-foundation result, 102-test reports from 27–28 October, 101-test report from 7 October, and earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) remain historical checkpoints.
+Most recent automated baseline: **124 passing tests** on 29 October 2026 after Prediction Studio screens 1–3 and the generation endpoint. The 120-test readiness result, 110-test dataset-integration result, 109-test dataset-foundation result, 102-test reports from 27–28 October, 101-test report from 7 October, and earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) remain historical checkpoints.
+
+## Prediction Studio screens 1–3 — 29 October 2026
+
+Four generation-route tests cover validated configuration bounds, derived cycle/checkpoint settings, deterministic all-scenario output, useful setting errors, same-origin enforcement, JSON requirements and body limits. `npm.cmd test` passed all **124 tests**. `npm.cmd run build` passed with Next.js 16.3.8 and produced static `/prediction` plus the dynamic generation and readiness endpoints.
+
+A local browser walkthrough opened the overview, reviewed all eight decisions, generated 1,252 rows across four scenarios, and displayed the sufficient-history latest-cycle split. Switching to no history produced Scenario A with a rule-based estimate and blocked model training. Invalid history produced a blocked result with named findings. A role filter reduced the preview from 12 to 6 matching rows without changing the readiness result. Server requests returned HTTP 200. Downloads were not clicked during this walkthrough; serialization remains covered by automated tests.
+
+These checks demonstrate synthetic prototype behavior only. They do not train a model, validate prediction accuracy or authorize real employee data.
 
 ## Prediction readiness backend — 29 October 2026
 

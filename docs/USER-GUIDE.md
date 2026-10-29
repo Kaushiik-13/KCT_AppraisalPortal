@@ -62,3 +62,46 @@ Click a + on the tree, then Plugin (below Result), then Publication workflow. Th
 Use **Use form value** when an explicit mapping step helps the workflow remain readable. Choose the field; its type is inherited automatically. Use **Extract evidence** for selected `Label: value` fields, full content, or both. Use **Compare evidence** for one or more submitted-versus-extracted pairs. Missing evidence becomes `unknown`, never `mismatch`. Route its status with a Condition. Save scoring rules in Scoring policy, then select the version in Apply scoring policy.
 
 For a document-content KPI, choose Full content or Both in Extract evidence, map its Full content object to AI evaluation, add named topic/faculty inputs, and provide the rubric plus system instructions. See [Content relevance KPI](CONTENT-RELEVANCE-KPI.md) for exact steps.
+
+## Use the Prediction Framework prototype
+
+Open **Prediction framework** from the Framework Studio sidebar, or visit `/prediction`. The current prototype covers data preparation only; it does not train a model or produce an employee prediction.
+
+### Overview
+
+The Overview shows the target, generated-dataset status, latest readiness result and next action. **Configure synthetic data** opens the setup screen. The synthetic-only notice means no real employee records are loaded or saved.
+
+### Dataset setup
+
+Review the eight decisions, then choose **Generate datasets**:
+
+1. **Prediction target:** final approved overall score from 0 to 200. It is never an input feature.
+2. **Data unit:** one employee, cycle and checkpoint per row.
+3. **Input fields:** only checkpoint-available role, time, score, evidence, mandatory-status and KRA values.
+4. **Performance patterns:** relative weights for steady, fast, improving, stalled, irregular, consistently high/low and delayed-evidence behavior. They are mix weights, not score percentages.
+5. **History scenarios:** no history, limited history, sufficient history and a separate invalid-data case.
+6. **Dataset size and timing:** the seed makes generation repeatable; cycle year, progress, checkpoints, employee counts and cycle counts control dataset size.
+7. **Data-quality cases:** include controlled broken rows when demonstrating readiness blocks.
+8. **Train/test structure:** earlier completed cycles train; the latest completed cycle is held out for testing. Employee-cycle groups are never divided.
+
+Changing the seed or another setting marks the current snapshot as changed. Generate again to replace the in-memory preview. Nothing is added to browser draft storage or a database.
+
+### Dataset preview and filters
+
+Choose a scenario tab to rerun readiness for the complete selected dataset. The filters change only the visible table:
+
+- **Search synthetic employee:** matches the pseudonymous employee key.
+- **All roles:** limits the preview to one configured role.
+- **All cycles:** limits the preview to one appraisal cycle.
+- **All checkpoints:** limits the preview to one checkpoint number.
+
+The table shows at most 25 matching rows. **Download CSV** exports the complete selected scenario, not just filtered rows. **Metadata** exports generation settings, checksums and summaries for all scenarios. **Regenerate** returns to setup.
+
+### Readiness result
+
+- **Scenario A — No historical data:** rule-based estimate available; model training blocked.
+- **Scenario B — Limited historical data:** low-confidence training gate; evaluation is still required.
+- **Scenario C — Sufficient historical data:** training eligible with the latest completed cycle held out.
+- **Blocked:** invalid rows or unsafe features prevent both training and a misleading fallback.
+
+Warnings describe limitations that do not invalidate all rows. Blocking findings show the code, explanation and affected-row count. A readiness result permits a later action; it does not approve a model or claim real KCT accuracy.

@@ -3,6 +3,7 @@
 @import '../src/studio.css';
 @import '../src/tree.css';
 @import '../src/scoring.css';
+@import '../src/prediction/prediction.css';
 
 html,body{margin:0;min-height:100%;}
 .app-loading{display:grid;min-height:100vh;place-items:center;color:#53627a;font:500 16px/1.5 system-ui,sans-serif;}

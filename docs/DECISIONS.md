@@ -97,3 +97,9 @@ Implement readiness before model training. Validate synthetic provenance, organi
 Use completed employee-cycles—not checkpoint-row count—to select readiness. Scenario A has no completed history and permits only the transparent rule-based path. Scenario B has limited compatible history and remains low confidence. Scenario C meets configurable sufficient-history defaults. The committed 20-case/two-cycle and 200-case/four-cycle bands are synthetic demonstration settings, not production policy.
 
 Hold out the latest completed cycle, keep each employee-cycle in one partition, fit later preprocessing on training data only, and exclude targets, target timing, identities, split metadata and generator-only labels from inputs. Readiness permits training or fallback; it does not approve, publish or claim model quality.
+
+## D-25 — Thin Prediction Studio over shared generation and readiness contracts
+
+Implement the first three prototype screens as a separate `/prediction` module linked from Framework Studio. The browser owns only editable generation choices, the current generated response, preview filters and the latest readiness result. Server routes own bounded generation and the canonical readiness decision; React components must not copy validation or scenario-selection rules.
+
+Generate all four scenarios together, keep them in memory, and allow complete CSV plus metadata download. Preview filters never alter the frozen snapshot evaluated by readiness. Keep KCT/PADS organization and policy terms in versioned configuration rather than UI components. This is a demonstrable data-preparation layer, not model training, approval or real-data ingestion.

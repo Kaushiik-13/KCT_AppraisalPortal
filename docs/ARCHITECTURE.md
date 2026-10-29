@@ -38,6 +38,7 @@ Next.js App Router serves the application. `app/studio-client.jsx` loads the exi
 | Documents | `src/pdfReader.js`, `src/paperFindings.js`, `scripts/copy-pdf-worker.mjs` | PDF text, candidates, browser-worker preparation |
 | AI | `src/aiContext.js`, `server/ai.js`, `server/nextAiRoute.js`, `app/api/ai-*` | Bounds, provider calls, Next.js endpoints |
 | Prediction readiness | `src/prediction/datasetSchema.js`, `datasetValidation.js`, `readiness.js`, `featureMatrix.js`, `server/prediction/readinessRoute.js`, `app/api/prediction/datasets/readiness/route.js` | Synthetic snapshot validation, Scenario A/B/C selection, time-based split and leakage-safe feature contract |
+| Prediction screens and generation | `app/prediction/page.jsx`, `src/prediction/PredictionStudio.jsx`, `PredictionOverview.jsx`, `SyntheticDatasetWizard.jsx`, `DatasetPreview.jsx`, `DataReadinessReport.jsx`, `server/prediction/generationRoute.js`, `app/api/prediction/datasets/generate/route.js` | Screens 1–3, configurable in-memory generation, preview/download and presentation of the shared readiness result |
 
 `src/WorkflowView.jsx` and `src/ExtractionPanel.jsx` are older retained implementations. The active main app imports `WorkflowStudio.jsx` under the local name `WorkflowView`; the similarly named old file is not the active entry point.
 
@@ -61,9 +62,9 @@ Evidence sections carry PDF page, PPTX slide, or spreadsheet sheet/range locatio
 
 ## Prediction Framework boundary
 
-The implemented prediction backend foundation now includes the seeded generator, KCT/PADS role/KRA cap fixtures, four scenario datasets, canonical validation, Scenario A/B/C selection, time-based cycle splitting, feature-leakage guards and a same-origin prototype readiness endpoint. Its row contract is recorded in the [prediction data dictionary](PREDICTION-DATA-DICTIONARY.md); its readiness behavior is recorded in the [prediction readiness contract](PREDICTION-READINESS.md).
+The implemented prediction foundation now includes the seeded generator, KCT/PADS role/KRA cap fixtures, four scenario datasets, configurable generation endpoint, overview/setup/preview screens, canonical validation, Scenario A/B/C selection, time-based cycle splitting, feature-leakage guards and a same-origin prototype readiness endpoint. Its row contract is recorded in the [prediction data dictionary](PREDICTION-DATA-DICTIONARY.md); its readiness behavior is recorded in the [prediction readiness contract](PREDICTION-READINESS.md).
 
-Prediction screens, rule-based inference, the training service, model registry, approval/publication and employee dashboard remain unimplemented. The readiness endpoint receives synthetic rows in the request because there is no durable dataset repository yet; it does not persist data or train a model.
+The browser holds generated previews only in component memory and sends the selected complete scenario to the shared readiness endpoint. Filters never change readiness input. Rule-based inference, the training service, model registry, approval/publication and employee dashboard remain unimplemented. The generation and readiness endpoints use committed KCT/PADS configuration at their server boundary because organization configuration storage does not exist yet; neither endpoint persists data or trains a model.
 
 The planned [Prediction Framework](PREDICTION-FRAMEWORK-IMPLEMENTATION-PLAN.md) consumes versioned, verified progress snapshots and predicts only the final overall score in its first iteration. It remains downstream of Framework Studio and deterministic scoring and cannot mutate evidence, policy calculations, reviews, or the official score.
 

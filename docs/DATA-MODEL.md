@@ -99,6 +99,8 @@ One completed-history row represents an employee-cycle checkpoint and repeats th
 
 These fixtures are test/demo data, not browser draft data, runtime predictions, model artifacts or real employee records.
 
+The Prediction Studio generation endpoint creates the same four scenario shapes from validated in-memory settings. Its response includes one snapshot-group ID, configuration, columns, default feature selection, per-scenario rows, summary and checksum. The browser retains that response only for the open page session. Preview filters are derived view state and are not part of the snapshot; CSV export always serializes the complete selected scenario.
+
 ## Prediction readiness result
 
 `evaluatePredictionReadiness` consumes a frozen synthetic snapshot, policy contract, compatibility scope and explicit feature selection. It returns a non-persisted result with:

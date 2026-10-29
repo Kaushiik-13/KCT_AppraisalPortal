@@ -1,8 +1,8 @@
 # Prediction prototype implementation plan
 
-Status: **Phase 1 and the backend readiness/feature-safety portion of Phase 2 implemented; screens, training and prediction not started**
+Status: **Phase 1 and Phase 2 implemented; screens 1–3 are usable, while training and prediction are not started**
 
-Active readiness branch: `codex/prediction-readiness` (based on `codex/prediction-prototype`)
+Active UI branch: `codex/prediction-readiness-ui` (based on `codex/prediction-readiness`)
 
 Initial organization: KCT
 
@@ -14,7 +14,7 @@ Review goal: demonstrate configuration → synthetic data → readiness → trai
 
 This document is the implementation-ready delivery plan for the first end-to-end review prototype. The broader product architecture, production safeguards, three readiness scenarios, lifecycle and long-term phases remain defined in the [Prediction Framework implementation plan](PREDICTION-FRAMEWORK-IMPLEMENTATION-PLAN.md).
 
-The seeded KCT/PADS KRA-level generator and no-history, limited-history, sufficient-history and invalid fixtures were implemented on 29 October 2026. The [prediction data dictionary](PREDICTION-DATA-DICTIONARY.md) records the canonical schema. The backend [prediction readiness contract](PREDICTION-READINESS.md) now validates the fixtures, selects Scenario A/B/C, creates a latest-cycle holdout and blocks leakage-prone features. Dataset configuration/readiness screens, model training, approval, prediction and employee views remain planned.
+The seeded KCT/PADS KRA-level generator and no-history, limited-history, sufficient-history and invalid fixtures were implemented on 29 October 2026. The [prediction data dictionary](PREDICTION-DATA-DICTIONARY.md) records the canonical schema. The [prediction readiness contract](PREDICTION-READINESS.md) validates the fixtures, selects Scenario A/B/C, creates a latest-cycle holdout and blocks leakage-prone features. Screens 1–3 now configure generation, preview/download scenarios and render the shared readiness result. Model training, approval, prediction and employee views remain planned.
 
 ## 1. Prototype outcome
 
@@ -633,7 +633,7 @@ Exit: the same seed produces identical policy-valid outputs and each fixture is 
 
 ### Phase 2: readiness and feature safety
 
-Status: backend implemented; readiness UI remains planned.
+Status: implemented, including the shared readiness UI.
 
 Deliverables:
 
@@ -643,9 +643,9 @@ Deliverables:
 - Time-based split and leakage protection.
 - Readiness UI.
 
-Current result: every committed known invalid case is blocked or warned as specified; feature leakage is rejected; no readiness UI exists yet.
+Current result: every committed known invalid case is blocked or warned as specified; feature leakage is rejected; the UI consumes the same backend result without duplicating rules.
 
-Exit: the backend gate is met. The complete phase exits after the readiness UI consumes the shared result without duplicating validation rules.
+Exit: met. The readiness UI consumes the shared result without duplicating validation rules.
 
 ### Phase 3: training service and comparison
 

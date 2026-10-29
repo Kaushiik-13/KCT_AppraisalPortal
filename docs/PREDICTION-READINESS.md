@@ -1,12 +1,14 @@
 # Prediction readiness and feature-safety contract
 
-Status: **implemented for the synthetic prototype; readiness UI and real-data ingestion are not implemented**
+Status: **implemented for the synthetic prototype, including the readiness UI; real-data ingestion is not implemented**
 
 Implemented endpoint: `POST /api/prediction/datasets/readiness`
 
 Implemented domain entry point: `evaluatePredictionReadiness` in `src/prediction/readiness.js`
 
 This layer decides whether a frozen dataset can support a rule-based estimate or model training. It does not train, approve, publish or run a model.
+
+Prediction Studio sends the complete selected generated scenario to this endpoint and renders the returned status, counts, split, eligibility, blocks and warnings. Table filters affect only the preview and never the readiness request.
 
 ## Inputs
 

@@ -1,11 +1,11 @@
 # Documentation index
 
-Application baseline: **7 October 2026**. Prediction Framework planning was added on **27 October 2026**. These documents distinguish planned features from the implemented Next.js PoC.
+Application baseline: **29 October 2026**. The Prediction Framework overview, synthetic-data setup and readiness screens are implemented. These documents distinguish planned features from the implemented Next.js PoC.
 
 ## Product and user guides
 
 - [Project brief](PROJECT-BRIEF.md): purpose, roles, requirements, and scope.
-- [User guide](USER-GUIDE.md): policy-first navigation, forms, workflows, review handoffs, saving, and clearing.
+- [User guide](USER-GUIDE.md): Framework Studio authoring plus Prediction Framework setup, preview filters and readiness results.
 - [Publication KPI](PUBLICATION-KPI.md): complete example and unresolved scoring decisions.
 - [Training KPI](TRAINING-KPI.md): build a generic workflow and scoring policy.
 
