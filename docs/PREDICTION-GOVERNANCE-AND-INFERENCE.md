@@ -4,7 +4,7 @@ Status: **implemented for the local synthetic prototype**
 
 ## Purpose and boundary
 
-Screens 6–8 turn a recommendation-eligible synthetic candidate into an explicitly approved and published prototype version, then exercise read-only prediction. This is model governance, not the KPI Human Review module. It does not authenticate a real administrator, persist a production artifact, change evidence, or update an official appraisal score.
+Screens 6–8 turn a recommendation-eligible synthetic candidate into an explicitly approved and published prototype version, then exercise read-only prediction. Screens 9–10 consume that active-model boundary for employee refresh and retraining readiness without weakening it. This is model governance, not the KPI Human Review module. It does not authenticate a real administrator, persist a production artifact, change evidence, or update an official appraisal score.
 
 ## Candidate registry
 
@@ -48,3 +48,5 @@ The response includes current and predicted scores, range/method, readiness scen
 - Prediction cannot mutate workflow evidence, scoring state or appraisal records.
 - Synthetic metrics/ranges are not real KCT accuracy, fairness, calibration or production-readiness evidence.
 - No authentication, tenant isolation, durable registry, signed/encrypted artifact store, distributed locking, monitoring, rollback or serverless-safe storage is implemented.
+
+Employee refresh uses this same inference contract and never asks the provider to train. Retraining eligibility cannot activate a model; the current publication remains active until a separately evaluated and approved candidate is published. See [prediction employee view and retraining](PREDICTION-EMPLOYEE-AND-RETRAINING.md).

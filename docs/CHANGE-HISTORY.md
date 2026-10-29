@@ -2,6 +2,10 @@
 
 This is a development summary, not a version-control commit log. The package remains `0.1.0`; no release/deployment is implied.
 
+## 30 October 2026 — Employee prediction and retraining readiness
+
+Implemented Prediction Studio screens 9–10 and Phase 5. The employee view is scoped to one simulated sandbox selection and shows current/predicted scores, range, time, KRA progress, factors and versions. New verified progress refreshes inference without refitting or changing the active model/run or official score. Retraining settings demonstrate manual, cycle-close and periodic checks, exclude active-cycle rows from labels, require both cycle closure and final outcome approval, apply new-case/cycle thresholds and keep evaluation/approval/publication mandatory. Added a complete review script, helper coverage and documentation; settings and identity remain session-only synthetic demonstrations.
+
 ## 29 October 2026 — Prediction prototype delivery planning
 
 Added an implementation-ready plan for the KCT/PADS synthetic prediction review prototype. It refines the eight dataset decisions, policy-aware seeded generation, scenario sizes, canonical fields, time-based split, established scikit-learn candidates, model gates, ten-screen review flow, local prototype service boundary, project structure, API contracts, phases, verification and demonstration script. No dataset, application code, model or prediction screen was implemented by this documentation change.

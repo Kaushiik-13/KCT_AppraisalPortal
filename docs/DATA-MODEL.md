@@ -131,6 +131,16 @@ Lifecycle is `candidate` → `approved` or `rejected`, then `approved` → `publ
 
 The non-persisted inference response contains synthetic/advisory flags, employee key, current verified score, predicted final score, expected-range bounds/method, readiness scenario, method, confidence, plain-language factors, model/policy/framework versions, warnings, timestamp, and `officialScoreChanged: false`. It contains no fitted artifact and cannot update any appraisal record. See [prediction governance and inference](PREDICTION-GOVERNANCE-AND-INFERENCE.md).
 
+## Employee prediction session
+
+The browser pairs the latest prediction response with its selected synthetic history ID, active checkpoint and refresh count. A verified-progress refresh creates a later active checkpoint for the same synthetic employee with updated cumulative score/KRA/time/evidence values. It does not add `final_approved_score` or `target_available_date`; therefore it cannot become a labelled training row. Freshness is derived from employee key, current verified score and policy version.
+
+## Retraining settings and status
+
+The session-only settings contain enabled triggers (`manual`, `cycle-close`, optional `periodic`), periodic interval, minimum new finally approved cases, minimum completed cycles, and fixed evaluation/approval/current-model safeguards. The simulated cycle state separately records closure, final-outcome approval and new case/cycle counts.
+
+The derived status records label availability, trigger readiness, threshold readiness, candidate-training eligibility, missing requirements and the next periodic date. It is a calculation result only: there is no schedule/job/model mutation and no persistence. See [prediction employee view and retraining](PREDICTION-EMPLOYEE-AND-RETRAINING.md).
+
 ## Plugin and reusable configuration
 
 Plugin nodes use kind `plugin`, with config `{plugin: "publication", tool: <operation ID>, settings: <operation config>}`. Existing legacy kinds/Action wrappers remain readable. `use_form_value` stores `fieldId` and a cached `valueType`; execution resolves the current field and emits source metadata. `extract_evidence` stores `mode` (`fields`, `content`, or `both`) and stable field entries `{id,name,type,label}`. `compare_evidence` stores one or more `{id,name,valueType,operator,ignoreCase}` pairs; each pair creates left/right mapping ports. Apply-policy stores `policyVersion` and a snapshot of formula component definitions; each component ID becomes a numeric mapping port. The runner resolves the saved policy version and records its calculation snapshot.

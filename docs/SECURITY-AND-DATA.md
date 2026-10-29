@@ -17,6 +17,8 @@
 | Synthetic training request/result | Same-origin JSON to the Next.js training route, then local Python stdin/stdout; matrices, metrics and results remain in memory and are not persisted |
 | Synthetic model artifact/registry | Server process memory only; serialized scikit-learn artifacts are stripped from browser responses and lost on server restart |
 | Sandbox prediction request/result | Same-origin JSON plus a server-resolved compatible artifact; current/history rows and advisory output remain in memory and are not persisted |
+| Employee prediction context/result | Browser session memory for one selected synthetic employee; refresh uses the same prediction route and does not train or persist |
+| Retraining demonstration settings/status | Browser session memory only; no scheduler, background job, training action or audit record is created |
 
 The PDF binary is not uploaded by the app's AI path, but selected extracted text may be sent externally. A local draft is not encrypted storage, a cloud backup, or an audit log. Saved policies/instructions can contain personal text if the creator enters it.
 
@@ -28,10 +30,11 @@ The PDF binary is not uploaded by the app's AI path, but selected extracted text
 - PDF extraction disables PDF.js eval support and enforces size/page limits. All evidence formats have a 20 MB client-side limit; Office extraction stays local.
 - Models do not directly mutate evidence or approve scores; deterministic workflow and scoring operations own those operations. New generic Human Review only transfers a package to a separate module.
 - Prediction lifecycle routes require the baseline gate before approval, explicit approval before publication, and an exact compatibility scope before activation. Inference revalidates the selected history and current checkpoint and always returns `officialScoreChanged: false`.
+- Employee refresh calls inference only and retains the active model/run. Retraining readiness excludes active-cycle rows and requires both cycle closure and final outcome approval before synthetic rows count as labels.
 - Serialized model artifacts are created by the local server-owned Python provider, retained on private registry records, and removed from browser/API records. The prediction request cannot supply an artifact.
 - Corrupt drafts are protected against automatic overwrite; clearing requires confirmation.
 
-Do not interpret these as production security guarantees. Origin validation is not user authentication and the in-memory concurrency guard is not a distributed rate limit. Browser state can be modified locally. Reviewer names are not authenticated. Arbitrary creator policies may consume AI response text as a condition source; the PoC has no trust-level enforcement for evidence.
+Do not interpret these as production security guarantees. Origin validation is not user authentication and the in-memory concurrency guard is not a distributed rate limit. Browser state can be modified locally. Reviewer names are not authenticated. The employee screen is a simulated context, not an access-control boundary; production must resolve the signed-in employee and authorized snapshot server-side. Arbitrary creator policies may consume AI response text as a condition source; the PoC has no trust-level enforcement for evidence.
 
 ## Retention and deletion
 

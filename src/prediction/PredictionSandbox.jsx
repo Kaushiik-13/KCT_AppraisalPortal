@@ -8,7 +8,7 @@ const HISTORY_OPTIONS = [
   { id: "invalid", label: "Invalid history · Expected block" },
 ];
 
-export default function PredictionSandbox({ generated, model, busy, errors, result, onPredict, onReset, onBack }) {
+export default function PredictionSandbox({ generated, model, busy, errors, result, onPredict, onReset, onBack, onOpenEmployee }) {
   const activeRows = generated.datasets.current.rows;
   const employeeOptions = useMemo(() => activeRows.toSorted((left, right) => left.employee_key.localeCompare(right.employee_key)), [activeRows]);
   const [employeeKey, setEmployeeKey] = useState(employeeOptions[0]?.employee_key || "");
@@ -38,6 +38,7 @@ export default function PredictionSandbox({ generated, model, busy, errors, resu
           {errors.length ? <div className="prediction-alert danger" role="alert"><ul>{errors.map((error) => <li key={error}>{error}</li>)}</ul></div> : null}
           <button className="prediction-btn primary prediction-full-button" disabled={!current || busy} onClick={() => onPredict(historyId, current)}><Gauge size={16} />{busy ? "Predicting…" : "Predict final score"}</button>
           <div className="prediction-inline-note"><ShieldCheck size={15} />Published model: {model.publication.version}</div>
+          {result ? <button className="prediction-btn prediction-full-button" onClick={onOpenEmployee}>Open employee prediction view</button> : null}
         </aside>
 
         <div className="prediction-sandbox-result">

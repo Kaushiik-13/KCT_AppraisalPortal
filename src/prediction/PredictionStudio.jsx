@@ -4,6 +4,7 @@ import { useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
   BarChart3,
+  CalendarClock,
   CheckCircle2,
   Database,
   FlaskConical,
@@ -13,15 +14,20 @@ import {
   Settings2,
   ShieldCheck,
   SlidersHorizontal,
+  UserRound,
 } from "lucide-react";
 import { rowsToCsv } from "./csv.js";
 import DatasetPreview from "./DatasetPreview.jsx";
+import EmployeePredictionDashboard from "./EmployeePredictionDashboard.jsx";
+import { advanceSyntheticCheckpoint } from "./employeePrediction.js";
 import ModelConfiguration from "./ModelConfiguration.jsx";
 import ModelApprovalPanel from "./ModelApprovalPanel.jsx";
 import ModelPublication from "./ModelPublication.jsx";
 import ModelTrainingComparison from "./ModelTrainingComparison.jsx";
 import PredictionSandbox from "./PredictionSandbox.jsx";
 import PredictionOverview from "./PredictionOverview.jsx";
+import RetrainingSettings from "./RetrainingSettings.jsx";
+import { DEFAULT_RETRAINING_SETTINGS, evaluateRetrainingStatus } from "./retrainingPolicy.js";
 import SyntheticDatasetWizard from "./SyntheticDatasetWizard.jsx";
 
 const INITIAL_CONFIGURATION = {
@@ -56,13 +62,26 @@ const SCREENS = [
   { id: "evaluation", label: "Evaluation", description: "Approve or reject candidate", icon: CheckCircle2 },
   { id: "publication", label: "Publication", description: "Activate compatible model", icon: Rocket },
   { id: "sandbox", label: "Prediction sandbox", description: "Try read-only inference", icon: FlaskConical },
+  { id: "employee", label: "Employee view", description: "Current advisory prediction", icon: UserRound },
+  { id: "retraining", label: "Retraining", description: "Eligibility and safeguards", icon: CalendarClock },
 ];
+
+const PUBLICATION_SCREEN_LIFECYCLES = new Set(["approved", "published"]);
 
 const INITIAL_MODEL_CONFIGURATION = {
   target: "final_approved_score",
   featureSelection: [],
   candidates: ["ridge", "random_forest", "gradient_boosting"],
   seed: 20261029,
+};
+
+const INITIAL_RETRAINING_SIMULATION = {
+  cycleClosed: false,
+  finalScoresApproved: false,
+  newCompletedCases: 0,
+  completedCycleCoverage: 0,
+  manualRequested: false,
+  lastCheckedAt: null,
 };
 
 function downloadText(name, content, type) {
@@ -98,9 +117,14 @@ export default function PredictionStudio({ organization, policy }) {
   const [trainingResult, setTrainingResult] = useState(null);
   const [trainingBusy, setTrainingBusy] = useState(false);
   const [governedModel, setGovernedModel] = useState(null);
+  const [publishedModel, setPublishedModel] = useState(null);
   const [lifecycleBusy, setLifecycleBusy] = useState(false);
   const [predictionBusy, setPredictionBusy] = useState(false);
   const [predictionResult, setPredictionResult] = useState(null);
+  const [employeeContext, setEmployeeContext] = useState(null);
+  const [retrainingSettings, setRetrainingSettings] = useState(() => ({ ...DEFAULT_RETRAINING_SETTINGS }));
+  const [retrainingSimulation, setRetrainingSimulation] = useState(INITIAL_RETRAINING_SIMULATION);
+  const [sessionNow] = useState(() => new Date().toISOString());
   const readinessRequest = useRef(0);
 
   const estimatedRows = useMemo(() => (
@@ -109,6 +133,16 @@ export default function PredictionStudio({ organization, policy }) {
     + configuration.sufficientEmployees * configuration.sufficientCycleCount * configuration.checkpointCount
     + (configuration.includeInvalidCases ? 12 : 0)
   ), [configuration]);
+
+  const publicationModel = governedModel && PUBLICATION_SCREEN_LIFECYCLES.has(governedModel.lifecycle)
+    ? governedModel
+    : publishedModel;
+  const retrainingStatus = useMemo(() => publishedModel?.publication?.publishedAt ? evaluateRetrainingStatus({
+    settings: retrainingSettings,
+    publishedAt: publishedModel.publication.publishedAt,
+    now: retrainingSimulation.lastCheckedAt || sessionNow,
+    ...retrainingSimulation,
+  }) : null, [publishedModel, retrainingSettings, retrainingSimulation, sessionNow]);
 
   const updateConfiguration = (field, value) => {
     setConfiguration((previous) => ({ ...previous, [field]: value }));
@@ -173,6 +207,7 @@ export default function PredictionStudio({ organization, policy }) {
       setTrainingResult(null);
       setGovernedModel(null);
       setPredictionResult(null);
+      setEmployeeContext(null);
       setSelectedDataset("sufficient");
       setDirty(false);
       setScreen("data");
@@ -188,7 +223,6 @@ export default function PredictionStudio({ organization, policy }) {
     setSelectedDataset(datasetId);
     setTrainingResult(null);
     setGovernedModel(null);
-    setPredictionResult(null);
     await runReadiness(generated, datasetId);
   };
 
@@ -196,7 +230,6 @@ export default function PredictionStudio({ organization, policy }) {
     setModelConfiguration((previous) => ({ ...previous, [field]: value }));
     setTrainingResult(null);
     setGovernedModel(null);
-    setPredictionResult(null);
     setErrors([]);
   };
 
@@ -228,7 +261,6 @@ export default function PredictionStudio({ organization, policy }) {
       const result = await readResponse(response);
       setTrainingResult(result);
       setGovernedModel(null);
-      setPredictionResult(null);
       setScreen("comparison");
     } catch (error) {
       setErrors(error.issues?.length ? error.issues : [error.message]);
@@ -281,6 +313,7 @@ export default function PredictionStudio({ organization, policy }) {
       });
       const result = await readResponse(response);
       setGovernedModel(result.model);
+      setPublishedModel(result.model);
     } catch (error) {
       setErrors(error.issues?.length ? error.issues : [error.message]);
     } finally {
@@ -288,10 +321,9 @@ export default function PredictionStudio({ organization, policy }) {
     }
   };
 
-  const predict = async (historyId, currentRecord) => {
+  const predict = async (historyId, currentRecord, { refreshCount = 0 } = {}) => {
     const history = generated.datasets[historyId];
     setPredictionBusy(true);
-    setPredictionResult(null);
     setErrors([]);
     try {
       const response = await fetch("/api/prediction/predict", {
@@ -309,12 +341,50 @@ export default function PredictionStudio({ organization, policy }) {
           policy: generated.policy,
         }),
       });
-      setPredictionResult(await readResponse(response));
+      const result = await readResponse(response);
+      setPredictionResult(result);
+      setEmployeeContext({ historyId, currentRecord, refreshCount });
+      return result;
     } catch (error) {
       setErrors(error.issues?.length ? error.issues : [error.message]);
     } finally {
       setPredictionBusy(false);
     }
+  };
+
+  const refreshEmployeePrediction = async () => {
+    const nextCheckpoint = advanceSyntheticCheckpoint(employeeContext.currentRecord, generated.policy);
+    await predict(employeeContext.historyId, nextCheckpoint, { refreshCount: employeeContext.refreshCount + 1 });
+  };
+
+  const resetPredictionSelection = () => {
+    setPredictionResult(null);
+    setEmployeeContext(null);
+    setErrors([]);
+  };
+
+  const updateRetrainingSetting = (field, value) => {
+    setRetrainingSettings((previous) => ({ ...previous, [field]: value }));
+    setRetrainingSimulation((previous) => ({ ...previous, manualRequested: false }));
+  };
+
+  const updateRetrainingSimulation = (field, value) => {
+    setRetrainingSimulation((previous) => ({ ...previous, [field]: value, manualRequested: false }));
+  };
+
+  const simulateCycleClose = () => {
+    setRetrainingSimulation((previous) => ({
+      ...previous,
+      cycleClosed: true,
+      finalScoresApproved: false,
+      newCompletedCases: configuration.activeEmployeeCount,
+      completedCycleCoverage: 1,
+      manualRequested: false,
+    }));
+  };
+
+  const runRetrainingCheck = () => {
+    setRetrainingSimulation((previous) => ({ ...previous, manualRequested: true, lastCheckedAt: new Date().toISOString() }));
   };
 
   const downloadCsv = () => {
@@ -359,9 +429,11 @@ export default function PredictionStudio({ organization, policy }) {
             const disabled = (item.id === "data" && !generated)
               || (item.id === "model" && !readiness?.eligibility?.modelTraining)
               || (item.id === "comparison" && !trainingResult)
-              || (item.id === "evaluation" && !trainingResult?.recommendation?.gatePassed)
-              || (item.id === "publication" && !new Set(["approved", "published"]).has(governedModel?.lifecycle))
-              || (item.id === "sandbox" && governedModel?.lifecycle !== "published");
+              || (item.id === "evaluation" && (!trainingResult?.recommendation?.gatePassed || !governedModel))
+              || (item.id === "publication" && !publicationModel)
+              || (item.id === "sandbox" && !publishedModel)
+              || (item.id === "employee" && (!publishedModel || !employeeContext || !predictionResult))
+              || (item.id === "retraining" && !publishedModel);
             return (
               <button
                 key={item.id}
@@ -403,11 +475,16 @@ export default function PredictionStudio({ organization, policy }) {
             readiness={readiness}
             trainingResult={trainingResult}
             governedModel={governedModel}
+            publishedModel={publishedModel}
+            employeeContext={employeeContext}
+            retrainingStatus={retrainingStatus}
             onConfigure={() => setScreen("setup")}
             onOpenData={() => setScreen("data")}
             onOpenModel={() => setScreen("model")}
             onOpenComparison={() => setScreen("comparison")}
-            onOpenGovernance={() => setScreen(governedModel?.lifecycle === "published" ? "sandbox" : governedModel?.lifecycle === "approved" ? "publication" : "evaluation")}
+            onOpenGovernance={() => setScreen(governedModel?.lifecycle === "approved" ? "publication" : governedModel && governedModel.lifecycle !== "published" ? "evaluation" : "sandbox")}
+            onOpenEmployee={() => setScreen("employee")}
+            onOpenRetraining={() => setScreen("retraining")}
           />
         ) : screen === "setup" ? (
           <SyntheticDatasetWizard
@@ -464,25 +541,52 @@ export default function PredictionStudio({ organization, policy }) {
             onBack={() => setScreen("comparison")}
             onContinue={() => setScreen("publication")}
           />
-        ) : screen === "publication" && governedModel ? (
+        ) : screen === "publication" && publicationModel ? (
           <ModelPublication
-            model={governedModel}
+            model={publicationModel}
             busy={lifecycleBusy}
             errors={errors}
             onPublish={publishModel}
-            onBack={() => setScreen("evaluation")}
+            onBack={() => setScreen(governedModel && trainingResult ? "evaluation" : "overview")}
             onOpenSandbox={() => setScreen("sandbox")}
           />
-        ) : screen === "sandbox" && governedModel?.lifecycle === "published" ? (
+        ) : screen === "sandbox" && publishedModel ? (
           <PredictionSandbox
             generated={generated}
-            model={governedModel}
+            model={publishedModel}
             busy={predictionBusy}
             errors={errors}
             result={predictionResult}
             onPredict={predict}
-            onReset={() => { setPredictionResult(null); setErrors([]); }}
+            onReset={resetPredictionSelection}
             onBack={() => setScreen("publication")}
+            onOpenEmployee={() => setScreen("employee")}
+          />
+        ) : screen === "employee" && publishedModel && employeeContext && predictionResult ? (
+          <EmployeePredictionDashboard
+            organization={organization}
+            policy={generated.policy}
+            model={publishedModel}
+            context={employeeContext}
+            result={predictionResult}
+            busy={predictionBusy}
+            errors={errors}
+            onRefresh={refreshEmployeePrediction}
+            onBack={() => setScreen("sandbox")}
+            onOpenRetraining={() => setScreen("retraining")}
+          />
+        ) : screen === "retraining" && publishedModel && retrainingStatus ? (
+          <RetrainingSettings
+            model={publishedModel}
+            settings={retrainingSettings}
+            simulation={retrainingSimulation}
+            status={retrainingStatus}
+            onSettingChange={updateRetrainingSetting}
+            onSimulationChange={updateRetrainingSimulation}
+            onSimulateCycleClose={simulateCycleClose}
+            onCheck={runRetrainingCheck}
+            onBack={() => setScreen("publication")}
+            onOpenEmployee={employeeContext && predictionResult ? () => setScreen("employee") : null}
           />
         ) : null}
       </main>

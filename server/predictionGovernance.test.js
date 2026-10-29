@@ -158,10 +158,12 @@ test("Scenario C requires a published compatible model and returns empirical mod
   registry.decide(candidate.id, { decision: "approved", reviewer: "Prototype Admin", note: "Synthetic evaluation reviewed.", decidedAt: NOW });
   registry.publish(candidate.id, compatibility(), NOW);
   let providerArtifact;
+  let providerOperation;
   const response = await predictionInference(request("/api/prediction/predict", predictionBody("sufficient")), {
     registry,
     provider: async (payload) => {
       providerArtifact = payload.artifact;
+      providerOperation = payload.operation;
       return { status: "succeeded", predictedScore: 164.25 };
     },
     now: () => NOW,
@@ -174,6 +176,7 @@ test("Scenario C requires a published compatible model and returns empirical mod
   assert.equal(result.versions.model, "kct-final_approved_score-v1");
   assert.equal(result.officialScoreChanged, false);
   assert.equal(providerArtifact.payload, "artifact-run-1");
+  assert.equal(providerOperation, "predict");
 });
 
 test("invalid history and invalid current records block prediction", async () => {

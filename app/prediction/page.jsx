@@ -4,7 +4,7 @@ import policy from "../../fixtures/prediction/kct/config/pads-policy-v1.json" wi
 
 export const metadata = {
   title: "AFPI · Prediction Framework",
-  description: "Configure synthetic appraisal data, compare models, govern publication, and try read-only predictions.",
+  description: "Configure synthetic appraisal data, compare models, govern publication, and review employee prediction and retraining readiness.",
 };
 
 export default function PredictionPage() {
