@@ -32,6 +32,7 @@ See [setup](docs/SETUP.md) for environment configuration, the production server,
 | Understand the implementation | [Architecture](docs/ARCHITECTURE.md) |
 | Plan the Prediction Framework | [Prediction Framework implementation plan](docs/PREDICTION-FRAMEWORK-IMPLEMENTATION-PLAN.md) |
 | Build the prediction review prototype | [Prediction prototype implementation plan](docs/PREDICTION-PROTOTYPE-IMPLEMENTATION-PLAN.md) |
+| Understand prediction readiness | [Prediction readiness contract](docs/PREDICTION-READINESS.md) |
 | Review the synthetic dataset audit | [Prediction dataset audit](docs/PREDICTION-DATASET-AUDIT-2026-10-29.md) |
 | Work on the code | [Contributing](CONTRIBUTING.md) |
 | See remaining work | [Roadmap](docs/ROADMAP.md) |
@@ -46,7 +47,7 @@ See [setup](docs/SETUP.md) for environment configuration, the production server,
 - Organization-defined formula and conditional scoring policies with immutable local versions.
 - Execution traces, terminal review packages, legacy publication review decisions, and browser-local draft autosave.
 - A collapsible sidebar and confirmed Clear saved draft action.
-- Reproducible synthetic KCT/PADS prediction fixtures for no-history, limited-history, sufficient-history, and invalid-data scenarios; no prediction UI or trained model yet.
+- Reproducible synthetic KCT/PADS prediction fixtures plus implemented readiness, Scenario A/B/C selection, time-based split and leakage-safe feature contracts; no prediction UI or trained model yet.
 
 ## Boundaries
 

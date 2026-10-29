@@ -18,6 +18,7 @@ These records summarize accepted conversation choices and implemented behavior; 
 | D-12 | Keep two scoring paths temporarily | Preserve existing publication behavior while generalizing the builder |
 | D-13 | Desktop first, compact canvas | Mobile excluded; collapsible navigation and reduced chrome |
 | D-16 | Use Next.js App Router for deployment readiness | Preserve the browser workflow engine behind a client-only boundary; expose AI through Node route handlers and keep secrets server-side |
+| D-24 | Make prediction readiness a strict, configurable gate | Select Scenario A/B/C from compatible completed cases and cycles; block invalid/leaking data before training |
 
 ## Unresolved domain questions
 
@@ -88,3 +89,11 @@ Remove AI evaluation from the new Publication template. The Clear branch applies
 Deliver the first Prediction Framework review as a complete local demonstration rather than configuration-only screens. The path covers eight synthetic-dataset decisions, seeded PADS-aware generation, readiness, time-based splitting, established candidate training, held-out testing, simulated approval/publication, a prediction sandbox, and a simulated employee view.
 
 Use generic configuration and stable IDs so KCT/PADS remains the first fixture rather than hard-coded application behavior. Generate final targets through the configured scoring policy and future synthetic achievements. Use established scikit-learn regressors behind a local prototype service instead of implementing new ML mathematics. Treat every resulting metric and model as synthetic demonstration evidence, not real institutional accuracy.
+
+## D-24 — Configurable prediction readiness and strict leakage gate
+
+Implement readiness before model training. Validate synthetic provenance, organization/policy/framework compatibility, canonical keys, score/date/role/KRA contracts, target timing and cumulative checkpoint order. Return stable block/warning codes instead of silently repairing invalid training rows.
+
+Use completed employee-cycles—not checkpoint-row count—to select readiness. Scenario A has no completed history and permits only the transparent rule-based path. Scenario B has limited compatible history and remains low confidence. Scenario C meets configurable sufficient-history defaults. The committed 20-case/two-cycle and 200-case/four-cycle bands are synthetic demonstration settings, not production policy.
+
+Hold out the latest completed cycle, keep each employee-cycle in one partition, fit later preprocessing on training data only, and exclude targets, target timing, identities, split metadata and generator-only labels from inputs. Readiness permits training or fallback; it does not approve, publish or claim model quality.

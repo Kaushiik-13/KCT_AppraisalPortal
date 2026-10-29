@@ -10,6 +10,8 @@ Implemented the first dataset foundation after that plan: a versioned KCT/PADS r
 
 Completed the dataset-foundation integration review. The review found no blocking fixture-contract defect, added automated proof that a different seed changes synthetic values without changing scenario contracts, and corrected the audit's repository status after the branch was pushed. The PADS mapping remains explicitly limited to the synthetic KRA-level prototype pending current institutional policy confirmation.
 
+Implemented the prediction readiness backend: canonical row validation, stable block/warning codes, configurable Scenario A/B/C selection, completed-case counting, latest-cycle holdout, employee-cycle grouping, checkpoint-safe feature selection and a raw train/test matrix contract. Added the no-store same-origin readiness API and expected outcomes for all four synthetic fixtures. Readiness UI, model training and inference remain planned.
+
 ## 28 October 2026 — Publication scoring and shared review routes
 
 Removed AI evaluation from the new Publication template. Clear now runs the selected saved scoring policy and passes its provisional score into Appraiser review. Needs review and Ineligible bypass scoring; all three outcomes converge on the same review node, where the outcome and reasons are displayed. An unconfigured scoring Action requires a saved policy selection; no institutional point values are supplied by the template.

@@ -13,7 +13,13 @@ The current Publication plugin has ten steps, no simulated index or AI node, a C
 
 Tests use Node's built-in test runner over `src/*.test.js` and `server/*.test.js`. A passing build verifies bundling, not browser behavior. There is no lint script or committed full browser automation suite.
 
-Most recent automated baseline: **110 passing tests** on 29 October 2026 after the synthetic prediction dataset integration review. The 109-test dataset-foundation result, 102-test reports from 27–28 October, 101-test report from 7 October, and earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) remain historical checkpoints.
+Most recent automated baseline: **120 passing tests** on 29 October 2026 after the prediction readiness backend. The 110-test dataset-integration result, 109-test dataset-foundation result, 102-test reports from 27–28 October, 101-test report from 7 October, and earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) remain historical checkpoints.
+
+## Prediction readiness backend — 29 October 2026
+
+Ten new tests cover the no-history, limited-history, sufficient-history and controlled-invalid expectations; completed-case versus checkpoint-row counting; latest-cycle splitting; target/generator/identity leakage rejection; one-cycle fallback; checkpoint-safe matrix grouping; KRA feature contracts; API request validation; blocked responses; same-origin enforcement and body limits.
+
+`npm.cmd test` passed all **120 tests**. `npm.cmd run build` completed successfully with Next.js 16.3.8 and included the dynamic `/api/prediction/datasets/readiness` route. The readiness work does not include a browser screen, trained model, inference endpoint or real employee data; no accuracy claim was tested.
 
 ## Synthetic prediction dataset foundation — 29 October 2026
 

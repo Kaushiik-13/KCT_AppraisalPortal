@@ -1,14 +1,14 @@
 # Prediction Framework implementation plan
 
-Status: **synthetic dataset foundation implemented; prediction runtime not implemented**
+Status: **synthetic dataset and backend readiness foundation implemented; prediction runtime not implemented**
 
-Active prototype branch: `codex/prediction-prototype`
+Active readiness branch: `codex/prediction-readiness` (based on `codex/prediction-prototype`)
 
 Initial prototype organization: KCT
 
 Initial prediction target: final approved overall appraisal score
 
-The implementation-ready Saturday review slice, synthetic-data decisions and refined project structure are maintained in the [Prediction prototype implementation plan](PREDICTION-PROTOTYPE-IMPLEMENTATION-PLAN.md).
+The implementation-ready Saturday review slice, synthetic-data decisions and refined project structure are maintained in the [Prediction prototype implementation plan](PREDICTION-PROTOTYPE-IMPLEMENTATION-PLAN.md). The implemented backend gate is specified in the [prediction readiness contract](PREDICTION-READINESS.md).
 
 ## 1. Purpose
 
@@ -870,6 +870,8 @@ Deliverables:
 Exit: every required field has an owner, source, type, timing rule, and validation rule.
 
 ### Phase 1: synthetic dataset and readiness engine
+
+Implementation status: synthetic fixtures plus the backend validator, Scenario A/B/C selection, latest-cycle split, leakage-safe feature contract and readiness API are implemented. The data-mapping/readiness UI is not implemented.
 
 Deliverables:
 
