@@ -29,6 +29,8 @@ See [setup](docs/SETUP.md) for environment configuration, the production server,
 | Use the application | [User guide](docs/USER-GUIDE.md) |
 | Test publication verification | [Publication walkthrough](docs/PUBLICATION-KPI.md) |
 | Build a second KPI | [Training walkthrough](docs/TRAINING-KPI.md) |
+| Verify one PADS KPI end to end | [PADS TL-1 walkthrough](docs/PADS-TL1-WALKTHROUGH.md) |
+| Check all 59 individual PADS KPIs | [PADS individual KPI verification](docs/PADS-INDIVIDUAL-KPIS.md) |
 | Understand the implementation | [Architecture](docs/ARCHITECTURE.md) |
 | Plan the Prediction Framework | [Prediction Framework implementation plan](docs/PREDICTION-FRAMEWORK-IMPLEMENTATION-PLAN.md) |
 | Work on the code | [Contributing](CONTRIBUTING.md) |

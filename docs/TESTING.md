@@ -13,7 +13,62 @@ The current Publication plugin has ten steps, no simulated index or AI node, a C
 
 Tests use Node's built-in test runner over `src/*.test.js` and `server/*.test.js`. A passing build verifies bundling, not browser behavior. There is no lint script or committed full browser automation suite.
 
-Most recent automated baseline: **102 passing tests** on 28 October 2026 after the Publication scoring and route update. The 27 October picker report, 101-test report from 7 October, and earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) remain historical checkpoints.
+Most recent automated baseline: **167 passing tests** and a successful production build on 30 October 2026 after committing the 59 individual PADS KPI fixtures and their 201 automated cases. The 27 October picker report, 101-test report from 7 October, and earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) remain historical checkpoints.
+
+## PADS TL-1 initial-KPI verification — 30 October 2026
+
+Verified one reference KPI row, `TL-1 Teaching Pedagogy & Content Preparation`, against `public/samples/PADS.xlsx`, sheet `PADS Template`, columns `A–E` (KRA code, Sl No, KPI, Criteria, Max Points), rows 13–15. The workbook is the owner-supplied 2021 reference template; institutional approval is not verified. See the [TL-1 walkthrough](PADS-TL1-WALKTHROUGH.md) for source, mapping, boundary choice, screenshots, and reproduction steps.
+
+The committed fixture `public/samples/pads/tl1-initial-kpi.json` defines Inputs → Scoring policy → Workflow → Test & review: required percentage and evidence, labelled extraction, a three-band rules policy with zero fallback, and a terminal Appraiser review. Synthetic evidence: `evidence-tl1-clear.pdf` (line `Teaching score: 90`), `evidence-tl1-unreadable.pdf` (no extractable text), and `evidence-tl1-invalid.txt`.
+
+Observed results:
+
+- Clear `90` + clear PDF: extraction candidate, **8 points**, `Eligible`, `sent-to-review`.
+- Band boundaries: `85 → 8`, `84 → 6`, `75 → 6`, `74 → 4`, `65 → 4`, `64 → 0`.
+- Missing score or evidence blocked execution; missing evidence did not call the extractor.
+- Non-numeric score and `.txt` evidence produced validation errors.
+- Unreadable PDF produced `candidate_with_warnings`, reported score **Unknown**, two warnings, provisional **8**, and `sent-to-review`.
+- Role-cap and mandatory-rule checks were not applicable; TL-1 has no such rule. No approve/reject decision was recorded.
+
+Evidence: focused tests in `src/padsInitialKpi.test.js` (5 tests) plus screenshots in `docs/assets/pads-tl1/`. Full suite: **107/107 passing**; `npm run build` completed successfully on 30 October 2026. This is individual-KPI provisional scoring only; PADS totals, role maxima, mandatory assessment eligibility, institutional approval, OCR/arbitrary evidence, and live external checks remain unverified. The open boundary question (`> 85` versus `>= 85`) and the [filed #17 review-package defect](https://github.com/Kaushiik-13/KCT_AppraisalPortal/issues/17) are recorded in the walkthrough.
+
+## PADS 59-KPI automated verification — 30 October 2026
+
+Committed the 59 individual PADS KPI policies and their 201 expected scoring cases as reference fixtures. `public/samples/pads/kpis/` holds one saved draft per row (`tl-1` … `ec-2`), `cases.json` (59 groups, 201 `{values, expect}` cases), `index.json` (workbook row, Sl No, fields, case count and expected-point set per id, plus the excluded institutional rows), and `README.md` with the localStorage load procedure. Full description: [PADS individual KPI verification](PADS-INDIVIDUAL-KPIS.md).
+
+`src/padsAllKpis.test.js` scores every case through `runWorkflow` with `extract: null` and asserts `status === "completed"`, `scoring.status === "scored"`, and the exact points. It also asserts each fixture's ordered `{id, type}` fields match its case group, that every fixture policy is enabled, and that `index.json` agrees with `cases.json`. No assertion accepts `pending`, `invalid`, or error states; all 201 cases matched on the first committed run.
+
+- Focused file: **60 tests** (1 fixture-metadata test, 59 KPI tests) — 60/60 passing.
+- Full suite: **167/167** passing (`npm.cmd test` from the repository root; the existing `src/*.test.js` glob picks up the new file).
+- `npm.cmd run build`: successful production build.
+- No UI sweep was re-run for this step; the 201 workflow executions are the behavioural proof, and the 29 October UI report below stays as the historical UI record.
+
+Institutional rows 173–177 (`BOS coordinator/Placement Coordinator`, `NAAC criteria I Coordinator`, `MS Team Coordinator`, `Spoken Tutorial Coordinator`, `Class Advisor`) are excluded by design. PADS scores them on a 5-point supervisor scale with no Max Points, evidence fields, role eligibility, caps, or aggregation rules; the gap and what AFPI would need are recorded in `index.json.excluded.reason`, `public/samples/pads/kpis/README.md`, the test-file header, and [PADS individual KPI verification](PADS-INDIVIDUAL-KPIS.md). No test asserts an institutional score.
+
+Limits: all 59 rows are form-value policies, so no PDF evidence, extraction comparison, or network path is exercised. Author role is Primary/Co-author only (no third-author 25% share); TL-11 scores one course; TL-12 omits the additive PhD/guideship components; role and eligibility wording (primary coordinator, RD-5 co-author, RD-12 combined conference-plus-publication, O-4's 40-attendee minimum) has no validating field; O-2/O-3/O-5/O-7/O-10 cannot reach their multi-event maxima; RD-6 uses enumerated combinations; negative values fall through the zero fallback without range validation. PADS KRA weights and totals, role maxima, the 200-point cap, mandatory assessment eligibility, dual self/supervisor scores, descriptive/overall review, HR observations, panel review, and any cross-KPI aggregation remain unimplemented.
+
+Evidence: `public/samples/pads/kpis/`, [PADS individual KPI verification](PADS-INDIVIDUAL-KPIS.md), and the prior RD-12 zero-case screenshot `docs/assets/pads-kpis/rd-12-zero-points.png` (a 29 October UI capture, not a new walkthrough).
+
+## PADS individual-KPI Framework Studio verification — 29 October 2026
+
+Built and exercised **59 of the 64 KPI rows** in `public/samples/PADS.xlsx` (sheet `PADS Template`): 14 Teaching & Learning, 16 Research & Development, 11 External Interface, 10 Operations, 6 Student Development and 2 Extra & Co-Curricular. The workbook's seventh KRA, `INSTITUTIONAL OR DEPARTMENTAL CONTRIBUTIONS AND OUTCOMES`, has five optional rows with no Max Points that use `Supervisor Scoring (on 5 pt. scale)`, so they were not built. The request referred to 55, but the template contains 64 KPI rows, 59 with an explicit Max Points value.
+
+Each of the 59 was loaded as a saved `v1` conditional rules policy with Inputs → Scoring Policy → Workflow (Submit → Result), then run through Test & review. **201 UI checks passed** across every award tier, boundary/zero scores and below-threshold fallbacks; no check remained pending. On 30 October 2026 the automated suite passed **102/102** and `npm run build` completed successfully; those tests do not exercise these 59 policies. The set includes the role-dependent RD-1 primary/co-author outcomes, the TL-5 cap and the RD-12 publication cap. Every policy uses the zero fallback when a present value matches no rule; missing or unparseable evidence still returns Pending review from the engine. RD-6 is encoded as 15 enumerated submitted/presented combinations because the formula mode cannot express `6 × submitted + 4 × presented`; RD-12 is capped at 30.
+
+This is **individual-KPI provisional scoring, not a complete PADS appraisal**. PADS KRA totals and role-specific maxima (Assistant/Associate Professor, Professor, HOD), the 200-point cap, mandatory assessment eligibility (Scopus/Annexure-I paper or 7-day FDP), separate self and supervisor scores, descriptive assessments, overall feedback, HR observations, and panel review of institutional contributions are not implemented or tested.
+
+Known rule simplifications: author role is Primary/Co-author only, so the Guidelines’ third-author 25% share is absent; TL-11 scores one course rather than multiple courses, and TL-12 does not model its additive PhD/guideship/guiding components. Eligibility language such as “primary coordinator” (EI-1, EI-3, EI-4, EI-11, SD-1, SD-4, SD-6, EC-1, EC-2), RD-5’s co-author requirement, RD-12’s combined conference-plus-publication condition and O-4’s minimum 40 external attendees has no validating field. O-2 awards 3 points for any committee membership rather than 3 points per member up to two; O-3, O-5, O-7 and O-10 score a single event/visit and cannot reach their multi-event maxima.
+
+Evidence: local ignored `artifacts/pads-kpis/` (59 KPI JSON drafts, `cases.json`, edge drafts and `edge-results.json`, screenshot `rd-12-zero-points.png`). These are local test artifacts, not committed fixtures. This verifies that the app computes the encoded rules through its UI; it does not establish institutional approval of the mappings, live index checks, or independent creator usability (still #3).
+
+Supplementary edge-path checks on representative drafts:
+
+- A required numeric field left blank blocked execution with “Percentage is required.”
+- Leaving an optional field blank returned **Pending review**, not zero points.
+- A draft with an Apply scoring policy Action followed by a Human review node reached **sent-to-review** with the review package rendered.
+- A negative percentage (`-5`) was accepted by the number field and scored **0 points** through the zero fallback; no range validation rejected it. This is an observed input-validation gap, not an approved mapping. Values above the workbook maximum (for example, 150%) were not exercised.
+
+Extraction/comparison uncertainty was not exercised because these 59 rows are form-value policies; they have no PDF evidence or comparison nodes.
 
 ## Publication workflow picker verification — 27 October 2026
 
@@ -43,6 +98,8 @@ Validated local links in the new Prediction Framework plan and all documentation
 | `server/nextAiRoute.test.js` | Next route validation, forwarded origin handling, status secrecy, payload limits |
 
 Automated provider tests inject responses. They do not establish live indexing or guarantee future Crossref/OpenRouter availability.
+
+`public/samples/PADS.xlsx` is the reference PADS Academic Review 2021 template (sheets `PADS Overview`, `PADS Template`, `Guidelines`), with provenance in [sample notes](../public/samples/README.txt). The 29 October 2026 run above records 59 of 64 KPI rows and their expected-versus-actual results; the five institutional 5-point rows and PADS-wide aggregate mechanics remain uncovered. It is not an independent creator walkthrough or an institutional-compliance check.
 
 ## Manual acceptance checklist
 
