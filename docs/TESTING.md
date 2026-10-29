@@ -13,7 +13,41 @@ The current Publication plugin has ten steps, no simulated index or AI node, a C
 
 Tests use Node's built-in test runner over `src/*.test.js` and `server/*.test.js`. A passing build verifies bundling, not browser behavior. There is no lint script or committed full browser automation suite.
 
-Most recent automated baseline: **102 passing tests** and a successful production build on 30 October 2026 after the PADS verification. The 27 October picker report, 101-test report from 7 October, and earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) remain historical checkpoints.
+Most recent automated baseline: **167 passing tests** and a successful production build on 30 October 2026 after committing the 59 individual PADS KPI fixtures and their 201 automated cases. The 27 October picker report, 101-test report from 7 October, and earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) remain historical checkpoints.
+
+## PADS TL-1 initial-KPI verification — 30 October 2026
+
+Verified one reference KPI row, `TL-1 Teaching Pedagogy & Content Preparation`, against `public/samples/PADS.xlsx`, sheet `PADS Template`, columns `A–E` (KRA code, Sl No, KPI, Criteria, Max Points), rows 13–15. The workbook is the owner-supplied 2021 reference template; institutional approval is not verified. See the [TL-1 walkthrough](PADS-TL1-WALKTHROUGH.md) for source, mapping, boundary choice, screenshots, and reproduction steps.
+
+The committed fixture `public/samples/pads/tl1-initial-kpi.json` defines Inputs → Scoring policy → Workflow → Test & review: required percentage and evidence, labelled extraction, a three-band rules policy with zero fallback, and a terminal Appraiser review. Synthetic evidence: `evidence-tl1-clear.pdf` (line `Teaching score: 90`), `evidence-tl1-unreadable.pdf` (no extractable text), and `evidence-tl1-invalid.txt`.
+
+Observed results:
+
+- Clear `90` + clear PDF: extraction candidate, **8 points**, `Eligible`, `sent-to-review`.
+- Band boundaries: `85 → 8`, `84 → 6`, `75 → 6`, `74 → 4`, `65 → 4`, `64 → 0`.
+- Missing score or evidence blocked execution; missing evidence did not call the extractor.
+- Non-numeric score and `.txt` evidence produced validation errors.
+- Unreadable PDF produced `candidate_with_warnings`, reported score **Unknown**, two warnings, provisional **8**, and `sent-to-review`.
+- Role-cap and mandatory-rule checks were not applicable; TL-1 has no such rule. No approve/reject decision was recorded.
+
+Evidence: focused tests in `src/padsInitialKpi.test.js` (5 tests) plus screenshots in `docs/assets/pads-tl1/`. Full suite: **107/107 passing**; `npm run build` completed successfully on 30 October 2026. This is individual-KPI provisional scoring only; PADS totals, role maxima, mandatory assessment eligibility, institutional approval, OCR/arbitrary evidence, and live external checks remain unverified. The open boundary question (`> 85` versus `>= 85`) and the [filed #17 review-package defect](https://github.com/Kaushiik-13/KCT_AppraisalPortal/issues/17) are recorded in the walkthrough.
+
+## PADS 59-KPI automated verification — 30 October 2026
+
+Committed the 59 individual PADS KPI policies and their 201 expected scoring cases as reference fixtures. `public/samples/pads/kpis/` holds one saved draft per row (`tl-1` … `ec-2`), `cases.json` (59 groups, 201 `{values, expect}` cases), `index.json` (workbook row, Sl No, fields, case count and expected-point set per id, plus the excluded institutional rows), and `README.md` with the localStorage load procedure. Full description: [PADS individual KPI verification](PADS-INDIVIDUAL-KPIS.md).
+
+`src/padsAllKpis.test.js` scores every case through `runWorkflow` with `extract: null` and asserts `status === "completed"`, `scoring.status === "scored"`, and the exact points. It also asserts each fixture's ordered `{id, type}` fields match its case group, that every fixture policy is enabled, and that `index.json` agrees with `cases.json`. No assertion accepts `pending`, `invalid`, or error states; all 201 cases matched on the first committed run.
+
+- Focused file: **60 tests** (1 fixture-metadata test, 59 KPI tests) — 60/60 passing.
+- Full suite: **167/167** passing (`npm.cmd test` from the repository root; the existing `src/*.test.js` glob picks up the new file).
+- `npm.cmd run build`: successful production build.
+- No UI sweep was re-run for this step; the 201 workflow executions are the behavioural proof, and the 29 October UI report below stays as the historical UI record.
+
+Institutional rows 173–177 (`BOS coordinator/Placement Coordinator`, `NAAC criteria I Coordinator`, `MS Team Coordinator`, `Spoken Tutorial Coordinator`, `Class Advisor`) are excluded by design. PADS scores them on a 5-point supervisor scale with no Max Points, evidence fields, role eligibility, caps, or aggregation rules; the gap and what AFPI would need are recorded in `index.json.excluded.reason`, `public/samples/pads/kpis/README.md`, the test-file header, and [PADS individual KPI verification](PADS-INDIVIDUAL-KPIS.md). No test asserts an institutional score.
+
+Limits: all 59 rows are form-value policies, so no PDF evidence, extraction comparison, or network path is exercised. Author role is Primary/Co-author only (no third-author 25% share); TL-11 scores one course; TL-12 omits the additive PhD/guideship components; role and eligibility wording (primary coordinator, RD-5 co-author, RD-12 combined conference-plus-publication, O-4's 40-attendee minimum) has no validating field; O-2/O-3/O-5/O-7/O-10 cannot reach their multi-event maxima; RD-6 uses enumerated combinations; negative values fall through the zero fallback without range validation. PADS KRA weights and totals, role maxima, the 200-point cap, mandatory assessment eligibility, dual self/supervisor scores, descriptive/overall review, HR observations, panel review, and any cross-KPI aggregation remain unimplemented.
+
+Evidence: `public/samples/pads/kpis/`, [PADS individual KPI verification](PADS-INDIVIDUAL-KPIS.md), and the prior RD-12 zero-case screenshot `docs/assets/pads-kpis/rd-12-zero-points.png` (a 29 October UI capture, not a new walkthrough).
 
 ## PADS individual-KPI Framework Studio verification — 29 October 2026
 

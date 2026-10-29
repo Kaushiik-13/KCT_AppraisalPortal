@@ -1,0 +1,217 @@
+{
+  "version": 1,
+  "savedAt": "2026-10-30T00:00:00.000Z",
+  "draft": {
+    "name": "PADS TL-1 initial KPI — evidence and review",
+    "fields": [
+      {
+        "id": "pct",
+        "label": "Teaching score",
+        "type": "number",
+        "required": true,
+        "help": "PADS TL-1 uses the percentage from the teaching-pedagogy review. Scale: 85 and above = 8; 75–84 = 6; 65–74 = 4; below 65 = 0.",
+        "example": "90",
+        "options": "",
+        "accept": ".pdf,.pptx,.xls,.xlsx",
+        "multiple": false
+      },
+      {
+        "id": "evidence",
+        "label": "Teaching evidence",
+        "type": "file",
+        "required": true,
+        "help": "Upload the synthetic review evidence used for this test. The file stays in this browser session.",
+        "example": "",
+        "options": "",
+        "accept": ".pdf,.pptx,.xls,.xlsx",
+        "multiple": false
+      }
+    ],
+    "nodes": [
+      {
+        "id": "n-submit",
+        "kind": "submit",
+        "name": "Submission received",
+        "mappings": {},
+        "routes": {
+          "next": "n-extract"
+        },
+        "config": {}
+      },
+      {
+        "id": "n-extract",
+        "kind": "action",
+        "name": "Extract evidence",
+        "mappings": {
+          "file": "field|evidence"
+        },
+        "routes": {
+          "next": "n-apply"
+        },
+        "config": {
+          "tool": "extract_evidence",
+          "settings": {
+            "mode": "fields",
+            "fields": [
+              {
+                "id": "reported_score",
+                "name": "Reported teaching score",
+                "label": "Teaching score",
+                "type": "number"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "n-apply",
+        "kind": "action",
+        "name": "Apply scoring policy",
+        "mappings": {},
+        "routes": {
+          "next": "n-review"
+        },
+        "config": {
+          "tool": "apply_policy",
+          "settings": {
+            "policyVersion": "v1",
+            "components": []
+          }
+        }
+      },
+      {
+        "id": "n-review",
+        "kind": "human_review",
+        "name": "Human review",
+        "mappings": {},
+        "routes": {},
+        "config": {
+          "role": "Appraiser",
+          "instructions": "Review the reported percentage, the extraction evidence and the provisional PADS points."
+        }
+      }
+    ],
+    "policy": {
+      "enabled": false,
+      "activeVersion": "v1",
+      "versions": [
+        {
+          "version": "v1",
+          "mode": "rules",
+          "aggregation": "sum",
+          "maxPoints": "",
+          "fallback": "zero",
+          "components": [],
+          "rules": [
+            {
+              "id": "r-85-or-above",
+              "name": "85 or above",
+              "match": "all",
+              "conditions": [
+                {
+                  "source": "field|pct",
+                  "type": "number",
+                  "operator": "gte",
+                  "expected": "85"
+                }
+              ],
+              "points": "8",
+              "multiplier": "1",
+              "outcome": "Eligible"
+            },
+            {
+              "id": "r-75-to-84",
+              "name": "75 to 84",
+              "match": "all",
+              "conditions": [
+                {
+                  "source": "field|pct",
+                  "type": "number",
+                  "operator": "gte",
+                  "expected": "75"
+                }
+              ],
+              "points": "6",
+              "multiplier": "1",
+              "outcome": "Eligible"
+            },
+            {
+              "id": "r-65-to-74",
+              "name": "65 to 74",
+              "match": "all",
+              "conditions": [
+                {
+                  "source": "field|pct",
+                  "type": "number",
+                  "operator": "gte",
+                  "expected": "65"
+                }
+              ],
+              "points": "4",
+              "multiplier": "1",
+              "outcome": "Eligible"
+            }
+          ]
+        }
+      ],
+      "draft": {
+        "version": "v1",
+        "mode": "rules",
+        "aggregation": "sum",
+        "maxPoints": "",
+        "fallback": "zero",
+        "components": [],
+        "rules": [
+          {
+            "id": "r-85-or-above",
+            "name": "85 or above",
+            "match": "all",
+            "conditions": [
+              {
+                "source": "field|pct",
+                "type": "number",
+                "operator": "gte",
+                "expected": "85"
+              }
+            ],
+            "points": "8",
+            "multiplier": "1",
+            "outcome": "Eligible"
+          },
+          {
+            "id": "r-75-to-84",
+            "name": "75 to 84",
+            "match": "all",
+            "conditions": [
+              {
+                "source": "field|pct",
+                "type": "number",
+                "operator": "gte",
+                "expected": "75"
+              }
+            ],
+            "points": "6",
+            "multiplier": "1",
+            "outcome": "Eligible"
+          },
+          {
+            "id": "r-65-to-74",
+            "name": "65 to 74",
+            "match": "all",
+            "conditions": [
+              {
+                "source": "field|pct",
+                "type": "number",
+                "operator": "gte",
+                "expected": "65"
+              }
+            ],
+            "points": "4",
+            "multiplier": "1",
+            "outcome": "Eligible"
+          }
+        ]
+      }
+    }
+  }
+}

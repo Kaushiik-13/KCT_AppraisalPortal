@@ -41,6 +41,8 @@ The included PRISMA paper retains its original attribution and license notice; s
 
 `public/samples/PADS.xlsx` is an unmodified, blank PADS Academic Review 2021 template supplied by the project owner. Its appraisee/appraiser identity fields are empty and it contains no personal submissions. It is a reference fixture for Framework Studio rule mapping; whether the institution has approved those rules for live scoring is not verified.
 
+`public/samples/pads/` contains synthetic TL-1 verification artifacts (two generated PDFs, one generated text file, one saved-draft configuration) and the 59 individual-KPI reference set in `public/samples/pads/kpis/`: 59 configuration-only saved drafts, `cases.json` (201 expected scoring cases), `index.json` (workbook source map), and `README.md`. None of these files contain real staff, student, appraisal, or institutional submission data; the cases are synthetic input values and expected point totals. They are reference-only policy encodings, not an approved institutional scoring rule or an appraisal submission. Screenshots in `docs/assets/pads-tl1/` and `docs/assets/pads-kpis/` show synthetic data only.
+
 AI adapter diagnostic logs include only selected model, finish reason and answer-presence boolean. They do not log instructions, evidence, keys or internal reasoning.
 
 Generic External lookup is removed from the new MVP catalogue. Its legacy handler remains readable only for existing saved drafts and still sends selected values to creator-configured public endpoints. Do not create new dependencies on it. A future connector/MCP layer needs explicit authentication, secret storage, permissions, response contracts, retry/timeout policy and allowlisting.
