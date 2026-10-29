@@ -1,4 +1,6 @@
 from time import perf_counter
+import base64
+import pickle
 
 import numpy as np
 import pandas as pd
@@ -17,6 +19,21 @@ CANDIDATE_PARAMETERS = {
     "random_forest": {"n_estimators": 200, "max_depth": 8, "min_samples_leaf": 3},
     "gradient_boosting": {"n_estimators": 150, "learning_rate": 0.05, "max_depth": 3},
 }
+
+
+def _serialize_artifact(pipeline, candidate, features, minimum, maximum):
+    payload = {
+        "interfaceVersion": "prediction-artifact-v1",
+        "candidate": candidate,
+        "features": features,
+        "scoreMinimum": minimum,
+        "scoreMaximum": maximum,
+        "pipeline": pipeline,
+    }
+    return {
+        "format": "python-pickle-base64-v1",
+        "payload": base64.b64encode(pickle.dumps(payload, protocol=pickle.HIGHEST_PROTOCOL)).decode("ascii"),
+    }
 
 
 def _examples_frame(examples, features):
@@ -171,6 +188,7 @@ def train_and_compare(payload):
                 "status": "succeeded",
                 "parameters": parameters,
                 "metrics": _metrics(test_target, predictions, minimum, maximum),
+                "artifact": _serialize_artifact(pipeline, candidate, features, minimum, maximum),
                 "durationMilliseconds": round((perf_counter() - started) * 1000, 3),
                 "warnings": [],
             })

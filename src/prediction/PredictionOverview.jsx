@@ -19,13 +19,17 @@ function SummaryCard({ icon: Icon, label, value, detail, tone = "default" }) {
   );
 }
 
-export default function PredictionOverview({ organization, policy, generated, readiness, trainingResult, onConfigure, onOpenData, onOpenModel, onOpenComparison }) {
+export default function PredictionOverview({ organization, policy, generated, readiness, trainingResult, governedModel, onConfigure, onOpenData, onOpenModel, onOpenComparison, onOpenGovernance }) {
   const datasetCount = generated ? Object.keys(generated.datasets).length : 0;
   const nextAction = !generated
     ? "Configure synthetic data"
     : readiness?.status === "blocked"
       ? "Resolve readiness blockers"
-      : trainingResult
+    : governedModel?.lifecycle === "published"
+      ? "Try prediction sandbox"
+      : governedModel?.lifecycle === "approved"
+        ? "Publish approved model"
+        : trainingResult
         ? "Review model comparison"
         : readiness?.eligibility?.modelTraining
           ? "Configure model training"
@@ -50,6 +54,7 @@ export default function PredictionOverview({ organization, policy, generated, re
             ) : null}
             {readiness?.eligibility?.modelTraining ? <button className="prediction-btn" onClick={onOpenModel}>Configure model</button> : null}
             {trainingResult ? <button className="prediction-btn" onClick={onOpenComparison}>Open comparison</button> : null}
+            {governedModel ? <button className="prediction-btn" onClick={onOpenGovernance}>{governedModel.lifecycle === "published" ? "Open sandbox" : governedModel.lifecycle === "approved" ? "Publish model" : "Open evaluation"}</button> : null}
           </div>
         </div>
         <div className="prediction-flow-card" aria-label="Prototype flow">
@@ -59,6 +64,8 @@ export default function PredictionOverview({ organization, policy, generated, re
             <li className={generated ? "done" : "active"}><i />Synthetic datasets</li>
             <li className={readiness ? "done" : generated ? "active" : ""}><i />Readiness gate</li>
             <li className={trainingResult ? "done" : readiness?.eligibility?.modelTraining ? "active" : ""}><i />Model training</li>
+            <li className={governedModel?.lifecycle === "approved" || governedModel?.lifecycle === "published" ? "done" : trainingResult ? "active" : ""}><i />Approval</li>
+            <li className={governedModel?.lifecycle === "published" ? "done" : governedModel?.lifecycle === "approved" ? "active" : ""}><i />Publication and sandbox</li>
           </ol>
         </div>
       </div>
@@ -100,7 +107,7 @@ export default function PredictionOverview({ organization, policy, generated, re
           icon={Gauge}
           label="Next action"
           value={nextAction}
-          detail={trainingResult ? "Held-out metrics are ready to review" : "Proceed only when the readiness gate allows training"}
+          detail={governedModel?.lifecycle === "published" ? governedModel.publication.version : trainingResult ? "Held-out metrics are ready to review" : "Proceed only when the readiness gate allows training"}
         />
       </div>
 

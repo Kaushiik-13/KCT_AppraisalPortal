@@ -14,7 +14,15 @@ The current Publication plugin has ten steps, no simulated index or AI node, a C
 
 Tests use Node's built-in test runner over `src/*.test.js` and `server/*.test.js`. A passing build verifies bundling, not browser behavior. There is no lint script or committed full browser automation suite.
 
-Most recent automated baseline: **131 passing JavaScript tests plus 4 passing Python tests** on 29 October 2026 after Prediction Studio screens 4–5 and the local training provider. The 124-test screens 1–3 result, 120-test readiness result, 110-test dataset-integration result, 109-test dataset-foundation result, 102-test reports from 27–28 October, 101-test report from 7 October, and earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) remain historical checkpoints.
+Most recent automated baseline: **137 passing JavaScript tests plus 5 passing Python tests** on 29 October 2026 after Prediction Studio screens 6–8, model governance and read-only inference. The 131-test training result, 124-test screens 1–3 result, 120-test readiness result, 110-test dataset-integration result, 109-test dataset-foundation result, 102-test reports from 27–28 October, 101-test report from 7 October, and earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) remain historical checkpoints.
+
+## Prediction approval, publication and sandbox — 29 October 2026
+
+Six additional JavaScript tests cover artifact privacy, approval/rejection guards, exact publication compatibility, version replacement/supersession, lifecycle request validation, Scenario A rule behavior, Scenario B published-model/fallback selection, Scenario C published-model enforcement, invalid-history blocking, output clamping/ranges and unchanged official scores. One additional Python test proves a serialized fitted candidate can predict without refitting.
+
+`npm.cmd test` passed all **137 JavaScript tests**. `npm.cmd run test:prediction-ml` passed all **5 Python tests**. `npm.cmd run build` passed with Next.js 16.3.8 and included the decision, publication and prediction routes. `git diff --check` passed. The React quality review found module-scope components, labelled controls, disabled async actions, no new effects, and no new client ML dependency.
+
+A local browser walkthrough generated 1,252 rows, trained the default candidates, approved the recommended Random Forest, published `kct-final_approved_score-v1`, and completed a Scenario C prediction of 143.63 with expected range 121.19–166.07. It also verified Scenario A used the transparent pace projection, Scenario B used the published model with low confidence, invalid history was blocked with named findings, changing the scenario cleared the prior result, and every result kept the official score unchanged. These are deterministic synthetic checks, not accuracy, fairness, authentication, durability or deployed-runtime evidence.
 
 ## Prediction model configuration and comparison — 29 October 2026
 

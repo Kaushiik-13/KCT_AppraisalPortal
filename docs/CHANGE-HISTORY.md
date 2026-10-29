@@ -16,6 +16,8 @@ Implemented Prediction Studio screens 1–3 at `/prediction`: lifecycle overview
 
 Implemented Prediction Studio screens 4–5 and Phase 3: fixed-target model configuration, checkpoint-safe feature/candidate selection, reproducibility seed, server-side readiness recheck, local Python/scikit-learn provider, train-only preprocessing, pace and grouped-median baselines, Ridge/Random Forest/Gradient Boosting candidates, held-out MAE/RMSE/nMAE/R²/range evidence, and a recommendation gate that must beat both baselines. Results are synthetic and in memory; approval, persistence, publication and inference remain planned.
 
+Implemented Prediction Studio screens 6–8 and Phase 4: private server-side candidate artifacts, immutable model metadata, recommendation-gated approval/rejection, explicit scope-compatible publication, superseded-version retention, rule-based Scenario A, Scenario B model/fallback behavior, strict Scenario C published-model requirement, invalid-history blocking, empirical ranges, factors, versions and advisory safeguards. Added lifecycle and prediction routes plus registry/inference coverage. The registry is process-memory only, reviewer identity is simulated, and all results remain synthetic.
+
 ## 28 October 2026 — Publication scoring and shared review routes
 
 Removed AI evaluation from the new Publication template. Clear now runs the selected saved scoring policy and passes its provisional score into Appraiser review. Needs review and Ineligible bypass scoring; all three outcomes converge on the same review node, where the outcome and reasons are displayed. An unconfigured scoring Action requires a saved policy selection; no institutional point values are supplied by the template.

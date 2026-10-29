@@ -4,9 +4,12 @@ import { useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
   BarChart3,
+  CheckCircle2,
   Database,
+  FlaskConical,
   Layers3,
   LineChart,
+  Rocket,
   Settings2,
   ShieldCheck,
   SlidersHorizontal,
@@ -14,7 +17,10 @@ import {
 import { rowsToCsv } from "./csv.js";
 import DatasetPreview from "./DatasetPreview.jsx";
 import ModelConfiguration from "./ModelConfiguration.jsx";
+import ModelApprovalPanel from "./ModelApprovalPanel.jsx";
+import ModelPublication from "./ModelPublication.jsx";
 import ModelTrainingComparison from "./ModelTrainingComparison.jsx";
+import PredictionSandbox from "./PredictionSandbox.jsx";
 import PredictionOverview from "./PredictionOverview.jsx";
 import SyntheticDatasetWizard from "./SyntheticDatasetWizard.jsx";
 
@@ -47,6 +53,9 @@ const SCREENS = [
   { id: "data", label: "Data & readiness", description: "Preview, filter and validate", icon: ShieldCheck },
   { id: "model", label: "Model configuration", description: "Features, split and candidates", icon: SlidersHorizontal },
   { id: "comparison", label: "Training results", description: "Held-out model comparison", icon: LineChart },
+  { id: "evaluation", label: "Evaluation", description: "Approve or reject candidate", icon: CheckCircle2 },
+  { id: "publication", label: "Publication", description: "Activate compatible model", icon: Rocket },
+  { id: "sandbox", label: "Prediction sandbox", description: "Try read-only inference", icon: FlaskConical },
 ];
 
 const INITIAL_MODEL_CONFIGURATION = {
@@ -88,6 +97,10 @@ export default function PredictionStudio({ organization, policy }) {
   const [modelConfiguration, setModelConfiguration] = useState(INITIAL_MODEL_CONFIGURATION);
   const [trainingResult, setTrainingResult] = useState(null);
   const [trainingBusy, setTrainingBusy] = useState(false);
+  const [governedModel, setGovernedModel] = useState(null);
+  const [lifecycleBusy, setLifecycleBusy] = useState(false);
+  const [predictionBusy, setPredictionBusy] = useState(false);
+  const [predictionResult, setPredictionResult] = useState(null);
   const readinessRequest = useRef(0);
 
   const estimatedRows = useMemo(() => (
@@ -158,6 +171,8 @@ export default function PredictionStudio({ organization, policy }) {
       setGenerated(result);
       setModelConfiguration({ ...INITIAL_MODEL_CONFIGURATION, featureSelection: result.defaultFeatureSelection });
       setTrainingResult(null);
+      setGovernedModel(null);
+      setPredictionResult(null);
       setSelectedDataset("sufficient");
       setDirty(false);
       setScreen("data");
@@ -172,12 +187,16 @@ export default function PredictionStudio({ organization, policy }) {
   const selectDataset = async (datasetId) => {
     setSelectedDataset(datasetId);
     setTrainingResult(null);
+    setGovernedModel(null);
+    setPredictionResult(null);
     await runReadiness(generated, datasetId);
   };
 
   const updateModelConfiguration = (field, value) => {
     setModelConfiguration((previous) => ({ ...previous, [field]: value }));
     setTrainingResult(null);
+    setGovernedModel(null);
+    setPredictionResult(null);
     setErrors([]);
   };
 
@@ -208,11 +227,93 @@ export default function PredictionStudio({ organization, policy }) {
       });
       const result = await readResponse(response);
       setTrainingResult(result);
+      setGovernedModel(null);
+      setPredictionResult(null);
       setScreen("comparison");
     } catch (error) {
       setErrors(error.issues?.length ? error.issues : [error.message]);
     } finally {
       setTrainingBusy(false);
+    }
+  };
+
+  const openEvaluation = () => {
+    const candidate = trainingResult?.candidates.find((entry) => entry.id === trainingResult.recommendation.candidateId);
+    const model = trainingResult?.models?.find((entry) => entry.id === candidate?.modelId);
+    setGovernedModel(model || null);
+    setErrors(model ? [] : ["The recommended candidate is not available in the local model registry."]);
+    if (model) setScreen("evaluation");
+  };
+
+  const decideModel = async (decision, reviewer, note) => {
+    setLifecycleBusy(true);
+    setErrors([]);
+    try {
+      const response = await fetch(`/api/prediction/models/${governedModel.id}/decision`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ decision, reviewer, note }),
+      });
+      const result = await readResponse(response);
+      setGovernedModel(result.model);
+    } catch (error) {
+      setErrors(error.issues?.length ? error.issues : [error.message]);
+    } finally {
+      setLifecycleBusy(false);
+    }
+  };
+
+  const publishModel = async () => {
+    setLifecycleBusy(true);
+    setErrors([]);
+    try {
+      const response = await fetch(`/api/prediction/models/${governedModel.id}/publish`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          compatibility: {
+            organizationId: governedModel.organizationId,
+            target: governedModel.target,
+            policyVersion: governedModel.compatibility.policyVersion,
+            frameworkVersion: governedModel.compatibility.frameworkVersion,
+          },
+        }),
+      });
+      const result = await readResponse(response);
+      setGovernedModel(result.model);
+    } catch (error) {
+      setErrors(error.issues?.length ? error.issues : [error.message]);
+    } finally {
+      setLifecycleBusy(false);
+    }
+  };
+
+  const predict = async (historyId, currentRecord) => {
+    const history = generated.datasets[historyId];
+    setPredictionBusy(true);
+    setPredictionResult(null);
+    setErrors([]);
+    try {
+      const response = await fetch("/api/prediction/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          historySnapshot: {
+            id: history.snapshotId,
+            organizationId: generated.organization.id,
+            policyVersion: generated.policy.version,
+            frameworkVersion: generated.frameworkVersion,
+            rows: history.rows,
+          },
+          currentRecord,
+          policy: generated.policy,
+        }),
+      });
+      setPredictionResult(await readResponse(response));
+    } catch (error) {
+      setErrors(error.issues?.length ? error.issues : [error.message]);
+    } finally {
+      setPredictionBusy(false);
     }
   };
 
@@ -257,7 +358,10 @@ export default function PredictionStudio({ organization, policy }) {
             const Icon = item.icon;
             const disabled = (item.id === "data" && !generated)
               || (item.id === "model" && !readiness?.eligibility?.modelTraining)
-              || (item.id === "comparison" && !trainingResult);
+              || (item.id === "comparison" && !trainingResult)
+              || (item.id === "evaluation" && !trainingResult?.recommendation?.gatePassed)
+              || (item.id === "publication" && !new Set(["approved", "published"]).has(governedModel?.lifecycle))
+              || (item.id === "sandbox" && governedModel?.lifecycle !== "published");
             return (
               <button
                 key={item.id}
@@ -298,10 +402,12 @@ export default function PredictionStudio({ organization, policy }) {
             generated={generated}
             readiness={readiness}
             trainingResult={trainingResult}
+            governedModel={governedModel}
             onConfigure={() => setScreen("setup")}
             onOpenData={() => setScreen("data")}
             onOpenModel={() => setScreen("model")}
             onOpenComparison={() => setScreen("comparison")}
+            onOpenGovernance={() => setScreen(governedModel?.lifecycle === "published" ? "sandbox" : governedModel?.lifecycle === "approved" ? "publication" : "evaluation")}
           />
         ) : screen === "setup" ? (
           <SyntheticDatasetWizard
@@ -346,6 +452,37 @@ export default function PredictionStudio({ organization, policy }) {
             result={trainingResult}
             onReconfigure={() => setScreen("model")}
             onRunAgain={trainModels}
+            onEvaluate={openEvaluation}
+          />
+        ) : screen === "evaluation" && trainingResult && governedModel ? (
+          <ModelApprovalPanel
+            result={trainingResult}
+            model={governedModel}
+            busy={lifecycleBusy}
+            errors={errors}
+            onDecision={decideModel}
+            onBack={() => setScreen("comparison")}
+            onContinue={() => setScreen("publication")}
+          />
+        ) : screen === "publication" && governedModel ? (
+          <ModelPublication
+            model={governedModel}
+            busy={lifecycleBusy}
+            errors={errors}
+            onPublish={publishModel}
+            onBack={() => setScreen("evaluation")}
+            onOpenSandbox={() => setScreen("sandbox")}
+          />
+        ) : screen === "sandbox" && governedModel?.lifecycle === "published" ? (
+          <PredictionSandbox
+            generated={generated}
+            model={governedModel}
+            busy={predictionBusy}
+            errors={errors}
+            result={predictionResult}
+            onPredict={predict}
+            onReset={() => { setPredictionResult(null); setErrors([]); }}
+            onBack={() => setScreen("publication")}
           />
         ) : null}
       </main>

@@ -119,7 +119,17 @@ The raw feature matrix includes only completed rows in train/test partitions, ex
 
 The in-memory training response records a deterministic run ID, configuration checksum, synthetic flag, snapshot ID, provider/seed, selected and excluded feature schema, time-based split/counts, two baseline results, candidate results and a recommendation gate. Each successful result contains MAE, RMSE, normalized MAE, optional R², held-out residual range evidence and configured-range evidence. Candidate parameters and bounded failure warnings are explicit.
 
-No dataset snapshot, fitted pipeline, training run or comparison is persisted. Repeating the same snapshot/configuration/seed reproduces the identity and metrics, but page reload discards the result. See [Prediction training](PREDICTION-TRAINING.md).
+The public training response omits fitted pipelines. Successful candidate pipelines are serialized by the local provider and registered only in server process memory. Repeating the same snapshot/configuration/seed reproduces the identity and metrics, but restarting the server discards candidates and artifacts. See [Prediction training](PREDICTION-TRAINING.md).
+
+## Prediction model record
+
+Each server-only model record contains a stable model ID; lifecycle; synthetic flag; organization and target; training run; dataset snapshot/checksum; configuration checksum; selected/excluded feature schema; policy/framework/score-range compatibility; provider, algorithm and parameters; evaluation metrics/baselines/gate evidence; approval; and publication metadata. The serialized pipeline artifact is stored only on the private in-process record and is removed from all public records.
+
+Lifecycle is `candidate` → `approved` or `rejected`, then `approved` → `published`; a replacement changes the earlier published record to `superseded`. Only one published record is active for the exact organization/target/policy/framework key. Approval and rejection are final for a candidate. Publication records a scope-local version, publication time, and superseded record IDs.
+
+## Prediction response
+
+The non-persisted inference response contains synthetic/advisory flags, employee key, current verified score, predicted final score, expected-range bounds/method, readiness scenario, method, confidence, plain-language factors, model/policy/framework versions, warnings, timestamp, and `officialScoreChanged: false`. It contains no fitted artifact and cannot update any appraisal record. See [prediction governance and inference](PREDICTION-GOVERNANCE-AND-INFERENCE.md).
 
 ## Plugin and reusable configuration
 

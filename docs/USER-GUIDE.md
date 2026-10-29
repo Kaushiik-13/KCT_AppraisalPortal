@@ -65,7 +65,7 @@ For a document-content KPI, choose Full content or Both in Extract evidence, map
 
 ## Use the Prediction Framework prototype
 
-Open **Prediction framework** from the Framework Studio sidebar, or visit `/prediction`. The current prototype covers synthetic data preparation, readiness, model configuration, local training and held-out comparison. It does not approve/publish a model or produce an employee prediction.
+Open **Prediction framework** from the Framework Studio sidebar, or visit `/prediction`. The current prototype covers synthetic data preparation, readiness, model configuration, local training, held-out comparison, simulated approval/publication, and a read-only prediction sandbox. All records and metrics are synthetic.
 
 ### Overview
 
@@ -121,4 +121,23 @@ Choose **Train and compare**. The server reruns readiness and reconstructs the f
 
 The comparison shows MAE, RMSE, normalized MAE, R², a held-out residual range, parameters, row counts and seed. Lower MAE/RMSE/nMAE is better; higher R² is better. A candidate is recommended only when its held-out MAE beats both transparent baselines and its final predictions remain inside the configured range.
 
-**Change configuration** returns to feature/model choices. **Run again** repeats the same frozen snapshot and settings. Results remain in memory and are labelled synthetic-only; there is no approval, registry, publication or inference step yet.
+**Change configuration** returns to feature/model choices. **Run again** repeats the same frozen snapshot and settings. Choose **Evaluate candidate** only for the recommended candidate that passed both baseline gates.
+
+### Evaluation and approval
+
+Screen 6 shows the candidate metrics, immutable run/snapshot/checksum metadata, selected feature scope, compatibility versions, and limitations. Enter a reviewer and decision note, then choose **Approve candidate** or **Reject candidate**. This is simulated model governance, not the KPI Human Review module. A final decision cannot be changed for that candidate, and approval alone does not activate it.
+
+### Publication
+
+Screen 7 checks the comparison gate, recorded approval, exact organization/target/policy/framework scope, and read-only inference boundary. Choose **Publish model** to activate the approved candidate for that exact scope. A later compatible publication receives the next version and supersedes the earlier record without deleting it. The local registry is process memory only; restarting the server clears it.
+
+### Prediction sandbox
+
+Screen 8 selects a synthetic active checkpoint and one history scenario, then **Predict final score**:
+
+- **Scenario A:** always uses a transparent pace projection and labels it rule-based rather than a trained-model prediction.
+- **Scenario B:** uses the compatible published model with low confidence; without one it safely falls back to the transparent projection.
+- **Scenario C:** requires the compatible approved and published organization model.
+- **Invalid history:** is blocked and lists the readiness findings.
+
+The result shows a score within 0–200, an expected range, method/confidence, checkpoint factors, policy/framework/model versions, timestamp, and warnings. Changing the employee or scenario clears the old result. The sandbox is advisory and explicitly reports that the official verified score was not changed.
