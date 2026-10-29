@@ -32,6 +32,23 @@ test("generator is deterministic and produces the planned scenario sizes", () =>
   assert.equal(first.invalid.length, 12);
 });
 
+test("changing the seed changes synthetic values without changing scenario contracts", () => {
+  const baseline = build();
+  const alternative = generateSyntheticDatasets({
+    organization,
+    policy,
+    defaults: { ...defaults, seed: defaults.seed + 1 },
+  });
+
+  assert.equal(alternative.current.length, baseline.current.length);
+  assert.equal(alternative.limited.length, baseline.limited.length);
+  assert.equal(alternative.sufficient.length, baseline.sufficient.length);
+  assert.equal(alternative.invalid.length, baseline.invalid.length);
+  assert.notEqual(rowsToCsv(alternative.current), rowsToCsv(baseline.current));
+  assert.notEqual(rowsToCsv(alternative.sufficient), rowsToCsv(baseline.sufficient));
+  assert.ok(alternative.current.every((row) => row.generation_seed === defaults.seed + 1));
+});
+
 test("clean completed rows stay within role and overall caps and progress cumulatively", () => {
   const { sufficient } = build();
   const roles = new Map(policy.roles.map((role) => [role.code, role]));

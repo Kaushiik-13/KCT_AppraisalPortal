@@ -60,6 +60,7 @@ The invalid fixture includes ten named defect types: missing target, missing cur
 |---|---|---|
 | Generator completed | Passed | Six planned fixture/report files created |
 | Seed determinism | Passed | Repeated in-memory generation produced identical datasets |
+| Different-seed variation | Passed | Alternate seed preserved scenario contracts while changing current and sufficient fixture content |
 | Planned scenario sizes | Passed | 40 current, 240 limited and 960 sufficient rows |
 | Role/KRA cap completeness | Passed | Every configured role has a non-negative cap for all seven KRAs |
 | Overall score range | Passed | Clean current and final scores remain within `0–200` |
@@ -127,6 +128,6 @@ Prohibited claims or uses:
 - Importing real employee data into fixture paths.
 - Treating the reference PADS version as current without confirmation.
 
-## Git status at audit close
+## Repository status after integration review
 
-The dataset and documentation changes remain uncommitted on `codex/prediction-prototype`. Nothing was pushed to GitHub as part of this audit. Commit and push are intentionally deferred to a later session at the project owner's request.
+The dataset foundation was committed as `c97b835` and pushed to `origin/codex/prediction-prototype`. The follow-up integration review found no blocking fixture-contract defect, added an automated different-seed variation check, and confirmed that the KRA-level PADS mapping is acceptable only for this synthetic prototype. Detailed KPI scoring-band conversion and confirmation of the current institution-approved KCT policy remain required before real-data or production use.
