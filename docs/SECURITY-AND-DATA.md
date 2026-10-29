@@ -39,6 +39,8 @@ Plan authentication, tenant-scoped authorization, trustworthy faculty/reviewer i
 
 The included PRISMA paper retains its original attribution and license notice; see [sample notes](../public/samples/README.txt). Mock index coverage is test data and must not be presented as verified indexing. This repository currently does not define a separate project-wide software license.
 
+`public/samples/PADS.xlsx` is an unmodified, blank PADS Academic Review 2021 template supplied by the project owner. Its appraisee/appraiser identity fields are empty and it contains no personal submissions. It is a reference fixture for Framework Studio rule mapping; whether the institution has approved those rules for live scoring is not verified.
+
 AI adapter diagnostic logs include only selected model, finish reason and answer-presence boolean. They do not log instructions, evidence, keys or internal reasoning.
 
 Generic External lookup is removed from the new MVP catalogue. Its legacy handler remains readable only for existing saved drafts and still sends selected values to creator-configured public endpoints. Do not create new dependencies on it. A future connector/MCP layer needs explicit authentication, secret storage, permissions, response contracts, retry/timeout policy and allowlisting.

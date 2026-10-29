@@ -11,6 +11,10 @@
 | 5 | Formula and conditional scoring policies, caps, saved versions |
 | 6 | Publication/training acceptance checks and setup guidance |
 
+## Verified 29 October 2026 — PADS individual KPI scores
+
+Built and exercised 59 of the 64 KPI rows in `public/samples/PADS.xlsx` (14 TL, 16 RD, 11 EI, 10 Operations, 6 SD, 2 EC) as saved `v1` rules policies. The five optional `INSTITUTIONAL OR DEPARTMENTAL CONTRIBUTIONS AND OUTCOMES` rows use a separate 5-point supervisor scale and were not built. 201 UI checks covering award tiers, zero/boundary cases and below-threshold fallbacks passed. RD-6 uses enumerated combinations because the formula mode cannot express its base-plus-increment rule. Supplementary edge checks confirmed required-field blocking, pending review for missing evidence and human-review handoff; negative values are not range-validated. This verifies individual KPI rule encoding and UI scoring only; PADS KRA weights/totals, role maxima, the 200-point cap, mandatory eligibility, dual self/supervisor scores, descriptive review and the five institutional rows remain unimplemented. Some KPI nuances remain simplified; see [testing](TESTING.md).
+
 ## Delivered 7 October 2026 — Framework Studio evidence workflow
 
 - Replaced creator-facing typed Read tools with Use form value.
@@ -33,7 +37,7 @@ Delivered on 6 October: migrated the PoC from Vite to Next.js 16 App Router, ret
 
 1. **Creator usability review.** Have the project owner build a KPI from scratch and record confusing steps. Do not assume seeded test workflows prove independent authoring is easy.
 2. **Persist final scoring and review handoffs.** Define the canonical durable final-score record, how pending facts are resolved, and the separate Human Review module's assignment and outcome contract before production.
-3. **Agree institutional rules.** Resolve co-author conflict, corresponding-author precedence, SAE treatment, date precedence, caps, and journal-versus-paper indexing evidence.
+3. **Agree institutional rules and PADS aggregation.** Resolve co-author conflict, corresponding-author precedence, SAE treatment, date precedence, caps, and journal-versus-paper indexing evidence. Decide whether AFPI will implement PADS KRA totals and role-specific maxima, the 200-point cap, mandatory assessment eligibility, dual self/supervisor scores, descriptive/overall review, and the five institutional 5-point rows; the current PoC scores individual KPIs only.
 4. **Optional live index verification.** Only pursue Scopus/Web of Science adapters after the institution confirms API entitlement, authorized credentials, and approved use. Coverage gaps and failures must remain explicit; DOI lookup alone cannot establish index status.
 5. **Portable draft lifecycle.** Add validated import, multiple drafts, schema migrations, and cross-tab conflict handling.
 

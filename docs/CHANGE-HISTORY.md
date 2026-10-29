@@ -2,6 +2,10 @@
 
 This is a development summary, not a version-control commit log. The package remains `0.1.0`; no release/deployment is implied.
 
+## 29 October 2026 — PADS individual-KPI verification
+
+Loaded 59 of the 64 KPI rows from `public/samples/PADS.xlsx` into Framework Studio as saved `v1` rules policies and ran 201 expected-versus-actual checks through Test & review: all matched, including each award tier and zero/below-threshold fallbacks. The five optional institutional-contribution rows use a separate 5-point supervisor scale and were not built. RD-6 uses 15 enumerated submitted/presented combinations because formula mode cannot express `6 × submitted + 4 × presented`; RD-12 is capped at 30. Supplementary edge checks confirmed required-field blocking, pending review for missing evidence, and human-review handoff. A negative percentage is accepted and scores 0 through the zero fallback; no range validation was observed. No application behavior changed. This verifies individual KPI rules only: KRA totals/role maxima, the 200-point cap, mandatory PADS eligibility, self/appraiser dual scores, descriptive review, the institutional rows and several KPI eligibility/multi-event nuances remain unimplemented or simplified. Institutional approval and independent creator usability remain unverified.
+
 ## 28 October 2026 — Publication scoring and shared review routes
 
 Removed AI evaluation from the new Publication template. Clear now runs the selected saved scoring policy and passes its provisional score into Appraiser review. Needs review and Ineligible bypass scoring; all three outcomes converge on the same review node, where the outcome and reasons are displayed. An unconfigured scoring Action requires a saved policy selection; no institutional point values are supplied by the template.
