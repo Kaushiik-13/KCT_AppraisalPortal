@@ -51,12 +51,14 @@ Delivered on 6 October: migrated the PoC from Vite to Next.js 16 App Router, ret
 
 ## Prediction Framework — planned 27 October 2026
 
-The detailed [Prediction Framework implementation plan](PREDICTION-FRAMEWORK-IMPLEMENTATION-PLAN.md) defines a new organization-scoped module for predicting the final approved overall score. It is planned work and no prediction screen, dataset, model, API, or employee dashboard is implemented yet.
+The detailed [Prediction Framework implementation plan](PREDICTION-FRAMEWORK-IMPLEMENTATION-PLAN.md) defines a new organization-scoped module for predicting the final approved overall score. The seeded synthetic dataset foundation is implemented; no prediction screen, readiness API, trained model, inference API or employee dashboard is implemented yet.
+
+The [Prediction prototype implementation plan](PREDICTION-PROTOTYPE-IMPLEMENTATION-PLAN.md) defines the KCT review slice. Phase 1 now provides configuration-driven KCT/PADS KRA-level fixtures for no history, limited history, sufficient history and invalid data, plus reproducibility metadata and automated tests. Detailed KPI scoring-band conversion, configuration screens, readiness, established scikit-learn candidates, time-based evaluation, approval/publication, sandbox and employee view remain planned.
 
 The planned sequence is:
 
 1. Obtain KCT KRA/KPI, scoring, role, cycle, and checkpoint definitions.
-2. Create reproducible synthetic KCT fixtures for no-history, limited-history, sufficient-history, and invalid-data cases.
+2. **Implemented foundation:** create reproducible synthetic KCT fixtures for no-history, limited-history, sufficient-history, and invalid-data cases. Current fixtures use KRA-level role caps; detailed current KPI policy conversion remains open.
 3. Build configuration, data mapping, readiness, rule-based estimate, training, evaluation, approval, test, publication, employee dashboard, and basic retraining screens.
 4. Evaluate established candidate algorithms through time-based holdout testing rather than selecting one before the data contract exists.
 5. Stabilize prediction before beginning the Recommendation Framework.

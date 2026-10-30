@@ -22,6 +22,9 @@ Application baseline: **7 October 2026**. Prediction Framework planning was adde
 - [AI and API](AI-AND-API.md): instructions, provider adapter, endpoints, and limits.
 - [Security and data](SECURITY-AND-DATA.md): storage, external transfers, and production gaps.
 - [Prediction Framework implementation plan](PREDICTION-FRAMEWORK-IMPLEMENTATION-PLAN.md): planned organization-specific final-score prediction, synthetic KCT data, three readiness scenarios, screens, architecture, and delivery phases.
+- [Prediction prototype implementation plan](PREDICTION-PROTOTYPE-IMPLEMENTATION-PLAN.md): implementation-ready KCT review slice covering the eight dataset decisions, generation method, ML service, screens, project structure, delivery order, verification, and demo flow.
+- [Prediction data dictionary](PREDICTION-DATA-DICTIONARY.md): implemented synthetic fixture grain, fields, KRA columns, scenarios, leakage exclusions, regeneration and current limitations.
+- [Synthetic prediction dataset audit — 29 October 2026](PREDICTION-DATASET-AUDIT-2026-10-29.md): fixture inventory, verification evidence, checksums, findings, approved prototype uses and deferred Git status.
 
 ## Engineering and planning
 
@@ -36,7 +39,7 @@ Application baseline: **7 October 2026**. Prediction Framework planning was adde
 
 **KPI creator:** User guide → Training KPI → Publication KPI → Scoring → AI and API.
 
-**Developer:** Setup → Architecture → Data model → Workflow engine → Tools and extensions → Prediction Framework plan → Testing.
+**Developer:** Setup → Architecture → Data model → Workflow engine → Tools and extensions → Prediction Framework plan → Prediction prototype plan → Testing.
 
 **Project reviewer:** Project brief → Decisions → Security and data → Roadmap.
 

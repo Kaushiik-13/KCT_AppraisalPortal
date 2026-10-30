@@ -91,6 +91,14 @@ Trace entries include node identity, name/kind, timestamps, output, and optional
 
 Exports exclude test files/results and server keys. There is no import UI. New schema changes must preserve old drafts or supply an explicit migration.
 
+## Synthetic prediction fixtures
+
+The implemented prediction dataset foundation is separate from the persisted Framework Studio draft. `fixtures/prediction/kct/config/` holds versioned organization, PADS reference-policy and generation configuration. `scripts/generate-kct-prediction-data.mjs` creates immutable synthetic CSV/JSON fixtures under `fixtures/prediction/kct/generated/`.
+
+One completed-history row represents an employee-cycle checkpoint and repeats the completed cycle's final approved score as a target-only field. Active rows contain no target. Identity, policy/framework version, cycle, role, checkpoint timing, current/previous score, evidence count, mandatory status and KRA score/cap columns are explicit. The canonical schema, feature exclusions and split rules are maintained in the [prediction data dictionary](PREDICTION-DATA-DICTIONARY.md).
+
+These fixtures are test/demo data, not browser draft data, runtime predictions, model artifacts or real employee records.
+
 ## Plugin and reusable configuration
 
 Plugin nodes use kind `plugin`, with config `{plugin: "publication", tool: <operation ID>, settings: <operation config>}`. Existing legacy kinds/Action wrappers remain readable. `use_form_value` stores `fieldId` and a cached `valueType`; execution resolves the current field and emits source metadata. `extract_evidence` stores `mode` (`fields`, `content`, or `both`) and stable field entries `{id,name,type,label}`. `compare_evidence` stores one or more `{id,name,valueType,operator,ignoreCase}` pairs; each pair creates left/right mapping ports. Apply-policy stores `policyVersion` and a snapshot of formula component definitions; each component ID becomes a numeric mapping port. The runner resolves the saved policy version and records its calculation snapshot.

@@ -8,6 +8,7 @@
   },
   "scripts": {
     "prepare:pdf-worker": "node scripts/copy-pdf-worker.mjs",
+    "generate:prediction-data": "node scripts/generate-kct-prediction-data.mjs",
     "dev": "npm run prepare:pdf-worker && next dev --hostname 127.0.0.1 --port 5173",
     "build": "npm run prepare:pdf-worker && next build",
     "test": "node --test src/*.test.js server/*.test.js",

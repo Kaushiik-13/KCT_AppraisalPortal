@@ -13,7 +13,11 @@ The current Publication plugin has ten steps, no simulated index or AI node, a C
 
 Tests use Node's built-in test runner over `src/*.test.js` and `server/*.test.js`. A passing build verifies bundling, not browser behavior. There is no lint script or committed full browser automation suite.
 
-Most recent automated baseline: **167 passing tests** and a successful production build on 30 October 2026 after committing the 59 individual PADS KPI fixtures and their 201 automated cases. The 27 October picker report, 101-test report from 7 October, and earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) remain historical checkpoints.
+Most recent automated baseline: **175 passing tests** and a successful production build on 30 October 2026 after merging `main` (the 59 individual PADS KPI fixtures and the TL-1 verification) into `codex/prediction-prototype`. The 167-test PADS KPI result, 110-test synthetic prediction dataset result and 109-test dataset-foundation result, 102-test reports from 27–28 October, 101-test report from 7 October, and earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) remain historical checkpoints.
+
+## Branch synchronization — 30 October 2026
+
+Merged `main` at `ebbb301` into `codex/prediction-prototype`. The four documentation conflicts (`CHANGE-HISTORY.md`, `DECISIONS.md`, `SECURITY-AND-DATA.md`, `TESTING.md`) retain both the PADS verification records and the synthetic prediction dataset records; the prediction prototype decision was renumbered D-25 to follow the new PADS decisions D-23 and D-24. The merged suite passed **175/175** tests and `npm.cmd run build` completed successfully with Next.js 16.3.8. The synchronization adds no new application behavior; it combines the PADS fixtures and tests from `main` with the prediction fixtures and tests on the branch.
 
 ## PADS TL-1 initial-KPI verification — 30 October 2026
 
@@ -69,6 +73,18 @@ Supplementary edge-path checks on representative drafts:
 - A negative percentage (`-5`) was accepted by the number field and scored **0 points** through the zero fallback; no range validation rejected it. This is an observed input-validation gap, not an approved mapping. Values above the workbook maximum (for example, 150%) were not exercised.
 
 Extraction/comparison uncertainty was not exercised because these 59 rows are form-value policies; they have no PDF evidence or comparison nodes.
+
+## Synthetic prediction dataset foundation — 29 October 2026
+
+`npm.cmd run generate:prediction-data` created the no-history, limited-history, sufficient-history and invalid CSV fixtures plus active-snapshot and generation-report JSON. The clean fixtures contain 40 current rows, 240 limited-history checkpoint rows (60 completed faculty-cycles) and 960 sufficient-history checkpoint rows (240 completed faculty-cycles). The invalid fixture contains 12 controlled rows covering ten named defect types.
+
+Seven initial automated tests verify PADS role/KRA cap completeness, seed determinism, planned scenario sizes, cumulative/capped progress, absence of active-cycle targets, clean canonical-key uniqueness, invalid-case coverage and CSV shape. The integration review added an eighth generator test proving that a changed seed alters synthetic content while preserving scenario sizes and provenance. `npm.cmd test` passed all **110 tests**. `npm.cmd run build` completed successfully with Next.js 16.3.8. Generated-file SHA-256 values matched `generation-report.json`; the combined review workbook's Overview and each dataset sheet were rendered and inspected.
+
+These checks validate fixture and software behavior only. They do not validate real KCT prediction accuracy or the complete current KPI policy.
+
+## Prediction prototype planning verification — 29 October 2026
+
+The implementation-ready prototype plan was checked for local Markdown links, project-boundary consistency and whitespace. This was a documentation-only change: no synthetic dataset, application code, Python service, trained model, API or screen was implemented, so automated application tests and the production build were not rerun for this planning update.
 
 ## Publication workflow picker verification — 27 October 2026
 

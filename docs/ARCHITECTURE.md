@@ -58,8 +58,10 @@ The new Publication workflow omits simulated indexing and AI. Its Clear branch r
 
 Evidence sections carry PDF page, PPTX slide, or spreadsheet sheet/range locations. AI combines a primary input, named mapped contexts, creator rubric and optional output schema before the shared input-bound checks; provider calls are blocked when those checks indicate truncation. Parsed numeric schema fields can feed formula policy components. Generic Human review assembles the complete executed package and terminates automation for transfer to the separate review module; it does not create decision branches.
 
-## Planned Prediction Framework boundary
+## Prediction Framework boundary
 
-Prediction is not implemented in the current PoC. The planned [Prediction Framework](PREDICTION-FRAMEWORK-IMPLEMENTATION-PLAN.md) consumes versioned, verified progress snapshots and predicts only the final overall score in its first iteration. It remains downstream of Framework Studio and deterministic scoring and cannot mutate evidence, policy calculations, reviews, or the official score.
+The prediction UI, readiness service, training service, model registry and inference runtime are not implemented in the current PoC. The implemented dataset foundation consists of a seeded configuration-driven generator, KCT/PADS role/KRA cap fixtures, four scenario datasets and automated consistency tests. Its contract is recorded in the [prediction data dictionary](PREDICTION-DATA-DICTIONARY.md).
+
+The planned [Prediction Framework](PREDICTION-FRAMEWORK-IMPLEMENTATION-PLAN.md) consumes versioned, verified progress snapshots and predicts only the final overall score in its first iteration. It remains downstream of Framework Studio and deterministic scoring and cannot mutate evidence, policy calculations, reviews, or the official score.
 
 The planned architecture separates model preparation from live inference. Completed cycles and checkpoint snapshots feed readiness, training, time-based evaluation, approval, and an organization-scoped model registry. Dashboard access uses the current verified snapshot with either a rule-based estimate, an approved limited-data model, or an approved organization model. It does not retrain a model during login or dashboard access.
