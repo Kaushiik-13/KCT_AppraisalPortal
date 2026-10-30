@@ -2,6 +2,23 @@
 
 This is a development summary, not a version-control commit log. The package remains `0.1.0`; no release/deployment is implied.
 
+## 30 October 2026 — Creator walkthrough follow-up fixes
+
+Addressed issues #22–#40 from the creator walkthrough:
+
+- Labelled the workflow result and policy result, documented their precedence, and added a shared-source warning between saved scoring rules and workflow Conditions.
+- Added a revision/writer guard for two tabs editing one draft, with reload or keep-my-version choices.
+- Added schema-validated import for draft and workflow exports, and included the KPI name in workflow exports.
+- Added optional numeric minimum/maximum settings enforced by the preview and workflow engine.
+- Added a session-only required-field bypass so the Needs review branch can be tested.
+- Started new rules, dropdowns, file filters, conditions, and results neutral; stopped pre-mapping Result values.
+- Added a referenced-field deletion warning, named source-validation causes, and corrected skipped-step grammar.
+- Added a narrow-window layout, kept save status visible below 1200 px, overlaid the Blocks library, added a visible label/title to add-step buttons, and strengthened text-input focus.
+- Stopped presenting PDF metadata placeholders or metadata from unreadable documents as extraction candidates.
+- Added scoring-rule Move down, removed the Inputs tab strip from the Scoring policy stage, and split the session counter into test runs and duplicate records.
+
+Automated suite: 178/178 passed; production build passed. Browser re-verification of responsive, focus, and multi-tab behavior remains outstanding. See [testing](TESTING.md) and [decisions](DECISIONS.md).
+
 ## 30 October 2026 — PADS 59-KPI committed fixtures and automated suite
 
 Committed the 59 individual-KPI policies that had only existed as ignored local artifacts, plus their 201 expected scoring cases, as reference fixtures in `public/samples/pads/kpis/`: one saved draft per row (`tl-1` … `ec-2`), `cases.json` (59 groups, 201 cases), `index.json` (KPI id → workbook row, Sl No, fields, case count, expected-point set, with the excluded institutional rows and the reason), and `README.md` with the localStorage load procedure. New `src/padsAllKpis.test.js` runs every case through `runWorkflow` with `extract: null` and asserts `completed`, `scored`, and the exact points, checks each fixture's ordered `{id, type}` fields against its case group, and checks every policy is enabled: focused file 60/60, full suite 167/167, production build passed. Workbook rows 173–177 (institutional 5-point duties) are intentionally excluded; the PADS gap and the AFPI requirements are recorded in `index.json`, the sample README, the test header, and the new [PADS individual KPI verification](PADS-INDIVIDUAL-KPIS.md) document, which also carries the 59-row source map, limits, and one prior RD-12 screenshot. Updated `TESTING.md`, `ROADMAP.md`, `DECISIONS.md` (D-24), `SECURITY-AND-DATA.md`, `docs/README.md`, the root `README.md`, the sample notes, and the TL-1 walkthrough link. No application behavior, schema, scoring, or UI change.

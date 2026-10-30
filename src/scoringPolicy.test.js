@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {newScoreComponent,newScoringPolicy,newScoringRule,saveScoringVersion,evaluateScoringVersion,validateScoringVersion,validPolicyShape} from './scoringPolicy.js';
+import {detectVerdictOverlaps,newScoreComponent,newScoringPolicy,newScoringRule,saveScoringVersion,evaluateScoringVersion,validateScoringVersion,validPolicyShape} from './scoringPolicy.js';
 import {chooseActionTool,createNode} from './workflowModel.js';
 import {runWorkflow,resumeWorkflow} from './workflowEngine.js';
 import {writeDraft,readDraft} from './draftStorage.js';
@@ -8,7 +8,7 @@ import {writeDraft,readDraft} from './draftStorage.js';
 const fields=[{id:'hours',label:'Hours',type:'number',required:false,help:'',options:'',accept:'',multiple:false}];
 function fixture(){
  const root=createNode('submit'),result=createNode('result');result.config.outcome='Eligible';root.routes.next=result.id;
- const policy=newScoringPolicy();policy.enabled=true;const rule=newScoringRule();rule.name='Training completed';rule.conditions[0].expected='Eligible';policy.draft.rules=[rule];
+ const policy=newScoringPolicy();policy.enabled=true;const rule=newScoringRule();rule.name='Training completed';rule.points='12';rule.outcome='Eligible';rule.conditions[0].expected='Eligible';policy.draft.rules=[rule];
  return {nodes:[root,result],fields,values:{hours:'8'},policy:saveScoringVersion(policy,fields,[root,result])};
 }
 test('saved policy scores completed workflow, multiplies, caps, and retains immutable snapshot',async()=>{
@@ -57,6 +57,23 @@ test('formula policy combines any number of organization-defined score component
  policy.aggregation='weighted_average';policy.components[0].weight='2';assert.equal(evaluateScoringVersion(policy,{componentValues:{evidence_a:8,evidence_b:5}}).points,7);
 });
 
+test('a new scoring rule is neutral until marks and an outcome are chosen',()=>{
+ const rule=newScoringRule();assert.equal(rule.points,'');assert.equal(rule.outcome,'');
+ const policy={...newScoringPolicy(),enabled:true};policy.draft.rules=[rule];
+ assert.ok(validateScoringVersion(policy.draft,fields,[]).length);
+});
+test('duplicate workflow and policy verdict sources are reported with the field label',()=>{
+ const condition={...createNode('condition'),name:'Check lecture count'};condition.mappings={value:'field|hours'};
+ const rule={...newScoringRule(),name:'Three or more hours',points:'10',outcome:'Eligible',conditions:[{source:'field|hours',type:'number',operator:'gte',expected:'3'}]};
+ const version={version:'v1',mode:'rules',aggregation:'sum',maxPoints:'',fallback:'pending',components:[],rules:[rule]};
+ const policy={...newScoringPolicy(),enabled:true,activeVersion:'v1',versions:[version]};
+ const overlaps=detectVerdictOverlaps(policy,[condition],fields);
+ assert.equal(overlaps.length,1);assert.equal(overlaps[0].rule,'Three or more hours');assert.equal(overlaps[0].condition,'Check lecture count');assert.equal(overlaps[0].field,'Hours');
+});
+test('a missing condition source names the deleted input instead of repeating generic advice',()=>{
+ const policy=newScoringPolicy();const rule={...newScoringRule(),name:'Gone',points:'5',outcome:'Eligible',conditions:[{source:'field|missing',type:'number',operator:'gte',expected:'1'}]};policy.draft.rules=[rule];
+ assert.match(validateScoringVersion(policy.draft,fields,[]).join(' '),/input field used by this condition was removed/);
+});
 test('formula policy is manually mapped through Apply scoring policy',async()=>{
  const scoreFields=[{id:'a',label:'First evaluated score',type:'number',required:true,help:'',options:'',accept:'',multiple:false},{id:'b',label:'Second evaluated score',type:'number',required:true,help:'',options:'',accept:'',multiple:false}];
  const root=createNode('submit'),apply=chooseActionTool(createNode('action'),'apply_policy'),result=createNode('result');root.routes.next=apply.id;apply.routes.next=result.id;result.config.outcome='Calculated';

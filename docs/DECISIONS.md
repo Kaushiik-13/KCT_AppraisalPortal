@@ -90,3 +90,19 @@ Use `TL-1 Teaching Pedagogy & Content Preparation` as the single initial-KPI ver
 ## D-24 — Commit and automate the 59-row PADS policy set
 
 Promote the 59 local saved drafts and their 201 expected cases verified through the UI on 29 October 2026 into committed reference fixtures under `public/samples/pads/kpis/`, with `cases.json`, a workbook-derived `index.json`, and a README load procedure. This supersedes the D-23 instruction to keep the 59-row set out of the repository: without it, the only coverage lived in ignored artifacts and could not regress. Verify through `runWorkflow` in `src/padsAllKpis.test.js` rather than 59 stored screenshots, so all 201 cases are re-executed on every `npm test`; one prior RD-12 screenshot is kept as visual evidence only. Keep the five institutional rows 173-177 out of scope and record what PADS leaves undefined and what AFPI would need (1-5 institutional score field, duty/role eligibility, evidence or notes, supervisor or panel review, one claim per duty per period, audit history, aggregation). Keep full PADS aggregation, KRA weights, role maxima, the 200-point cap, mandatory eligibility, and dual self/supervisor scores out of scope. Fixtures remain reference-only: they are a working interpretation, not institutional approval, and contain no personal data.
+
+## D-25 — Resolve the creator walkthrough findings
+
+Address the 19 usability findings recorded in the [creator walkthrough](CREATOR-WALKTHROUGH.md) without inventing institutional policy:
+
+- Name the verdict contract: the workflow result chooses the path; an active saved rule policy supplies the marks. Detect shared input sources between a saved rule and a workflow Condition and warn, rather than silently reconciling different thresholds.
+- Protect multi-tab editing with a revision plus writer identity in browser storage. A conflicting tab stops saving and chooses reload or keep-my-version; this is not a collaborative merge.
+- Add schema-validated import for both export shapes, and include the KPI name in workflow exports. Import remains local and excludes test values and files.
+- Add optional numeric min/max enforced by the submission preview and runtime validation.
+- Keep the Needs review branch testable with a session-only required-field bypass; it is not persisted and does not bypass invalid non-empty values.
+- Start new rules, dropdowns, file filters, conditions, and results neutral; never pre-map a Result value to an arbitrary form field.
+- Warn before deleting a referenced field and name the cause in source-validation messages.
+- Improve narrow-window layout, keep the save badge visible, overlay the Blocks library instead of shifting the canvas, and strengthen text-control focus indication.
+- Do not present PDF metadata placeholders or metadata from documents with no readable page as extraction candidates.
+
+The fixes are local PoC behavior. They do not add durable concurrency, authentication, OCR, or production evidence-trust controls. Browser re-verification of the responsive, focus, and multi-tab UI remains required before closing the walkthrough issue.

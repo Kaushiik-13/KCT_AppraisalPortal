@@ -23,11 +23,15 @@ A missing required component makes scoring pending. A missing optional component
 
 ## Conditional rule policy
 
-Enable the policy, create ordered rules, save a unique version, and select it. Each rule has a name, all/any conditions, non-negative points and multiplier, and scoring outcome. A cap is optional and applies **per submission**, not across a cycle.
+Enable the policy, create ordered rules, save a unique version, and select it. Each rule has a name, all/any conditions, non-negative points and multiplier, and scoring outcome. A new rule starts with empty points and outcome, so it cannot silently award 12 points while marking the submission Eligible. Rules support Move up and Move down because order decides the first match. A cap is optional and applies **per submission**, not across a cycle.
 
 Conditions can use supported scalar form values, declared tool outputs, selected nested findings, legacy reviewer actions, or `result|outcome`. New terminal Human Review nodes do not produce an in-studio decision. The source type is recorded; removing or retyping the source blocks execution until corrected. Numeric/date operators are inclusive. Text equality is exact.
 
 The first matching rule wins. Its points are multiplied, capped if configured, and rounded to two decimal places. The workflow outcome remains separate from the scoring outcome.
+
+### Workflow result and policy result
+
+The **Workflow result** is the path selected by Conditions; it is not the marks record. When a saved rule policy is active, the **Policy result** supplies the marks. The result panel labels both explicitly and states that precedence. If a saved rule and a workflow Condition read the same input, the Scoring policy and Workflow stages show a warning listing the rule, condition, and field so the creator can remove one threshold or make them agree. This is a duplicate-verdict guard, not an automatic reconciliation of different thresholds.
 
 ### Missing evidence
 

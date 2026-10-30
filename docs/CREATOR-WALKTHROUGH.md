@@ -176,3 +176,31 @@ All 19 findings are filed as separate follow-up issues:
 - Low: #24 (rule reordering), #32 (Inputs tab on Scoring stage), #33 (session counter label), #34 (defaults), #35 (add-step affordance), #36 (save status), #37 (validation/trace wording), #38 (input focus).
 
 The later coverage pass filed #39 (unreadable-PDF placeholders), and #37 also covers the skipped-step plural wording. Two items were flagged for re-verification in their issues: #25 for the `policyVersions` shape, and #26 for the Result mapping on the current UI.
+
+## Resolution status — 30 October 2026
+
+The follow-up fixes are implemented on branch `fix/creator-walkthrough-issues` with 178/178 automated tests and a passing production build. The original findings above are retained as the historical walkthrough record.
+
+| Issue | Implemented behavior |
+|---|---|
+| #22 | Result panels label **Workflow result** and **Policy result**; the policy result is stated as the marks record when a saved rule policy is active. Scoring policy and Workflow warn when a saved rule and a Condition read the same input. |
+| #23 | Draft records carry a revision and writer identity. A conflicting tab stops saving and offers **Reload other version** or **Keep my version**. |
+| #24 | Conditional scoring rules support **Move down** as well as **Move up**. |
+| #25 | The review package includes field definitions and `labelledValues`; `maxPoints`, empty points, multipliers, and component weights are normalized to `null`; policy versions remain an array. |
+| #26 | Result steps leave **Value to use** unconnected instead of suggesting a form field. |
+| #27 | Test & review has a session-only **Simulate missing required values for this test** toggle, so the Needs review branch is reachable without editing the field. |
+| #28 | Number and whole-number fields support optional minimum/maximum values, enforced in the preview and runtime validation. |
+| #29 | **Import draft** validates and restores both export shapes; workflow exports now include the KPI name. |
+| #30 | Removing a referenced field lists the scoring rules, workflow conditions, and step mappings that depend on it and asks for confirmation. |
+| #31 | Narrow windows stack the builder inspector and related layout; the sidebar takes its own row; Workflow settings overlay the canvas. |
+| #32 | The Inputs tab strip no longer appears on the Scoring policy stage. |
+| #33 | The counter reports test runs and duplicate decision records separately. |
+| #34 | New dropdowns start without choices, file fields accept any format, and new Conditions/Results are named **New condition**/**New result**. |
+| #35 | Add-step + buttons carry a title alongside the existing accessible name; Blocks overlays rather than shifting the canvas. |
+| #36 | Save status stays visible below 1200 px. |
+| #37 | Source errors name the removed input, removed/moved step, or incompatible source; skipped-step grammar is singular/plural correct. |
+| #38 | Text controls use a visible 3 px focus outline and stronger border/glow. |
+| #39 | Placeholder PDF metadata such as `untitled`/`anonymous`, and metadata from documents with no readable page, stays `Not found` rather than a candidate. |
+| #40 | New scoring rules start with empty points and outcome, so they cannot silently award 12 points while marking Eligible. |
+
+Not re-verified in the browser during this change: the responsive layout, focus ring, multi-tab banner, import controls, and the required-field toggle. The automated checks and production build passed; a fresh Chromium pass is still required before closing #3.

@@ -77,6 +77,20 @@ export function SubmissionFields({ fields, values, onValue, disabled }) {
                       : f.type
                 }
                 step={f.type === "integer" ? 1 : "any"}
+                min={
+                  ["number", "integer"].includes(f.type) &&
+                  f.min !== "" &&
+                  f.min !== undefined
+                    ? f.min
+                    : undefined
+                }
+                max={
+                  ["number", "integer"].includes(f.type) &&
+                  f.max !== "" &&
+                  f.max !== undefined
+                    ? f.max
+                    : undefined
+                }
                 value={v ?? ""}
                 onChange={(e) => onValue(f.id, e.target.value)}
               />
@@ -415,17 +429,22 @@ export function RunResults({ run, busy, progress, stale, onDecide, history }) {
           </ul>
         </div>
       )}
-      {run?.snapshot && (
-        <p>
-          {run.trace.length} of {run.snapshot.length} steps ran.{" "}
-          {run.trace.length === run.snapshot.length
-            ? "All steps ran."
-            : `${run.snapshot
-                .filter((n) => !run.trace.some((s) => s.id === n.id))
-                .map((n) => n.name)
-                .join(", ")} have not run on this path.`}
-        </p>
-      )}
+      {run?.snapshot &&
+        (() => {
+          const skipped = run.snapshot.filter(
+            (n) => !run.trace.some((s) => s.id === n.id),
+          );
+          return (
+            <p>
+              {run.trace.length} of {run.snapshot.length} steps ran.{" "}
+              {skipped.length === 0
+                ? "All steps ran."
+                : skipped.length === 1
+                  ? `${skipped[0].name} has not run on this path.`
+                  : `${skipped.map((n) => n.name).join(", ")} have not run on this path.`}
+            </p>
+          );
+        })()}
       {run?.trace.map((s, i) => (
         <StepResult step={s} key={`${s.id}-${i}`} />
       ))}
@@ -461,7 +480,11 @@ export function RunResults({ run, busy, progress, stale, onDecide, history }) {
       )}
       {run?.result && (
         <div className="studio-outcome">
-          <strong>Outcome: {run.result.outcome}</strong>
+          <strong>Workflow result: {run.result.outcome}</strong>
+          <p className="verdict-note">
+            This is the path this submission followed through the workflow. It
+            does not replace the policy result.
+          </p>
           {run.result.value !== null && (
             <p>Value: {String(run.result.value)}</p>
           )}
@@ -476,13 +499,17 @@ export function RunResults({ run, busy, progress, stale, onDecide, history }) {
           }
         >
           <strong>
+            Policy result:{" "}
             {run.scoring.points === null
-              ? "Score pending review"
+              ? "pending review"
               : `${run.scoring.points} points`}
           </strong>
           <p>
-            Scoring outcome: {run.scoring.outcome} | Policy{" "}
-            {run.scoring.version}
+            Outcome: {run.scoring.outcome} | Policy {run.scoring.version}
+          </p>
+          <p className="verdict-note">
+            When a saved rule policy is active, this policy result is the marks
+            record. The workflow result only chooses the path.
           </p>
           <details>
             <summary>Calculation and policy snapshot</summary>

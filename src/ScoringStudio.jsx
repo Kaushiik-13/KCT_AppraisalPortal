@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
+  detectVerdictOverlaps,
   newScoreComponent,
   newScoringRule,
   policySources,
@@ -40,6 +41,24 @@ export default function ScoringStudio({
     (n) =>
       n.kind === "score" ||
       (["action", "plugin"].includes(n.kind) && n.config.tool === "score"),
+  );
+  const verdictOverlaps = useMemo(
+    () =>
+      detectVerdictOverlaps(
+        {
+          ...policy,
+          activeVersion: draft.version,
+          versions: [
+            ...(policy.versions || []).filter(
+              (v) => v.version !== draft.version,
+            ),
+            draft,
+          ],
+        },
+        nodes,
+        fields,
+      ),
+    [policy, draft, nodes, fields],
   );
   return (
     <section className="scoring-studio studio">
@@ -85,6 +104,27 @@ export default function ScoringStudio({
           </p>
         )}
       </div>
+      {verdictOverlaps.length > 0 && (
+        <div className="studio-warning" role="status">
+          <strong>This policy and a workflow condition read the same input.</strong>
+          <ul>
+            {verdictOverlaps.map((overlap) => (
+              <li
+                key={`${overlap.ruleId || overlap.rule}-${overlap.conditionId || overlap.condition}`}
+              >
+                Rule <strong>{overlap.rule}</strong> and condition{" "}
+                <strong>{overlap.condition}</strong> both read{" "}
+                <strong>{overlap.field}</strong>.
+              </li>
+            ))}
+          </ul>
+          <p>
+            The workflow result chooses the path; this policy supplies the
+            marks. Duplicate thresholds can disagree, so keep one check or make
+            both thresholds agree.
+          </p>
+        </div>
+      )}
       <div className="policy-layout">
         <div>
           <div className="policy-card">
@@ -397,8 +437,11 @@ function RulesEditor({ draft, edit, rule, sources }) {
                     (s) => s.value === c.source && s.type === c.type,
                   ) && (
                     <small className="error">
-                      Select a compatible source again after building the
-                      workflow.
+                      {c.source.startsWith("field|")
+                        ? "The input field used here was removed. Choose another input."
+                        : c.source.startsWith("node|")
+                          ? "The workflow step used here was removed or moved later. Choose another source."
+                          : "Choose a compatible source."}
                     </small>
                   )}
                 </label>
@@ -510,6 +553,17 @@ function RulesEditor({ draft, edit, rule, sources }) {
               }}
             >
               Move up
+            </button>
+            <button
+              className="mini"
+              disabled={i === draft.rules.length - 1}
+              onClick={() => {
+                const rules = [...draft.rules];
+                [rules[i], rules[i + 1]] = [rules[i + 1], rules[i]];
+                edit({ rules });
+              }}
+            >
+              Move down
             </button>
             <button
               className="mini danger"

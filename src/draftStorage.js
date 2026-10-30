@@ -44,7 +44,9 @@ export function validDraft(d) {
         typeof f.options === "string" &&
         typeof f.accept === "string" &&
         typeof f.multiple === "boolean" &&
-        (f.example === undefined || typeof f.example === "string"),
+        (f.example === undefined || typeof f.example === "string") &&
+        (f.min === undefined || typeof f.min === "string") &&
+        (f.max === undefined || typeof f.max === "string"),
     )
   )
     return false;
@@ -276,7 +278,13 @@ export function readDraft(storage) {
     const parsed = JSON.parse(raw);
     if (parsed.version !== 1 || !validDraft(parsed.draft))
       throw Error("Invalid draft");
-    return { draft: parsed.draft, restored: true, savedAt: parsed.savedAt };
+    return {
+      draft: parsed.draft,
+      restored: true,
+      savedAt: parsed.savedAt,
+      revision: Number.isInteger(parsed.revision) ? parsed.revision : 0,
+      writerId: typeof parsed.writerId === "string" ? parsed.writerId : "",
+    };
   } catch {
     return {
       draft: emptyDraft(),
@@ -287,11 +295,74 @@ export function readDraft(storage) {
     };
   }
 }
-export function writeDraft(storage, draft) {
+export function parseImportedDraft(text) {
+  let parsed;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    throw Error("Choose a JSON draft or configuration file.");
+  }
+  let incoming;
+  if (parsed?.format === "afpi-workflow-v1")
+    incoming = {
+      name: parsed.name || "Untitled KPI",
+      fields: parsed.fields,
+      nodes: parsed.nodes,
+      policy: parsed.policy,
+    };
+  else if (parsed?.version === 1 && parsed.draft) incoming = parsed.draft;
+  else if (parsed && Array.isArray(parsed.fields) && Array.isArray(parsed.nodes))
+    incoming = {
+      name: parsed.name || "Untitled KPI",
+      fields: parsed.fields,
+      nodes: parsed.nodes,
+      policy: parsed.policy,
+    };
+  else
+    throw Error("This file is not an AFPI draft or workflow configuration.");
+  if (!validDraft(incoming))
+    throw Error("The file does not match a supported draft or configuration schema.");
+  return incoming;
+}
+export function writeDraft(
+  storage,
+  draft,
+  { expectedRevision = 0, writerId = "" } = {},
+) {
   // Persist configuration only: no files, submitted values, run results, or credentials.
+  let stored = null;
+  try {
+    const raw = storage.getItem(DRAFT_KEY);
+    stored = raw ? JSON.parse(raw) : null;
+  } catch {
+    stored = null;
+  }
+  const storedRevision = Number.isInteger(stored?.revision)
+    ? stored.revision
+    : 0;
+  if (
+    stored &&
+    stored.writerId &&
+    stored.writerId !== writerId &&
+    storedRevision > expectedRevision
+  )
+    return {
+      status: "conflict",
+      revision: storedRevision,
+      stored: {
+        draft: stored.draft,
+        savedAt: stored.savedAt,
+        revision: storedRevision,
+        writerId: stored.writerId,
+      },
+      error:
+        "This draft changed in another tab. Reload or keep this version before saving.",
+    };
   const record = {
     version: 1,
     savedAt: new Date().toISOString(),
+    revision: Math.max(storedRevision, expectedRevision) + 1,
+    ...(writerId ? { writerId } : {}),
     draft: {
       name: draft.name,
       fields: draft.fields,
@@ -301,7 +372,11 @@ export function writeDraft(storage, draft) {
   };
   try {
     storage.setItem(DRAFT_KEY, JSON.stringify(record));
-    return { status: "saved", savedAt: record.savedAt };
+    return {
+      status: "saved",
+      savedAt: record.savedAt,
+      revision: record.revision,
+    };
   } catch {
     return {
       status: "error",

@@ -10,6 +10,8 @@ Storage key: `afpi.kpi-draft.v1`.
 {
   "version": 1,
   "savedAt": "2026-10-04T12:00:00.000Z",
+  "revision": 4,
+  "writerId": "tab-…",
   "draft": {
     "name": "Training participation", "fields": [], "nodes": [],
     "policy": {
@@ -25,17 +27,19 @@ Storage key: `afpi.kpi-draft.v1`.
 
 Older drafts without top-level policy remain supported; the hook adds an empty one. Structural validity is separate from execution readiness: unfinished mappings and blank editable values can autosave.
 
+`revision` and `writerId` support multiple tabs on one origin. Each write advances the revision. A tab refuses to overwrite a higher revision written by a different `writerId`; the UI offers reload or keep-my-version. This is a local last-writer guard, not a server-side lock or collaborative merge.
+
 ## Input field
 
 ```json
 {
   "id": "hours", "label": "Training hours", "type": "number",
   "required": false, "help": "Enter attended hours.", "example": "8",
-  "options": "", "accept": "", "multiple": false
+  "options": "", "accept": "", "multiple": false, "min": "0", "max": "40"
 }
 ```
 
-Types: `text`, `textarea`, `number`, `integer`, `date`, `datetime`, `email`, `url`, `select`, `multi`, `boolean`, `file`. Options are newline-separated; file filters are comma-separated extensions/MIME types. Actual File objects remain in session values.
+Types: `text`, `textarea`, `number`, `integer`, `date`, `datetime`, `email`, `url`, `select`, `multi`, `boolean`, `file`. Options are newline-separated; file filters are comma-separated extensions/MIME types. `min` and `max` are optional strings for numeric fields and are enforced by both the submission preview and runtime validation. Actual File objects remain in session values. New dropdowns start with empty options and new file fields start with an empty `accept` value.
 
 ## Node
 
@@ -74,22 +78,24 @@ Ordinary workflow mappings resolve top-level declared output keys. Nested paths 
 }
 ```
 
+A newly added rule has empty `points` and `outcome`; both must be entered before a version can be saved. Rules are ordered and support moving up or down.
+
 Version snapshots contain `version`, `mode`, `maxPoints`, `fallback`, `rules`, and formula fields `aggregation` and `components`. A formula component is `{id,name,weight,required}`; its numeric source is mapped later by an Apply scoring policy node. A selected version is copied into each run. This is local configuration versioning, not a database audit log or cryptographic immutability.
 
 ## Runtime records
 
 Runs may contain `status`, `trace`, `outputs`, `snapshot`, `issues`, `review`, `reviewNode`, `genericReview`, `decisions`, `result`, and `scoring`. Fields vary by status. A paused legacy routed-review run carries an execution `context` with values and handler references; it is not a portable serialized job. A new terminal review handoff does not carry a resumable context.
 
-Trace entries include node identity, name/kind, timestamps, output, and optional error. Action trace kinds identify the executed tool. New generic Human review is terminal and produces `status: "sent-to-review"` with a package containing submission values, extraction packages, comparison findings, AI recommendations, scoring calculations, and policy versions available on the executed path. It has no workflow decision record or outgoing route. Legacy saved generic reviews and the specialized publication review remain readable.
+Trace entries include node identity, name/kind, timestamps, output, and optional error. Action trace kinds identify the executed tool. New generic Human review is terminal and produces `status: "sent-to-review"` with a package containing the submission (`values`, field definitions, and `labelledValues` with labels and values), extraction packages, comparison findings, AI recommendations, scoring calculations, and an array of policy versions available on the executed path. Empty numeric policy values such as `maxPoints` are normalized to `null` in that package. It has no workflow decision record or outgoing route. Legacy saved generic reviews and the specialized publication review remain readable.
 
 ## Other storage and exports
 
 - `afpi.kpi-draft.v1.recovery`: unreadable draft backup created during explicit recovery replacement.
 - `afpi.sidebar.collapsed`: sidebar preference.
-- Workflow export: `{format: "afpi-workflow-v1", fields, nodes, policy}`.
+- Workflow export: `{format: "afpi-workflow-v1", name, fields, nodes, policy}`.
 - Recovery draft download: `{version: 1, draft}`.
 
-Exports exclude test files/results and server keys. There is no import UI. New schema changes must preserve old drafts or supply an explicit migration.
+Both export shapes can be imported through **Import draft** after structural validation. Exports and imports exclude test files/results and server keys. New schema changes must preserve old drafts or supply an explicit migration.
 
 ## Plugin and reusable configuration
 

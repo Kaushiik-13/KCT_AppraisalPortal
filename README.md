@@ -44,8 +44,8 @@ See [setup](docs/SETUP.md) for environment configuration, the production server,
 - Typed form-value mapping and multi-pair evidence comparison with match/mismatch/unknown states.
 - Configurable multi-input AI evaluation, optional JSON-schema validation, and human-review evidence packages.
 - Organization-defined formula and conditional scoring policies with immutable local versions.
-- Execution traces, terminal review packages, legacy publication review decisions, and browser-local draft autosave.
-- A collapsible sidebar and confirmed Clear saved draft action.
+- Execution traces, terminal review packages, legacy publication review decisions, and browser-local draft autosave with multi-tab conflict protection.
+- Schema-validated import of draft and workflow exports, optional numeric bounds, a test-only required-field bypass, labeled workflow/policy results, and a collapsible sidebar with confirmed Clear saved draft.
 
 ## Boundaries
 

@@ -179,7 +179,7 @@ export function PolicyEditor({ policy, onChange }) {
                 name: "New rule",
                 match: "all",
                 conditions: [{ fact: "scopus", op: "eq", value: "yes" }],
-                points: 12,
+                points: "",
                 multiplier: 1,
               },
             ],
@@ -387,7 +387,9 @@ export default function NodeSettings({
                 {node.mappings[p.key] &&
                   !choices.some((c) => c.value === node.mappings[p.key]) && (
                     <small className="error">
-                      Source is no longer compatible. Select another.
+                      {node.mappings[p.key].startsWith("field|")
+                        ? "The input field used here was removed. Choose another field."
+                        : "The workflow step used here was removed or is no longer available on this route. Choose another source."}
                     </small>
                   )}
               </label>

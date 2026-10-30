@@ -359,7 +359,14 @@ export function createNode(kind) {
   return {
     id: crypto.randomUUID(),
     kind,
-    name: definition(kind).name,
+    // Branch and Result labels are generic defaults. Name them for the KPI so a
+    // shipped workflow never contains an unexplained "Condition" or "Result".
+    name:
+      kind === "condition"
+        ? "New condition"
+        : kind === "result"
+          ? "New result"
+          : definition(kind).name,
     mappings: {},
     routes: Object.fromEntries(definition(kind).routes.map((r) => [r, ""])),
     config:
@@ -453,6 +460,9 @@ export function sourceChoices(node, input, nodes, fields) {
   ];
 }
 export function suggestMappings(node, nodes, fields) {
+  // A Result's optional value is never guessed: a creator must deliberately
+  // choose what the outcome should carry.
+  if (node.kind === "result") return node;
   const mappings = { ...node.mappings };
   for (const input of nodeDefinition(node).inputs) {
     const choices = sourceChoices(node, input, nodes, fields);

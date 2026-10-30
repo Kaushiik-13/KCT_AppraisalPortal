@@ -75,6 +75,16 @@ Wording defect seen in this pass (low): the skipped-step summary uses a plural v
 
 Limits: the live free model timed out once at the 45 s server abort before succeeding on retry, so latency is provider-dependent and the rate-limit path was not exercised; OpenRouter selected a different free model for a direct key probe (`nvidia/nemotron-3.5-super-vl:free`), confirming that the routed model varies; Crossref success is live but the failure path was forced by aborting the request, not by a provider outage; no Firefox/WebKit, screen reader or colour-vision checks; one browser session, so multi-tab behaviour is unchanged from the walkthrough record. Screenshots from this pass were not committed.
 
+## Creator walkthrough follow-up verification — 30 October 2026
+
+Implemented the #22–#40 follow-up fixes on branch `fix/creator-walkthrough-issues`. Automated verification:
+
+- `npm test`: **178/178 passed**.
+- `npm run build`: passed (Next.js 16.3.8 production build).
+- New regression coverage checks: multi-tab revision conflict and same-writer revision advance; import validation for both export shapes and rejection of unrelated JSON; optional numeric bounds in persisted drafts and runtime validation; required-field bypass for the Needs review branch; neutral new-rule defaults; duplicate workflow/policy source detection with field labels; named missing-condition-source messages; Result steps not pre-mapping unrelated fields; review-package labels and normalized `maxPoints`; and unreadable-PDF metadata placeholders staying `Not found`.
+
+Not performed in this change: a fresh Chromium walkthrough of the responsive layout, focus ring, multi-tab banner, import controls, or the new test-only required-field toggle. The existing walkthrough and coverage-pass records above remain the browser evidence; their 19 findings are marked resolved here only for the code paths covered by the automated checks. Screen-reader, Firefox/WebKit, and colour-vision checks remain unavailable.
+
 ## PADS individual-KPI Framework Studio verification — 29 October 2026
 
 Built and exercised **59 of the 64 KPI rows** in `public/samples/PADS.xlsx` (sheet `PADS Template`): 14 Teaching & Learning, 16 Research & Development, 11 External Interface, 10 Operations, 6 Student Development and 2 Extra & Co-Curricular. The workbook's seventh KRA, `INSTITUTIONAL OR DEPARTMENTAL CONTRIBUTIONS AND OUTCOMES`, has five optional rows with no Max Points that use `Supervisor Scoring (on 5 pt. scale)`, so they were not built. The request referred to 55, but the template contains 64 KPI rows, 59 with an explicit Max Points value.

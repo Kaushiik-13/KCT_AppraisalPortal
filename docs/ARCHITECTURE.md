@@ -46,6 +46,8 @@ Next.js App Router serves the application. `app/studio-client.jsx` loads the exi
 
 Canvas selection, zoom, library visibility, and undo are transient. Sidebar collapse has a separate preference key. Clear saved draft removes KPI storage and reloads, resetting session state while retaining sidebar preference.
 
+Draft writes carry a revision and a per-tab writer identity. A tab that sees a higher revision from another writer stops saving and offers reload or keep-my-version, so two tabs do not silently overwrite each other. Import validates a downloaded draft or workflow export and replaces the current draft only after confirmation. These protections are browser-local; there is no server-side lock or merge.
+
 ## Graph and scoring design
 
 Nodes and route IDs form a directed acyclic graph. The visual hierarchy can share a later node across paths. Layout derives from connections; execution follows one selected route at a time, not every visible branch.

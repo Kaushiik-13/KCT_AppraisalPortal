@@ -63,8 +63,13 @@ test('PPTX adapter preserves slide references',async()=>{
 
 test('human review receives the complete inspectable evidence package',async()=>{
  const node=createNode('human_review');
- const output=await executeNode(node,{}, {values:{faculty:'John Smith'},policyVersions:[{version:'v1'}],outputs:{extract:{evidence:{verified:false}},compare:{comparison:{status:'mismatch'}},ai:{assistance:{structured:{decision:'relevant'}}},score:{scoring:{points:12}}}});
+ const output=await executeNode(node,{}, {fields:[{id:'faculty',label:'Faculty name',type:'text',required:true}],values:{faculty:'John Smith'},policyVersions:[{version:'v1',maxPoints:'',rules:[]}],outputs:{extract:{evidence:{verified:false}},compare:{comparison:{status:'mismatch'}},ai:{assistance:{structured:{decision:'relevant'}}},score:{scoring:{points:12}}}});
  assert.equal(output.review.package.submission.values.faculty,'John Smith');
+ assert.equal(output.review.package.submission.fields[0].label,'Faculty name');
+ assert.equal(output.review.package.submission.labelledValues.faculty.label,'Faculty name');
+ assert.equal(output.review.package.submission.labelledValues.faculty.value,'John Smith');
+ assert.ok(Array.isArray(output.review.package.policyVersions));
+ assert.equal(output.review.package.policyVersions[0].maxPoints,null);
  assert.equal(output.review.package.extraction[0].verified,false);
  assert.equal(output.review.package.comparison[0].status,'mismatch');
  assert.equal(output.review.package.aiRecommendation[0].structured.decision,'relevant');
