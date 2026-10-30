@@ -4,7 +4,7 @@ Status: **implemented for the local synthetic prototype**
 
 ## Purpose and boundary
 
-Screens 4–5 demonstrate how one organization can configure and compare established final-score models after readiness succeeds. The target is fixed to `final_approved_score` within the policy range (0–200 for the KCT fixture). This phase does not invent an algorithm, persist a fitted model, approve/publish a version, serve predictions or establish real KCT accuracy.
+Screens 4–5 demonstrate how one organization can configure and compare established final-score models after readiness succeeds. The target is fixed to `final_approved_score` within the policy range (0–200 for the KCT fixture). This phase does not invent an algorithm or establish real KCT accuracy. Successful fitted candidates are now handed to the separate prototype governance boundary described in [prediction governance and inference](PREDICTION-GOVERNANCE-AND-INFERENCE.md).
 
 ## Request contract
 
@@ -40,6 +40,6 @@ Lowest held-out MAE breaks ties among candidates that pass. This gate is a proto
 
 ## Provider boundary and lifecycle
 
-The Node route starts `ml/prediction_service/app.py`, sends one JSON operation through stdin and accepts bounded JSON stdout. The child process is hidden, has a 60-second timeout and 2 MB response limit, and returns controlled unavailable/timeout/failure responses. `PREDICTION_PYTHON` can select the executable.
+The Node route starts `ml/prediction_service/app.py`, sends one JSON operation through stdin and accepts bounded JSON stdout. The child process is hidden, has a 60-second timeout and 12 MB response limit, and returns controlled unavailable/timeout/failure responses. `PREDICTION_PYTHON` can select the executable.
 
-Run identity derives from the snapshot ID plus validated configuration checksum. The response and fitted estimator live only for the request/page session; page reload loses the comparison. A production version requires authenticated organization scope, immutable server-resolved snapshots/policies, a durable training job, isolated compute, model/artifact storage, approval records, audit events, monitoring and rollback.
+Run identity derives from the snapshot ID plus validated configuration checksum. The provider serializes each successful fitted pipeline for the trusted server registry; the training route strips those artifacts from the browser response. Registry state lives only in the current Node process, so a server restart loses candidates, decisions, publications and artifacts. A production version requires authenticated organization scope, immutable server-resolved snapshots/policies, a durable training job, isolated compute, signed model/artifact storage, approval records, audit events, monitoring and rollback.

@@ -20,6 +20,7 @@ These records summarize accepted conversation choices and implemented behavior; 
 | D-16 | Use Next.js App Router for deployment readiness | Preserve the browser workflow engine behind a client-only boundary; expose AI through Node route handlers and keep secrets server-side |
 | D-24 | Make prediction readiness a strict, configurable gate | Select Scenario A/B/C from compatible completed cases and cycles; block invalid/leaking data before training |
 | D-26 | Keep prototype training local, reproducible and baseline-gated | Compare established candidates on the latest-cycle holdout; do not persist or publish a model yet |
+| D-27 | Use explicit, scope-compatible prototype model governance | Keep artifacts server-side, require one-way approval/publication, supersede instead of delete, and keep prediction advisory |
 
 ## Unresolved domain questions
 
@@ -118,3 +119,9 @@ Generate all four scenarios together, keep them in memory, and allow complete CS
 Implement screens 4–5 with a Node route that reruns canonical readiness and creates the checkpoint-safe matrix before invoking an isolated local Python/scikit-learn provider. Fit imputation, encoding and scaling only on earlier-cycle training rows; evaluate the latest completed cycle. Compare Ridge, Random Forest and Gradient Boosting with pace projection and role-plus-checkpoint median baselines using a fixed seed.
 
 Recommend a candidate only when its held-out MAE beats both baselines and its clamped outputs remain in the configured score range. Record metrics, parameters, counts, feature/split contracts and checksums in the in-memory response. Do not persist, approve, publish or use the fitted pipeline for inference in this phase. Every metric remains synthetic demonstration evidence.
+
+## D-27 — Explicit prototype governance and read-only inference
+
+Register successful fitted pipelines only in server process memory and return public metadata without the serialized artifact. Permit approval only for the recommendation-eligible candidate, require an authenticated production replacement later, and make prototype approval/rejection final. Publication is a separate action that requires the exact organization, target, policy and framework scope. A newer compatible publication supersedes the prior record rather than deleting it; only one is active per scope.
+
+Inference always revalidates the selected synthetic history and active checkpoint. Scenario A uses the transparent pace rule without a model. Scenario B uses a compatible published model when available and otherwise a low-confidence transparent fallback. Scenario C requires the compatible approved and published organization model. Return score, empirical/transparent range, method, confidence, factors, versions and warnings, but never mutate verified evidence or the official appraisal score. The in-process registry, simulated reviewer and pickle artifact are local-review constraints, not a production storage/security design.

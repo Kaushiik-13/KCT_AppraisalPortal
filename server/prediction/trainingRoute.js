@@ -3,6 +3,7 @@ import { buildCheckpointSafeFeatureMatrix } from "../../src/prediction/featureMa
 import { evaluatePredictionReadiness } from "../../src/prediction/readiness.js";
 import { validateTrainingConfiguration } from "../../src/prediction/trainingConfig.js";
 import { runTrainingProvider } from "./trainingClient.js";
+import { modelRegistry } from "./modelRegistry.js";
 
 const MAX_BODY_BYTES = 6_000_000;
 const json = (data, status = 200) => Response.json(data, { status, headers: { "Cache-Control": "no-store" } });
@@ -24,7 +25,7 @@ function validOrigin(request) {
 
 const checksum = (value) => createHash("sha256").update(JSON.stringify(value)).digest("hex");
 
-export async function predictionTraining(request, { provider = runTrainingProvider } = {}) {
+export async function predictionTraining(request, { provider = runTrainingProvider, registry = modelRegistry } = {}) {
   if (!validOrigin(request)) return json({ error: "Use the application to make this request." }, 403);
   if (!request.headers.get("content-type")?.startsWith("application/json")) return json({ error: "Use JSON." }, 415);
   const declared = Number(request.headers.get("content-length"));
@@ -88,6 +89,31 @@ export async function predictionTraining(request, { provider = runTrainingProvid
       matrix,
       options: validation.configuration,
     });
+    const registered = registry.registerTraining({
+      runId,
+      organizationId: data.snapshot.organizationId,
+      target: result.target,
+      snapshotId: data.snapshot.id,
+      snapshotChecksum,
+      configurationChecksum,
+      policyVersion: data.snapshot.policyVersion || data.policy.version,
+      frameworkVersion: data.snapshot.frameworkVersion,
+      scoreRange: {
+        minimum: validation.configuration.scoreMinimum,
+        maximum: validation.configuration.scoreMaximum,
+      },
+      featureSchema: result.featureSchema,
+      provider: result.provider,
+      baselines: result.baselines,
+      candidates: result.candidates,
+      recommendation: result.recommendation,
+      createdAt: startedAt,
+    });
+    const modelIdByCandidate = new Map(registered.map((entry) => [entry.algorithm.id, entry.id]));
+    const candidates = result.candidates.map(({ artifact, ...candidate }) => ({
+      ...candidate,
+      modelId: modelIdByCandidate.get(candidate.id) || null,
+    }));
     return json({
       runId,
       status: "succeeded",
@@ -108,6 +134,8 @@ export async function predictionTraining(request, { provider = runTrainingProvid
         warnings: readiness.warnings,
       },
       ...result,
+      candidates,
+      models: registered,
     });
   } catch (error) {
     const unavailable = error?.code === "TRAINING_PROVIDER_UNAVAILABLE";

@@ -2,12 +2,19 @@ import json
 import sys
 
 from training import train_and_compare
+from inference import predict_with_artifact
 
 
 def main():
     try:
         payload = json.load(sys.stdin)
-        result = train_and_compare(payload)
+        operation = payload.get("operation")
+        if operation == "train_compare":
+            result = train_and_compare(payload)
+        elif operation == "predict":
+            result = predict_with_artifact(payload)
+        else:
+            raise ValueError("Unsupported provider operation.")
         json.dump(result, sys.stdout, separators=(",", ":"), allow_nan=False)
         sys.stdout.write("\n")
     except Exception as error:

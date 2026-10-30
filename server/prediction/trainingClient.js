@@ -3,7 +3,7 @@ import { join } from "node:path";
 
 const providerScript = join(process.cwd(), "ml", "prediction_service", "app.py");
 const DEFAULT_TIMEOUT_MS = 60_000;
-const MAX_OUTPUT_BYTES = 2_000_000;
+const MAX_OUTPUT_BYTES = 12_000_000;
 
 function providerError(message, code = "TRAINING_PROVIDER_FAILED") {
   const error = new Error(message);
@@ -23,6 +23,19 @@ export function parseTrainingProviderOutput(output, exitCode) {
   }
   if (!Array.isArray(result.baselines) || !Array.isArray(result.candidates) || !result.recommendation) {
     throw providerError("The local training provider response is incomplete.");
+  }
+  return result;
+}
+
+export function parseInferenceProviderOutput(output, exitCode) {
+  let result;
+  try {
+    result = JSON.parse(output);
+  } catch {
+    throw providerError("The local inference provider returned an unreadable response.");
+  }
+  if (exitCode !== 0 || result?.status !== "succeeded" || !Number.isFinite(result?.predictedScore)) {
+    throw providerError(result?.error || "The local inference provider could not complete the request.");
   }
   return result;
 }
@@ -74,7 +87,9 @@ export function runTrainingProvider(payload, {
         return;
       }
       try {
-        finish(resolve, parseTrainingProviderOutput(stdout, code));
+        finish(resolve, payload.operation === "predict"
+          ? parseInferenceProviderOutput(stdout, code)
+          : parseTrainingProviderOutput(stdout, code));
       } catch (error) {
         finish(reject, error);
       }

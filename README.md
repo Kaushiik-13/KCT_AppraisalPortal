@@ -2,7 +2,7 @@
 
 A desktop proof of concept for creating configurable KPI forms, verification workflows, and scoring policies. The aim is to let different institutions compose their own KPIs from shared tools. Publication verification is the first worked example, not the only supported workflow.
 
-Application baseline: **29 October 2026**. Prediction Framework screens 1–5 are implemented through local synthetic model comparison. This is a PoC, not a production appraisal platform.
+Application baseline: **29 October 2026**. Prediction Framework screens 1–8 are implemented through synthetic model approval, publication, and read-only prediction. This is a PoC, not a production appraisal platform.
 
 ## Run locally
 
@@ -36,6 +36,7 @@ See [setup](docs/SETUP.md) for environment configuration, the production server,
 | Build the prediction review prototype | [Prediction prototype implementation plan](docs/PREDICTION-PROTOTYPE-IMPLEMENTATION-PLAN.md) |
 | Understand prediction readiness | [Prediction readiness contract](docs/PREDICTION-READINESS.md) |
 | Understand model training and comparison | [Prediction training contract](docs/PREDICTION-TRAINING.md) |
+| Understand model governance and prediction | [Prediction governance and inference](docs/PREDICTION-GOVERNANCE-AND-INFERENCE.md) |
 | Review the synthetic dataset audit | [Prediction dataset audit](docs/PREDICTION-DATASET-AUDIT-2026-10-29.md) |
 | Work on the code | [Contributing](CONTRIBUTING.md) |
 | See remaining work | [Roadmap](docs/ROADMAP.md) |
@@ -50,7 +51,7 @@ See [setup](docs/SETUP.md) for environment configuration, the production server,
 - Organization-defined formula and conditional scoring policies with immutable local versions.
 - Execution traces, terminal review packages, legacy publication review decisions, and browser-local draft autosave.
 - A collapsible sidebar and confirmed Clear saved draft action.
-- A Prediction Framework prototype at `/prediction` with overview, eight-decision synthetic dataset setup, deterministic generation, preview/download, Scenario A/B/C readiness, time-based split, leakage-safe model configuration, local scikit-learn training and held-out baseline comparison. Training results are in-memory synthetic demonstrations; no approved/published model or live prediction exists yet.
+- A Prediction Framework prototype at `/prediction` with overview, eight-decision synthetic dataset setup, deterministic generation, preview/download, Scenario A/B/C readiness, time-based split, leakage-safe model configuration, local scikit-learn training, held-out comparison, simulated approval/publication, and a read-only prediction sandbox. Model records and artifacts are process-memory synthetic demonstrations and disappear on server restart.
 
 ## Boundaries
 
@@ -58,7 +59,7 @@ Indexing is mocked, not verified against Scopus/WOS. Only first-listed authors a
 
 AI can summarize findings but does not itself mutate recorded evidence or scores. Creator-authored policies can consume exposed text values; the PoC does not enforce a production evidence-trust model.
 
-The application uses Next.js App Router and is ready to import into Vercel, but it has not been pushed or deployed. The most recent automated baseline is recorded in [testing](docs/TESTING.md). Historical results are retained in [Phase 6 verification](PHASE-6-VERIFICATION.md).
+The application uses Next.js App Router and builds for Vercel, but the local Python prediction provider and in-process model registry are not a production/serverless deployment design. The most recent automated baseline is recorded in [testing](docs/TESTING.md). Historical results are retained in [Phase 6 verification](PHASE-6-VERIFICATION.md).
 
 The included PRISMA PDF is an attributed, unmodified fixture. See [sample attribution](public/samples/README.txt) and [security and data](docs/SECURITY-AND-DATA.md).
 

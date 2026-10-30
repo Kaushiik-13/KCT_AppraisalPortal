@@ -15,6 +15,8 @@
 | Generated prediction preview | Same-origin generation request; KCT/PADS-shaped synthetic rows returned to browser memory and not persisted |
 | Synthetic readiness request/result | Same-origin JSON request to the Next.js readiness route; evaluated in memory and not persisted |
 | Synthetic training request/result | Same-origin JSON to the Next.js training route, then local Python stdin/stdout; matrices, metrics and results remain in memory and are not persisted |
+| Synthetic model artifact/registry | Server process memory only; serialized scikit-learn artifacts are stripped from browser responses and lost on server restart |
+| Sandbox prediction request/result | Same-origin JSON plus a server-resolved compatible artifact; current/history rows and advisory output remain in memory and are not persisted |
 
 The PDF binary is not uploaded by the app's AI path, but selected extracted text may be sent externally. A local draft is not encrypted storage, a cloud backup, or an audit log. Saved policies/instructions can contain personal text if the creator enters it.
 
@@ -25,6 +27,8 @@ The PDF binary is not uploaded by the app's AI path, but selected extracted text
 - Context is bounded and evidence is separated from system instructions.
 - PDF extraction disables PDF.js eval support and enforces size/page limits. All evidence formats have a 20 MB client-side limit; Office extraction stays local.
 - Models do not directly mutate evidence or approve scores; deterministic workflow and scoring operations own those operations. New generic Human Review only transfers a package to a separate module.
+- Prediction lifecycle routes require the baseline gate before approval, explicit approval before publication, and an exact compatibility scope before activation. Inference revalidates the selected history and current checkpoint and always returns `officialScoreChanged: false`.
+- Serialized model artifacts are created by the local server-owned Python provider, retained on private registry records, and removed from browser/API records. The prediction request cannot supply an artifact.
 - Corrupt drafts are protected against automatic overwrite; clearing requires confirmation.
 
 Do not interpret these as production security guarantees. Origin validation is not user authentication and the in-memory concurrency guard is not a distributed rate limit. Browser state can be modified locally. Reviewer names are not authenticated. Arbitrary creator policies may consume AI response text as a condition source; the PoC has no trust-level enforcement for evidence.
@@ -49,7 +53,7 @@ The included PRISMA paper retains its original attribution and license notice; s
 
 The prediction fixtures use pseudonymous `SYN-KCT-*` keys and an explicit synthetic flag. They are generated from a reference PADS role/KRA configuration and contain no names, email addresses, submissions or uploaded evidence. Synthetic model metrics must not be represented as real KCT accuracy. Real appraisal data must not be placed in these fixture paths; production ingestion requires institutional authorization, tenant isolation, retention rules and an approved security design.
 
-The prototype generation, readiness and training endpoints enforce same-origin requests in production, JSON input, request-size limits and no-store responses. Training reruns readiness, rejects target/future/identity leakage, excludes active rows, enforces the time split and returns bounded provider failures without exposing raw stderr. The local child process has a timeout and output limit. These controls do not provide authentication, tenant authorization, resource quotas, sandboxing or durable audit storage. Requests carry rows and a policy contract only for the synthetic prototype; production must resolve immutable organization-scoped snapshots and policy releases server-side and run training in an isolated durable service.
+The prototype generation, readiness, training, lifecycle and prediction endpoints enforce same-origin requests in production, JSON input, request-size limits and no-store responses. Training reruns readiness, rejects target/future/identity leakage, excludes active rows, enforces the time split and returns bounded provider failures without exposing raw stderr. The local child process has a timeout and output limit. Python pickle is safe here only under the narrow prototype rule that artifacts are created and later loaded by the same trusted local provider; accepting client-supplied or untrusted artifacts is forbidden. These controls do not provide authentication, tenant authorization, resource quotas, sandboxing, signing, encryption at rest or durable audit storage. The simulated reviewer identity is not authenticated. The global in-process registry is not reliable across restarts, replicas or serverless invocations. Production must resolve immutable organization-scoped snapshots/policy releases server-side and use isolated training, a durable signed artifact store and authenticated lifecycle permissions.
 
 AI adapter diagnostic logs include only selected model, finish reason and answer-presence boolean. They do not log instructions, evidence, keys or internal reasoning.
 

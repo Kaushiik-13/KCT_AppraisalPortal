@@ -1,11 +1,11 @@
 # Documentation index
 
-Application baseline: **29 October 2026**. Prediction Framework screens 1–5 are implemented through local synthetic training and held-out comparison. These documents distinguish planned features from the implemented Next.js PoC.
+Application baseline: **29 October 2026**. Prediction Framework screens 1–8 are implemented through local synthetic approval, publication, and read-only inference. These documents distinguish planned features from the implemented Next.js PoC.
 
 ## Product and user guides
 
 - [Project brief](PROJECT-BRIEF.md): purpose, roles, requirements, and scope.
-- [User guide](USER-GUIDE.md): Framework Studio authoring plus Prediction Framework setup, readiness, model configuration and comparison.
+- [User guide](USER-GUIDE.md): Framework Studio authoring plus Prediction Framework setup, readiness, training, approval, publication, and sandbox prediction.
 - [Publication KPI](PUBLICATION-KPI.md): complete example and unresolved scoring decisions.
 - [Training KPI](TRAINING-KPI.md): build a generic workflow and scoring policy.
 - [PADS TL-1 walkthrough](PADS-TL1-WALKTHROUGH.md): reference-only end-to-end verification of one PADS KPI, with source mapping, expected scores, screenshots, and limits.
@@ -26,6 +26,7 @@ Application baseline: **29 October 2026**. Prediction Framework screens 1–5 ar
 - [Prediction data dictionary](PREDICTION-DATA-DICTIONARY.md): implemented synthetic fixture grain, fields, KRA columns, scenarios, leakage exclusions, regeneration and current limitations.
 - [Prediction readiness and feature-safety contract](PREDICTION-READINESS.md): implemented Scenario A/B/C selection, data-quality findings, leakage exclusions, time-based split, API behavior and prototype limits.
 - [Prediction training and comparison contract](PREDICTION-TRAINING.md): implemented local provider boundary, preprocessing, candidates, metrics, recommendation gate, API behavior and limitations.
+- [Prediction governance and inference](PREDICTION-GOVERNANCE-AND-INFERENCE.md): implemented candidate registry, approval/publication lifecycle, compatibility, fallback behavior, inference response and prototype limits.
 - [Synthetic prediction dataset audit — 29 October 2026](PREDICTION-DATASET-AUDIT-2026-10-29.md): fixture inventory, verification evidence, checksums, findings and approved prototype uses.
 
 ## Engineering and planning
@@ -41,7 +42,7 @@ Application baseline: **29 October 2026**. Prediction Framework screens 1–5 ar
 
 **KPI creator:** User guide → Training KPI → Publication KPI → Scoring → AI and API.
 
-**Developer:** Setup → Architecture → Data model → Workflow engine → Tools and extensions → Prediction Framework plan → Prediction prototype plan → Prediction readiness → Prediction training → Testing.
+**Developer:** Setup → Architecture → Data model → Workflow engine → Tools and extensions → Prediction Framework plan → Prediction prototype plan → Prediction readiness → Prediction training → Prediction governance and inference → Testing.
 
 **Project reviewer:** Project brief → Decisions → Security and data → Roadmap.
 

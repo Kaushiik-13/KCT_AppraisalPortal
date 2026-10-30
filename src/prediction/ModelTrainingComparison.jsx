@@ -3,12 +3,13 @@ import { AlertTriangle, CheckCircle2, RotateCcw, Trophy } from "lucide-react";
 const metric = (value, digits = 2) => Number.isFinite(value) ? Number(value).toFixed(digits) : "—";
 const parameters = (value) => Object.entries(value || {}).map(([key, item]) => `${key.replaceAll("_", " ")}: ${Array.isArray(item) ? item.join("–") : item}`).join(" · ");
 
-export default function ModelTrainingComparison({ result, onReconfigure, onRunAgain }) {
+export default function ModelTrainingComparison({ result, onReconfigure, onRunAgain, onEvaluate }) {
   const rows = [...result.baselines.map((entry) => ({ ...entry, kind: "Baseline" })), ...result.candidates.map((entry) => ({ ...entry, kind: "Candidate" }))];
   const scoreRange = result.scoreRange || { minimum: 0, maximum: 200 };
   const recommended = result.recommendation.gatePassed
     ? rows.find((entry) => entry.id === result.recommendation.candidateId)
     : null;
+  const recommendedModel = result.models?.find((entry) => entry.id === recommended?.modelId);
 
   return (
     <section className="prediction-page-section" aria-labelledby="model-comparison-title">
@@ -21,6 +22,7 @@ export default function ModelTrainingComparison({ result, onReconfigure, onRunAg
         <div className="prediction-action-row">
           <button className="prediction-btn" onClick={onReconfigure}>Change configuration</button>
           <button className="prediction-btn" onClick={onRunAgain}><RotateCcw size={15} />Run again</button>
+          {recommended?.modelId ? <button className="prediction-btn primary" onClick={onEvaluate}>{recommendedModel?.lifecycle === "candidate" ? "Evaluate candidate" : "View candidate"}</button> : null}
         </div>
       </div>
 

@@ -1,8 +1,8 @@
 # Prediction prototype implementation plan
 
-Status: **Phases 1–3 implemented; screens 1–5 are usable, while approval, publication and prediction remain planned**
+Status: **Phases 1–4 implemented; screens 1–8 are usable, while the employee view, durable storage, monitoring and retraining remain planned**
 
-Active training branch: `codex/prediction-model-training` (based on `codex/prediction-readiness-ui`)
+Active governance branch: `codex/prediction-governance-sandbox` (based on `codex/prediction-model-training`)
 
 Initial organization: KCT
 
@@ -14,7 +14,7 @@ Review goal: demonstrate configuration → synthetic data → readiness → trai
 
 This document is the implementation-ready delivery plan for the first end-to-end review prototype. The broader product architecture, production safeguards, three readiness scenarios, lifecycle and long-term phases remain defined in the [Prediction Framework implementation plan](PREDICTION-FRAMEWORK-IMPLEMENTATION-PLAN.md).
 
-The seeded KCT/PADS KRA-level generator and four scenario fixtures were implemented on 29 October 2026. The [prediction readiness contract](PREDICTION-READINESS.md) validates them, selects Scenario A/B/C, creates a latest-cycle holdout and blocks leakage-prone features. Screens 1–5 now configure generation, render readiness, configure safe model inputs and compare established candidates with transparent baselines through the local provider. Approval, persistence, prediction and employee views remain planned.
+The seeded KCT/PADS KRA-level generator and four scenario fixtures were implemented on 29 October 2026. The [prediction readiness contract](PREDICTION-READINESS.md) validates them, selects Scenario A/B/C, creates a latest-cycle holdout and blocks leakage-prone features. Screens 1–8 now configure generation, render readiness, compare established candidates, simulate approval/publication, and run read-only predictions through a private in-process registry. The employee view, durable persistence, monitoring and retraining remain planned.
 
 ## 1. Prototype outcome
 
@@ -670,7 +670,11 @@ Deliverables:
 - Prediction endpoint and expected range.
 - Sandbox.
 
-Exit: only the approved/published compatible model is used for Scenario B/C inference.
+Planned exit: only the approved/published compatible model is used for Scenario B/C inference.
+
+Current result: implemented for the local synthetic prototype. Scenario A never calls a model; Scenario B uses the active compatible model or transparent fallback; Scenario C refuses inference without the active compatible model. Approval and publication are separate, replacement supersedes rather than deletes, and inference cannot change the official score.
+
+Exit: met for screens 6–8. The registry and artifact are process-memory only and are not a production persistence boundary.
 
 ### Phase 5: employee view and review walkthrough
 

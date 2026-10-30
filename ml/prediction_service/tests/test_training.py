@@ -7,6 +7,7 @@ if SERVICE_ROOT not in sys.path:
     sys.path.insert(0, SERVICE_ROOT)
 
 from training import train_and_compare  # noqa: E402
+from inference import predict_with_artifact  # noqa: E402
 
 
 def example(employee, cycle, checkpoint, final_score):
@@ -101,6 +102,20 @@ class TrainingProviderTests(unittest.TestCase):
         result = train_and_compare(request)
         self.assertEqual(result["baselines"][0]["metrics"]["mae"], 0)
         self.assertGreater(result["baselines"][1]["metrics"]["mae"], 0)
+
+    def test_serialized_candidate_predicts_without_refitting(self):
+        request = payload(91)
+        request["options"]["candidates"] = ["ridge"]
+        result = train_and_compare(request)
+        candidate = result["candidates"][0]
+        prediction = predict_with_artifact({
+            "artifact": candidate["artifact"],
+            "features": request["matrix"]["test"][0]["features"],
+        })
+        self.assertEqual(prediction["status"], "succeeded")
+        self.assertEqual(prediction["candidate"], "ridge")
+        self.assertGreaterEqual(prediction["predictedScore"], 0)
+        self.assertLessEqual(prediction["predictedScore"], 200)
 
 
 if __name__ == "__main__":
