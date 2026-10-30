@@ -4,6 +4,7 @@
 
 ```powershell
 npm.cmd test
+npm.cmd run test:prediction-ml
 npm.cmd run build
 ```
 
@@ -11,9 +12,59 @@ npm.cmd run build
 
 The current Publication plugin has ten steps, no simulated index or AI node, a Clear-only scoring Action, and one shared Appraiser review target for all three outcomes. Regression assertions check route convergence, saved-policy selection, score mapping into review, and setup validation. All 102 automated tests and the production build passed on 28 October 2026. `git diff --check` passed; historical reports below cover earlier versions.
 
-Tests use Node's built-in test runner over `src/*.test.js` and `server/*.test.js`. A passing build verifies bundling, not browser behavior. There is no lint script or committed full browser automation suite.
+Tests use Node's built-in test runner over `src/*.test.js`, `src/prediction/*.test.js`, and `server/*.test.js`. A passing build verifies bundling, not browser behavior. There is no lint script or committed full browser automation suite.
 
-Most recent automated baseline: **167 passing tests** and a successful production build on 30 October 2026 after committing the 59 individual PADS KPI fixtures and their 201 automated cases. The 27 October picker report, 101-test report from 7 October, and earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) remain historical checkpoints.
+Most recent automated baseline: **226 passing JavaScript tests plus 5 passing Python tests** and a successful production build on 30 October 2026 after merging the prediction stack and the final `main` into `fix/creator-walkthrough-issues`. The merged test command collects the creator-walkthrough regression tests and five nested prediction-service tests that the governance baseline did not run. The 215-test employee-dashboard result, 202-test governance result, 196-test model-training result, 189-test readiness-UI result, 185-test readiness result, 175-test merged prototype result, 167-test PADS KPI result, 150-test employee-dashboard result, 137-test governance result, 131-test training result, 124-test screens 1–3 result, 120-test readiness backend result, 110-test synthetic prediction dataset result and 109-test dataset-foundation result, 102-test reports from 27–28 October, 101-test report from 7 October, and earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) remain historical checkpoints.
+
+## Branch synchronization — 30 October 2026
+
+Merged `main` at `ebbb301` into `codex/prediction-prototype`, then propagated the updated base through `codex/prediction-readiness`, `codex/prediction-readiness-ui`, `codex/prediction-model-training`, `codex/prediction-governance-sandbox` and `codex/prediction-employee-dashboard`. The four documentation conflicts (`CHANGE-HISTORY.md`, `DECISIONS.md`, `SECURITY-AND-DATA.md`, `TESTING.md`) retain both the PADS verification records and the synthetic prediction dataset records; the prediction prototype decision was renumbered D-25 to follow the new PADS decisions D-23 and D-24. The merged prototype suite passed **175/175** tests, readiness **185/185**, readiness-UI **189/189**, model-training **196/196** JavaScript tests plus **4/4** Python tests, governance **202/202** JavaScript tests plus **5/5** Python tests, and employee dashboard **215/215** JavaScript tests plus **5/5** Python tests; `npm.cmd run build` completed successfully with Next.js 16.3.8. The synchronization adds no new application behavior; it combines the PADS fixtures and tests from `main` with the prediction fixtures and tests on the branch.
+
+## Creator walkthrough merge — 30 October 2026
+
+Merged `main` into `fix/creator-walkthrough-issues` after landing the six-PR prediction stack (#12, #13, #14, #15, #16 and #18). Conflicts in `README.md`, `docs/CHANGE-HISTORY.md` and `docs/DECISIONS.md` retain both the creator-walkthrough and prediction records. Renumbered the prediction decisions to unique IDs D-25 through D-30 and the creator-walkthrough decision to D-31. `npm.cmd test` passed all **226 JavaScript tests**; `npm.cmd run test:prediction-ml` passed all **5 Python tests**; `npm.cmd run build` passed with Next.js 16.3.8; `git diff --check` passed. Browser re-verification of responsive, focus and multi-tab behavior remains outstanding.
+
+## Employee prediction and retraining readiness — 30 October 2026
+
+Eight new JavaScript tests cover creation of a later valid active checkpoint without a target label, policy-labelled bounded KRA progress, prediction freshness, active-cycle label exclusion, cycle-close/final-approval gating, case/cycle thresholds, periodic check dates and locked replacement safeguards. The main `npm.cmd test` command now includes nested `src/prediction/*.test.js` files, including five existing prediction-service/configuration tests that the previous command did not collect. Scenario C server coverage also asserts that the provider operation is `predict`, not training.
+
+`npm.cmd test` passed all **150 JavaScript tests**. `npm.cmd run test:prediction-ml` passed all **5 Python tests**. `npm.cmd run build` passed with Next.js 16.3.8 and screens/routes 1–10. `git diff --check` and documentation-link checks passed. The React quality review found module-scope components, labelled controls, no added effects, memoized derived retraining status and no new dependency.
+
+The local browser journey generated 1,252 rows, confirmed Scenario C readiness, trained the three established candidates, viewed the recommended Random Forest, published `kct-final_approved_score-v1`, and predicted 143.63 (range 121.19–166.07) for the selected synthetic employee. Screen 9 refreshed a later verified checkpoint from 34.52/143.63 to 42.52/56.33 while retaining model `kct-final_approved_score-v1`, training run `training-2722b378db71cd4e`, and `officialScoreChanged: No`. Screen 10 proved a closed cycle still had zero usable labels until final outcomes were approved; with 40 approved cases and one cycle it reported candidate-training eligibility while the active model remained published. The periodic option exposed the next check date.
+
+The same browser run confirmed Scenario A used the transparent pace rule, Scenario B used the published model with low confidence, Scenario C required the published model, and invalid history returned named blocking findings with HTTP 422. An approval-state crash found during the first walkthrough was fixed by keeping approved and published model state separate and guarding publication metadata; the complete journey was rerun successfully afterward. These are synthetic local checks, not real accuracy, fairness, production identity, scheduling, durability or deployment evidence.
+
+## Prediction approval, publication and sandbox — 29 October 2026
+
+Six additional JavaScript tests cover artifact privacy, approval/rejection guards, exact publication compatibility, version replacement/supersession, lifecycle request validation, Scenario A rule behavior, Scenario B published-model/fallback selection, Scenario C published-model enforcement, invalid-history blocking, output clamping/ranges and unchanged official scores. One additional Python test proves a serialized fitted candidate can predict without refitting.
+
+`npm.cmd test` passed all **137 JavaScript tests**. `npm.cmd run test:prediction-ml` passed all **5 Python tests**. `npm.cmd run build` passed with Next.js 16.3.8 and included the decision, publication and prediction routes. `git diff --check` passed. The React quality review found module-scope components, labelled controls, disabled async actions, no new effects, and no new client ML dependency.
+
+A local browser walkthrough generated 1,252 rows, trained the default candidates, approved the recommended Random Forest, published `kct-final_approved_score-v1`, and completed a Scenario C prediction of 143.63 with expected range 121.19–166.07. It also verified Scenario A used the transparent pace projection, Scenario B used the published model with low confidence, invalid history was blocked with named findings, changing the scenario cleared the prior result, and every result kept the official score unchanged. These are deterministic synthetic checks, not accuracy, fairness, authentication, durability or deployed-runtime evidence.
+
+## Prediction model configuration and comparison — 29 October 2026
+
+Seven new JavaScript tests cover fixed-target/configuration validation, leakage rejection, candidate/seed/readiness/split guards, server-side readiness recomputation, completed-only time-split matrix construction, deterministic run identity, safe provider errors, output parsing and a real Node-to-Python Ridge integration. Four Python tests cover both baselines and all three candidate metrics, baseline-only inputs, configured-range evidence, deterministic metrics/recommendation for the same seed, and unsupported-candidate rejection.
+
+`npm.cmd test` passed all **131 JavaScript tests**. `npm.cmd run test:prediction-ml` passed all **4 Python tests**. `npm.cmd run build` passed with Next.js 16.3.8 and included dynamic `/api/prediction/training`. The React quality review found components declared at module scope, no new effects or dependency arrays, labelled controls/fieldsets, disabled-state guards and no large new client library.
+
+A local browser walkthrough generated the default 1,252 synthetic rows, confirmed Scenario C and its 2022–25 training/2025–26 holdout split, opened Screen 4, reviewed ten selected checkpoint-safe inputs plus three candidates, and completed Screen 5. The default synthetic run recommended Random Forest with MAE 9.60 after it beat pace MAE 20.83 and grouped-median MAE 24.38; Ridge and Gradient Boosting also completed. The screen showed RMSE, nMAE, R², residual ranges, seed, counts and parameters. This is one deterministic synthetic demonstration, not evidence of real KCT performance.
+
+The local provider requires Python/scikit-learn and is not packaged as a production Vercel training service. No approval, model artifact persistence, inference endpoint, subgroup/fairness validation, real employee data, download click or deployed training run was tested.
+
+## Prediction Studio screens 1–3 — 29 October 2026
+
+Four generation-route tests cover validated configuration bounds, derived cycle/checkpoint settings, deterministic all-scenario output, useful setting errors, same-origin enforcement, JSON requirements and body limits. `npm.cmd test` passed all **124 tests**. `npm.cmd run build` passed with Next.js 16.3.8 and produced static `/prediction` plus the dynamic generation and readiness endpoints.
+
+A local browser walkthrough opened the overview, reviewed all eight decisions, generated 1,252 rows across four scenarios, and displayed the sufficient-history latest-cycle split. Switching to no history produced Scenario A with a rule-based estimate and blocked model training. Invalid history produced a blocked result with named findings. A role filter reduced the preview from 12 to 6 matching rows without changing the readiness result. Server requests returned HTTP 200. Downloads were not clicked during this walkthrough; serialization remains covered by automated tests.
+
+These checks demonstrate synthetic prototype behavior only. They do not train a model, validate prediction accuracy or authorize real employee data.
+
+## Prediction readiness backend — 29 October 2026
+
+Ten new tests cover the no-history, limited-history, sufficient-history and controlled-invalid expectations; completed-case versus checkpoint-row counting; latest-cycle splitting; target/generator/identity leakage rejection; one-cycle fallback; checkpoint-safe matrix grouping; KRA feature contracts; API request validation; blocked responses; same-origin enforcement and body limits.
+
+`npm.cmd test` passed all **120 tests**. `npm.cmd run build` completed successfully with Next.js 16.3.8 and included the dynamic `/api/prediction/datasets/readiness` route. The readiness work does not include a browser screen, trained model, inference endpoint or real employee data; no accuracy claim was tested.
 
 ## PADS TL-1 initial-KPI verification — 30 October 2026
 
@@ -105,6 +156,19 @@ Supplementary edge-path checks on representative drafts:
 - A negative percentage (`-5`) was accepted by the number field and scored **0 points** through the zero fallback; no range validation rejected it. This is an observed input-validation gap, not an approved mapping. Values above the workbook maximum (for example, 150%) were not exercised.
 
 Extraction/comparison uncertainty was not exercised because these 59 rows are form-value policies; they have no PDF evidence or comparison nodes.
+
+
+## Synthetic prediction dataset foundation — 29 October 2026
+
+`npm.cmd run generate:prediction-data` created the no-history, limited-history, sufficient-history and invalid CSV fixtures plus active-snapshot and generation-report JSON. The clean fixtures contain 40 current rows, 240 limited-history checkpoint rows (60 completed faculty-cycles) and 960 sufficient-history checkpoint rows (240 completed faculty-cycles). The invalid fixture contains 12 controlled rows covering ten named defect types.
+
+Seven initial automated tests verify PADS role/KRA cap completeness, seed determinism, planned scenario sizes, cumulative/capped progress, absence of active-cycle targets, clean canonical-key uniqueness, invalid-case coverage and CSV shape. The integration review added an eighth generator test proving that a changed seed alters synthetic content while preserving scenario sizes and provenance. `npm.cmd test` passed all **110 tests**. `npm.cmd run build` completed successfully with Next.js 16.3.8. Generated-file SHA-256 values matched `generation-report.json`; the combined review workbook's Overview and each dataset sheet were rendered and inspected.
+
+These checks validate fixture and software behavior only. They do not validate real KCT prediction accuracy or the complete current KPI policy.
+
+## Prediction prototype planning verification — 29 October 2026
+
+The implementation-ready prototype plan was checked for local Markdown links, project-boundary consistency and whitespace. This was a documentation-only change: no synthetic dataset, application code, Python service, trained model, API or screen was implemented, so automated application tests and the production build were not rerun for this planning update.
 
 ## Publication workflow picker verification — 27 October 2026
 

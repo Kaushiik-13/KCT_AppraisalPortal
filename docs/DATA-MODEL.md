@@ -97,6 +97,56 @@ Trace entries include node identity, name/kind, timestamps, output, and optional
 
 Both export shapes can be imported through **Import draft** after structural validation. Exports and imports exclude test files/results and server keys. New schema changes must preserve old drafts or supply an explicit migration.
 
+## Synthetic prediction fixtures
+
+The implemented prediction dataset foundation is separate from the persisted Framework Studio draft. `fixtures/prediction/kct/config/` holds versioned organization, PADS reference-policy and generation configuration. `scripts/generate-kct-prediction-data.mjs` creates immutable synthetic CSV/JSON fixtures under `fixtures/prediction/kct/generated/`.
+
+One completed-history row represents an employee-cycle checkpoint and repeats the completed cycle's final approved score as a target-only field. Active rows contain no target. Identity, policy/framework version, cycle, role, checkpoint timing, current/previous score, evidence count, mandatory status and KRA score/cap columns are explicit. The canonical schema, feature exclusions and split rules are maintained in the [prediction data dictionary](PREDICTION-DATA-DICTIONARY.md).
+
+These fixtures are test/demo data, not browser draft data, runtime predictions, model artifacts or real employee records.
+
+The Prediction Studio generation endpoint creates the same four scenario shapes from validated in-memory settings. Its response includes one snapshot-group ID, configuration, columns, default feature selection, per-scenario rows, summary and checksum. The browser retains that response only for the open page session. Preview filters are derived view state and are not part of the snapshot; CSV export always serializes the complete selected scenario.
+
+## Prediction readiness result
+
+`evaluatePredictionReadiness` consumes a frozen synthetic snapshot, policy contract, compatibility scope and explicit feature selection. It returns a non-persisted result with:
+
+- `status`: `ready-rule-based`, `ready-for-training`, `fallback-only` or `blocked`.
+- `scenario`: `A`, `B`, `C` or `null`.
+- Row/case/cycle counts and rejected-row reason codes.
+- A latest-cycle time-based split when valid.
+- Separate rule-based and model-training eligibility.
+- Allowed, selected and excluded feature contracts.
+- Blocks, warnings and quality summaries.
+
+The raw feature matrix includes only completed rows in train/test partitions, exposes `final_approved_score` as target only, keeps employee-cycle groups intact and records `preprocessingFitScope: "train-only"`. See [Prediction readiness](PREDICTION-READINESS.md).
+
+## Prediction training result
+
+The in-memory training response records a deterministic run ID, configuration checksum, synthetic flag, snapshot ID, provider/seed, selected and excluded feature schema, time-based split/counts, two baseline results, candidate results and a recommendation gate. Each successful result contains MAE, RMSE, normalized MAE, optional R², held-out residual range evidence and configured-range evidence. Candidate parameters and bounded failure warnings are explicit.
+
+The public training response omits fitted pipelines. Successful candidate pipelines are serialized by the local provider and registered only in server process memory. Repeating the same snapshot/configuration/seed reproduces the identity and metrics, but restarting the server discards candidates and artifacts. See [Prediction training](PREDICTION-TRAINING.md).
+
+## Prediction model record
+
+Each server-only model record contains a stable model ID; lifecycle; synthetic flag; organization and target; training run; dataset snapshot/checksum; configuration checksum; selected/excluded feature schema; policy/framework/score-range compatibility; provider, algorithm and parameters; evaluation metrics/baselines/gate evidence; approval; and publication metadata. The serialized pipeline artifact is stored only on the private in-process record and is removed from all public records.
+
+Lifecycle is `candidate` → `approved` or `rejected`, then `approved` → `published`; a replacement changes the earlier published record to `superseded`. Only one published record is active for the exact organization/target/policy/framework key. Approval and rejection are final for a candidate. Publication records a scope-local version, publication time, and superseded record IDs.
+
+## Prediction response
+
+The non-persisted inference response contains synthetic/advisory flags, employee key, current verified score, predicted final score, expected-range bounds/method, readiness scenario, method, confidence, plain-language factors, model/policy/framework versions, warnings, timestamp, and `officialScoreChanged: false`. It contains no fitted artifact and cannot update any appraisal record. See [prediction governance and inference](PREDICTION-GOVERNANCE-AND-INFERENCE.md).
+
+## Employee prediction session
+
+The browser pairs the latest prediction response with its selected synthetic history ID, active checkpoint and refresh count. A verified-progress refresh creates a later active checkpoint for the same synthetic employee with updated cumulative score/KRA/time/evidence values. It does not add `final_approved_score` or `target_available_date`; therefore it cannot become a labelled training row. Freshness is derived from employee key, current verified score and policy version.
+
+## Retraining settings and status
+
+The session-only settings contain enabled triggers (`manual`, `cycle-close`, optional `periodic`), periodic interval, minimum new finally approved cases, minimum completed cycles, and fixed evaluation/approval/current-model safeguards. The simulated cycle state separately records closure, final-outcome approval and new case/cycle counts.
+
+The derived status records label availability, trigger readiness, threshold readiness, candidate-training eligibility, missing requirements and the next periodic date. It is a calculation result only: there is no schedule/job/model mutation and no persistence. See [prediction employee view and retraining](PREDICTION-EMPLOYEE-AND-RETRAINING.md).
+
 ## Plugin and reusable configuration
 
 Plugin nodes use kind `plugin`, with config `{plugin: "publication", tool: <operation ID>, settings: <operation config>}`. Existing legacy kinds/Action wrappers remain readable. `use_form_value` stores `fieldId` and a cached `valueType`; execution resolves the current field and emits source metadata. `extract_evidence` stores `mode` (`fields`, `content`, or `both`) and stable field entries `{id,name,type,label}`. `compare_evidence` stores one or more `{id,name,valueType,operator,ignoreCase}` pairs; each pair creates left/right mapping ports. Apply-policy stores `policyVersion` and a snapshot of formula component definitions; each component ID becomes a numeric mapping port. The runner resolves the saved policy version and records its calculation snapshot.

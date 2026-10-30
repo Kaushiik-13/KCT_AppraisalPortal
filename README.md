@@ -2,7 +2,7 @@
 
 A desktop proof of concept for creating configurable KPI forms, verification workflows, and scoring policies. The aim is to let different institutions compose their own KPIs from shared tools. Publication verification is the first worked example, not the only supported workflow.
 
-Application baseline: **7 October 2026**. Prediction Framework planning was added on **27 October 2026**. This is a PoC, not a production appraisal platform.
+Application baseline: **30 October 2026**. Prediction Framework screens 1–10 are implemented through synthetic model approval, publication, employee prediction refresh, and retraining-readiness settings. This is a PoC, not a production appraisal platform.
 
 ## Run locally
 
@@ -33,6 +33,13 @@ See [setup](docs/SETUP.md) for environment configuration, the production server,
 | Check all 59 individual PADS KPIs | [PADS individual KPI verification](docs/PADS-INDIVIDUAL-KPIS.md) |
 | Understand the implementation | [Architecture](docs/ARCHITECTURE.md) |
 | Plan the Prediction Framework | [Prediction Framework implementation plan](docs/PREDICTION-FRAMEWORK-IMPLEMENTATION-PLAN.md) |
+| Build the prediction review prototype | [Prediction prototype implementation plan](docs/PREDICTION-PROTOTYPE-IMPLEMENTATION-PLAN.md) |
+| Understand prediction readiness | [Prediction readiness contract](docs/PREDICTION-READINESS.md) |
+| Understand model training and comparison | [Prediction training contract](docs/PREDICTION-TRAINING.md) |
+| Understand model governance and prediction | [Prediction governance and inference](docs/PREDICTION-GOVERNANCE-AND-INFERENCE.md) |
+| Understand employee prediction and retraining | [Prediction employee view and retraining](docs/PREDICTION-EMPLOYEE-AND-RETRAINING.md) |
+| Run the prediction review | [Prediction demo script](docs/PREDICTION-DEMO-SCRIPT.md) |
+| Review the synthetic dataset audit | [Prediction dataset audit](docs/PREDICTION-DATASET-AUDIT-2026-10-29.md) |
 | Work on the code | [Contributing](CONTRIBUTING.md) |
 | See remaining work | [Roadmap](docs/ROADMAP.md) |
 
@@ -46,6 +53,7 @@ See [setup](docs/SETUP.md) for environment configuration, the production server,
 - Organization-defined formula and conditional scoring policies with immutable local versions.
 - Execution traces, terminal review packages, legacy publication review decisions, and browser-local draft autosave with multi-tab conflict protection.
 - Schema-validated import of draft and workflow exports, optional numeric bounds, a test-only required-field bypass, labeled workflow/policy results, and a collapsible sidebar with confirmed Clear saved draft.
+- A Prediction Framework prototype at `/prediction` with overview, eight-decision synthetic dataset setup, deterministic generation, preview/download, Scenario A/B/C readiness, time-based split, leakage-safe model configuration, local scikit-learn training, held-out comparison, simulated approval/publication, read-only sandbox and employee prediction, plus retraining-readiness settings. Model records and artifacts are process-memory synthetic demonstrations and disappear on server restart.
 
 ## Boundaries
 
@@ -53,7 +61,7 @@ Indexing is mocked, not verified against Scopus/WOS. Only first-listed authors a
 
 AI can summarize findings but does not itself mutate recorded evidence or scores. Creator-authored policies can consume exposed text values; the PoC does not enforce a production evidence-trust model.
 
-The application uses Next.js App Router and is ready to import into Vercel, but it has not been pushed or deployed. The most recent automated baseline is recorded in [testing](docs/TESTING.md). Historical results are retained in [Phase 6 verification](PHASE-6-VERIFICATION.md).
+The application uses Next.js App Router and builds for Vercel, but the local Python prediction provider and in-process model registry are not a production/serverless deployment design. The most recent automated baseline is recorded in [testing](docs/TESTING.md). Historical results are retained in [Phase 6 verification](PHASE-6-VERIFICATION.md).
 
 The included PRISMA PDF is an attributed, unmodified fixture. See [sample attribution](public/samples/README.txt) and [security and data](docs/SECURITY-AND-DATA.md).
 

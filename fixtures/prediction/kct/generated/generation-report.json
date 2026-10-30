@@ -1,0 +1,179 @@
+{
+  "synthetic": true,
+  "generatedAt": "2026-10-29T00:00:00.000Z",
+  "generatorVersion": "kct-synthetic-v1",
+  "seed": 20261029,
+  "organization": {
+    "id": "kct",
+    "name": "Kumaraguru College of Technology"
+  },
+  "policy": {
+    "version": "pads-2021-reference-v1",
+    "status": "reference-policy-pending-current-kct-confirmation",
+    "overallScoreCap": 200,
+    "kraCount": 7,
+    "roleCount": 4
+  },
+  "columns": [
+    "record_id",
+    "organization_id",
+    "policy_version",
+    "framework_version",
+    "generator_version",
+    "generation_seed",
+    "source_dataset",
+    "employee_key",
+    "role_code",
+    "cycle_id",
+    "cycle_status",
+    "cycle_start_date",
+    "cycle_end_date",
+    "checkpoint_index",
+    "checkpoint_date",
+    "elapsed_fraction",
+    "remaining_days",
+    "current_overall_score",
+    "previous_overall_score",
+    "score_change",
+    "verified_evidence_count",
+    "mandatory_status",
+    "mandatory_route",
+    "kra_teaching_learning_score",
+    "kra_teaching_learning_cap",
+    "kra_research_development_score",
+    "kra_research_development_cap",
+    "kra_external_interface_score",
+    "kra_external_interface_cap",
+    "kra_operations_score",
+    "kra_operations_cap",
+    "kra_student_development_score",
+    "kra_student_development_cap",
+    "kra_extra_cocurricular_score",
+    "kra_extra_cocurricular_cap",
+    "kra_optional_contributions_score",
+    "kra_optional_contributions_cap",
+    "missing_feature_count",
+    "target_available_date",
+    "final_approved_score",
+    "generation_pattern",
+    "is_synthetic",
+    "fixture_case_id",
+    "injected_defect"
+  ],
+  "datasets": {
+    "current": {
+      "rows": 40,
+      "employees": 40,
+      "cycles": [
+        "2026-27"
+      ],
+      "completedCases": 0,
+      "roles": {
+        "assistant_professor": 10,
+        "associate_professor": 10,
+        "professor": 10,
+        "professor_hod": 10
+      },
+      "patterns": {
+        "steady": 14,
+        "early_fast": 2,
+        "late_improvement": 6,
+        "stalled": 3,
+        "irregular": 4,
+        "high_consistent": 3,
+        "low_consistent": 3,
+        "evidence_delayed": 5
+      }
+    },
+    "limited": {
+      "rows": 240,
+      "employees": 30,
+      "cycles": [
+        "2024-25",
+        "2025-26"
+      ],
+      "completedCases": 60,
+      "roles": {
+        "assistant_professor": 64,
+        "associate_professor": 64,
+        "professor": 56,
+        "professor_hod": 56
+      },
+      "patterns": {
+        "steady": 64,
+        "early_fast": 20,
+        "late_improvement": 32,
+        "stalled": 24,
+        "irregular": 20,
+        "high_consistent": 36,
+        "low_consistent": 20,
+        "evidence_delayed": 24
+      }
+    },
+    "sufficient": {
+      "rows": 960,
+      "employees": 60,
+      "cycles": [
+        "2022-23",
+        "2023-24",
+        "2024-25",
+        "2025-26"
+      ],
+      "completedCases": 240,
+      "roles": {
+        "assistant_professor": 240,
+        "associate_professor": 240,
+        "professor": 240,
+        "professor_hod": 240
+      },
+      "patterns": {
+        "steady": 232,
+        "early_fast": 80,
+        "late_improvement": 168,
+        "stalled": 84,
+        "irregular": 116,
+        "high_consistent": 116,
+        "low_consistent": 116,
+        "evidence_delayed": 48
+      }
+    },
+    "invalid": {
+      "rows": 12,
+      "employees": 3,
+      "cycles": [
+        "2024-25",
+        "2026-27"
+      ],
+      "completedCases": 3,
+      "roles": {
+        "assistant_professor": 6,
+        "associate_professor": 2,
+        "professor": 3,
+        "professor_hod": 0
+      },
+      "patterns": {
+        "steady": 0,
+        "early_fast": 0,
+        "late_improvement": 0,
+        "stalled": 0,
+        "irregular": 5,
+        "high_consistent": 3,
+        "low_consistent": 4,
+        "evidence_delayed": 0
+      }
+    }
+  },
+  "checksums": {
+    "no-history-current.csv": "7077fa2be6d84d993ad46e7e1aca92fa9b99f3bc13e3bfd40e786aecceff7479",
+    "limited-history.csv": "e47a90a29c65356280c2927305903071a1abcb8f052ca26c505b265d8645e7cb",
+    "sufficient-history.csv": "4ec7f12f34f09988448f270d3fbc18ecf3762d07c247aa41a6d4951c41aa7bbd",
+    "invalid-history.csv": "5c7c1b1978fb0727c0cdb1372bfe3b684d006fb3b3e55c70f1a0635f4085e0f6",
+    "active-employee-snapshots.json": "ccba42121062542470929e5ebe7e84065c46171ea4320aa59a33c3ff0e16ae2c"
+  },
+  "limitations": [
+    "All records are synthetic and cannot establish real KCT prediction accuracy.",
+    "The first fixture models KRA-level progress and PADS role/KRA caps.",
+    "Detailed KPI scoring bands remain configuration work pending confirmation of the current KCT policy.",
+    "Mandatory criteria are represented as a status feature; no unsupported automatic score penalty is applied."
+  ]
+}

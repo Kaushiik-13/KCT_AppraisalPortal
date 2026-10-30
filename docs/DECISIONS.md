@@ -18,6 +18,15 @@ These records summarize accepted conversation choices and implemented behavior; 
 | D-12 | Keep two scoring paths temporarily | Preserve existing publication behavior while generalizing the builder |
 | D-13 | Desktop first, compact canvas | Mobile excluded; collapsible navigation and reduced chrome |
 | D-16 | Use Next.js App Router for deployment readiness | Preserve the browser workflow engine behind a client-only boundary; expose AI through Node route handlers and keep secrets server-side |
+| D-23 | Use PADS TL-1 as the initial-KPI reference fixture | Verify one complete three-band KPI end to end; keep it reference-only |
+| D-24 | Commit and automate the 59-row PADS policy set | Replace ignored local drafts with committed fixtures and 201 re-executed cases |
+| D-25 | Deliver the prediction review as an end-to-end synthetic demonstration | Cover dataset, readiness, training, governance and employee flows without claiming real accuracy |
+| D-26 | Make prediction readiness a strict, configurable gate | Select Scenario A/B/C from compatible completed cases and cycles; block invalid/leaking data before training |
+| D-27 | Keep Prediction Studio thin over shared generation and readiness contracts | Browser owns editable choices and view state; server owns validation and canonical readiness |
+| D-28 | Keep prototype training local, reproducible and baseline-gated | Compare established candidates on the latest-cycle holdout; do not persist or publish a model yet |
+| D-29 | Use explicit, scope-compatible prototype model governance | Keep artifacts server-side, require one-way approval/publication, supersede instead of delete, and keep prediction advisory |
+| D-30 | Separate employee inference from retraining eligibility | Refresh verified progress with the active model; count labels only after cycle closure and final approval; never auto-replace the active model |
+| D-31 | Resolve creator walkthrough findings without inventing policy | Fix usability locally; browser re-verification and production controls remain outstanding |
 
 ## Unresolved domain questions
 
@@ -91,7 +100,45 @@ Use `TL-1 Teaching Pedagogy & Content Preparation` as the single initial-KPI ver
 
 Promote the 59 local saved drafts and their 201 expected cases verified through the UI on 29 October 2026 into committed reference fixtures under `public/samples/pads/kpis/`, with `cases.json`, a workbook-derived `index.json`, and a README load procedure. This supersedes the D-23 instruction to keep the 59-row set out of the repository: without it, the only coverage lived in ignored artifacts and could not regress. Verify through `runWorkflow` in `src/padsAllKpis.test.js` rather than 59 stored screenshots, so all 201 cases are re-executed on every `npm test`; one prior RD-12 screenshot is kept as visual evidence only. Keep the five institutional rows 173-177 out of scope and record what PADS leaves undefined and what AFPI would need (1-5 institutional score field, duty/role eligibility, evidence or notes, supervisor or panel review, one claim per duty per period, audit history, aggregation). Keep full PADS aggregation, KRA weights, role maxima, the 200-point cap, mandatory eligibility, and dual self/supervisor scores out of scope. Fixtures remain reference-only: they are a working interpretation, not institutional approval, and contain no personal data.
 
-## D-25 — Resolve the creator walkthrough findings
+## D-25 — End-to-end synthetic prediction review prototype
+
+Deliver the first Prediction Framework review as a complete local demonstration rather than configuration-only screens. The path covers eight synthetic-dataset decisions, seeded PADS-aware generation, readiness, time-based splitting, established candidate training, held-out testing, simulated approval/publication, a prediction sandbox, and a simulated employee view.
+
+Use generic configuration and stable IDs so KCT/PADS remains the first fixture rather than hard-coded application behavior. Generate final targets through the configured scoring policy and future synthetic achievements. Use established scikit-learn regressors behind a local prototype service instead of implementing new ML mathematics. Treat every resulting metric and model as synthetic demonstration evidence, not real institutional accuracy.
+
+## D-26 — Configurable prediction readiness and strict leakage gate
+
+Implement readiness before model training. Validate synthetic provenance, organization/policy/framework compatibility, canonical keys, score/date/role/KRA contracts, target timing and cumulative checkpoint order. Return stable block/warning codes instead of silently repairing invalid training rows.
+
+Use completed employee-cycles—not checkpoint-row count—to select readiness. Scenario A has no completed history and permits only the transparent rule-based path. Scenario B has limited compatible history and remains low confidence. Scenario C meets configurable sufficient-history defaults. The committed 20-case/two-cycle and 200-case/four-cycle bands are synthetic demonstration settings, not production policy.
+
+Hold out the latest completed cycle, keep each employee-cycle in one partition, fit later preprocessing on training data only, and exclude targets, target timing, identities, split metadata and generator-only labels from inputs. Readiness permits training or fallback; it does not approve, publish or claim model quality.
+
+## D-27 — Thin Prediction Studio over shared generation and readiness contracts
+
+Implement the first three prototype screens as a separate `/prediction` module linked from Framework Studio. The browser owns only editable generation choices, the current generated response, preview filters and the latest readiness result. Server routes own bounded generation and the canonical readiness decision; React components must not copy validation or scenario-selection rules.
+
+Generate all four scenarios together, keep them in memory, and allow complete CSV plus metadata download. Preview filters never alter the frozen snapshot evaluated by readiness. Keep KCT/PADS organization and policy terms in versioned configuration rather than UI components. This is a demonstrable data-preparation layer, not model training, approval or real-data ingestion.
+
+## D-28 — Local established-candidate training with transparent gates
+
+Implement screens 4–5 with a Node route that reruns canonical readiness and creates the checkpoint-safe matrix before invoking an isolated local Python/scikit-learn provider. Fit imputation, encoding and scaling only on earlier-cycle training rows; evaluate the latest completed cycle. Compare Ridge, Random Forest and Gradient Boosting with pace projection and role-plus-checkpoint median baselines using a fixed seed.
+
+Recommend a candidate only when its held-out MAE beats both baselines and its clamped outputs remain in the configured score range. Record metrics, parameters, counts, feature/split contracts and checksums in the in-memory response. Do not persist, approve, publish or use the fitted pipeline for inference in this phase. Every metric remains synthetic demonstration evidence.
+
+## D-29 — Explicit prototype governance and read-only inference
+
+Register successful fitted pipelines only in server process memory and return public metadata without the serialized artifact. Permit approval only for the recommendation-eligible candidate, require an authenticated production replacement later, and make prototype approval/rejection final. Publication is a separate action that requires the exact organization, target, policy and framework scope. A newer compatible publication supersedes the prior record rather than deleting it; only one is active per scope.
+
+Inference always revalidates the selected synthetic history and active checkpoint. Scenario A uses the transparent pace rule without a model. Scenario B uses a compatible published model when available and otherwise a low-confidence transparent fallback. Scenario C requires the compatible approved and published organization model. Return score, empirical/transparent range, method, confidence, factors, versions and warnings, but never mutate verified evidence or the official appraisal score. The in-process registry, simulated reviewer and pickle artifact are local-review constraints, not a production storage/security design.
+
+## D-30 — Employee inference and retraining remain separate
+
+Show one simulated employee the latest advisory result after a sandbox selection. A newer verified checkpoint calls the same inference contract again with the active compatible model; it does not call training, create a label or change the official score. Keep the active published model available while a later candidate is configured, trained and evaluated.
+
+Treat manual, cycle-close and periodic choices as retraining-eligibility triggers, not automatic training schedules. Active-cycle checkpoints never count as labels. A completed-cycle row becomes eligible only after the cycle closes and its final outcome is approved. Minimum new-case/cycle thresholds must also pass. Readiness cannot publish: evaluation, explicit approval and publication remain mandatory. The current screen is a session-only review simulation, not a durable scheduler, monitoring service or access-control boundary.
+
+## D-31 — Resolve the creator walkthrough findings
 
 Address the 19 usability findings recorded in the [creator walkthrough](CREATOR-WALKTHROUGH.md) without inventing institutional policy:
 

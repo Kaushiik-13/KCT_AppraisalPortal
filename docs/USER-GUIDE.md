@@ -73,3 +73,101 @@ Click a + on the tree, then Plugin (below Result), then Publication workflow. Th
 Use **Use form value** when an explicit mapping step helps the workflow remain readable. Choose the field; its type is inherited automatically. Use **Extract evidence** for selected `Label: value` fields, full content, or both. Use **Compare evidence** for one or more submitted-versus-extracted pairs. Missing evidence becomes `unknown`, never `mismatch`. Route its status with a Condition. Save scoring rules in Scoring policy, then select the version in Apply scoring policy.
 
 For a document-content KPI, choose Full content or Both in Extract evidence, map its Full content object to AI evaluation, add named topic/faculty inputs, and provide the rubric plus system instructions. See [Content relevance KPI](CONTENT-RELEVANCE-KPI.md) for exact steps.
+
+## Use the Prediction Framework prototype
+
+Open **Prediction framework** from the Framework Studio sidebar, or visit `/prediction`. The current prototype covers synthetic data preparation, readiness, model configuration, local training, held-out comparison, simulated approval/publication, read-only sandbox and employee prediction, and retraining-readiness settings. All records and metrics are synthetic.
+
+### Overview
+
+The Overview shows the target, generated-dataset status, latest readiness result and next action. **Configure synthetic data** opens the setup screen. The synthetic-only notice means no real employee records are loaded or saved.
+
+### Dataset setup
+
+Review the eight decisions, then choose **Generate datasets**:
+
+1. **Prediction target:** final approved overall score from 0 to 200. It is never an input feature.
+2. **Data unit:** one employee, cycle and checkpoint per row.
+3. **Input fields:** only checkpoint-available role, time, score, evidence, mandatory-status and KRA values.
+4. **Performance patterns:** relative weights for steady, fast, improving, stalled, irregular, consistently high/low and delayed-evidence behavior. They are mix weights, not score percentages.
+5. **History scenarios:** no history, limited history, sufficient history and a separate invalid-data case.
+6. **Dataset size and timing:** the seed makes generation repeatable; cycle year, progress, checkpoints, employee counts and cycle counts control dataset size.
+7. **Data-quality cases:** include controlled broken rows when demonstrating readiness blocks.
+8. **Train/test structure:** earlier completed cycles train; the latest completed cycle is held out for testing. Employee-cycle groups are never divided.
+
+Changing the seed or another setting marks the current snapshot as changed. Generate again to replace the in-memory preview. Nothing is added to browser draft storage or a database.
+
+### Dataset preview and filters
+
+Choose a scenario tab to rerun readiness for the complete selected dataset. The filters change only the visible table:
+
+- **Search synthetic employee:** matches the pseudonymous employee key.
+- **All roles:** limits the preview to one configured role.
+- **All cycles:** limits the preview to one appraisal cycle.
+- **All checkpoints:** limits the preview to one checkpoint number.
+
+The table shows at most 25 matching rows. **Download CSV** exports the complete selected scenario, not just filtered rows. **Metadata** exports generation settings, checksums and summaries for all scenarios. **Regenerate** returns to setup.
+
+### Readiness result
+
+- **Scenario A — No historical data:** rule-based estimate available; model training blocked.
+- **Scenario B — Limited historical data:** low-confidence training gate; evaluation is still required.
+- **Scenario C — Sufficient historical data:** training eligible with the latest completed cycle held out.
+- **Blocked:** invalid rows or unsafe features prevent both training and a misleading fallback.
+
+Warnings describe limitations that do not invalidate all rows. Blocking findings show the code, explanation and affected-row count. A readiness result permits a later action; it does not approve a model or claim real KCT accuracy.
+
+### Model configuration
+
+For an eligible Scenario B or C dataset, choose **Configure model**. The target remains locked to `final_approved_score` in the configured 0–200 range. Review the earlier training cycles and latest held-out test cycle, then:
+
+- Select one or more permitted checkpoint-safe features. Target, identity, split, active-target and generator-only fields remain excluded.
+- Select Ridge regression, Random Forest and/or Gradient Boosting. These are established scikit-learn candidates, not AFPI-created algorithms.
+- Keep or change the reproducibility seed.
+- Review the always-included pace and role-plus-checkpoint median baselines.
+
+Choose **Train and compare**. The server reruns readiness and reconstructs the feature matrix; browser controls cannot bypass the leakage and split rules.
+
+### Training comparison
+
+The comparison shows MAE, RMSE, normalized MAE, R², a held-out residual range, parameters, row counts and seed. Lower MAE/RMSE/nMAE is better; higher R² is better. A candidate is recommended only when its held-out MAE beats both transparent baselines and its final predictions remain inside the configured range.
+
+**Change configuration** returns to feature/model choices. **Run again** repeats the same frozen snapshot and settings. Choose **Evaluate candidate** only for the recommended candidate that passed both baseline gates.
+
+### Evaluation and approval
+
+Screen 6 shows the candidate metrics, immutable run/snapshot/checksum metadata, selected feature scope, compatibility versions, and limitations. Enter a reviewer and decision note, then choose **Approve candidate** or **Reject candidate**. This is simulated model governance, not the KPI Human Review module. A final decision cannot be changed for that candidate, and approval alone does not activate it.
+
+### Publication
+
+Screen 7 checks the comparison gate, recorded approval, exact organization/target/policy/framework scope, and read-only inference boundary. Choose **Publish model** to activate the approved candidate for that exact scope. A later compatible publication receives the next version and supersedes the earlier record without deleting it. The local registry is process memory only; restarting the server clears it.
+
+### Prediction sandbox
+
+Screen 8 selects a synthetic active checkpoint and one history scenario, then **Predict final score**:
+
+- **Scenario A:** always uses a transparent pace projection and labels it rule-based rather than a trained-model prediction.
+- **Scenario B:** uses the compatible published model with low confidence; without one it safely falls back to the transparent projection.
+- **Scenario C:** requires the compatible approved and published organization model.
+- **Invalid history:** is blocked and lists the readiness findings.
+
+The result shows a score within 0–200, an expected range, method/confidence, checkpoint factors, policy/framework/model versions, timestamp, and warnings. Changing the employee or scenario clears the old result. The sandbox is advisory and explicitly reports that the official verified score was not changed.
+
+### Employee prediction
+
+After a successful sandbox prediction, choose **Open employee prediction view**. Screen 9 is scoped to that one simulated employee and shows the current verified score, predicted final score/range, time remaining, policy-labelled KRA progress, factors, compatibility versions and last calculation time. It does not expose model approval controls or another employee selector.
+
+Choose **Load newer verified progress** to create a later synthetic checkpoint and refresh the estimate. This calls prediction again with the same active model; it does not train or publish anything. Confirm that the current score and prediction can change while the active model version/training run stay the same and the official score remains unchanged.
+
+### Retraining readiness
+
+Screen 10 configures when a future retraining review may become eligible:
+
+- **Manual** permits an administrator-requested check.
+- **Cycle close** checks eligibility after the simulated cycle closes.
+- **Periodic** calculates the next check from the chosen interval.
+- Minimum new approved cases and completed cycles must also pass.
+
+Active-cycle checkpoints are never labels. First choose **Simulate cycle closure**, then confirm the final outcomes are approved. Until both conditions are true, the completed rows are not counted. **Check retraining readiness** calculates eligibility only; it does not train or publish a model.
+
+The current published model remains active while any future candidate is trained and evaluated. Replacement still requires evaluation, explicit approval and publication. The settings, counters and last check are browser-session demonstrations, not a real scheduler or durable audit record. See [Prediction employee view and retraining](PREDICTION-EMPLOYEE-AND-RETRAINING.md) for the full contract.
