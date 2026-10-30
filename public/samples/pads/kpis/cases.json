@@ -1,0 +1,2102 @@
+[
+  {
+    "id": "tl-1",
+    "title": "PADS TL-1 Teaching Pedagogy & Content Preparation",
+    "cases": [
+      {
+        "values": {
+          "pct": 90
+        },
+        "expect": 8
+      },
+      {
+        "values": {
+          "pct": 84
+        },
+        "expect": 6
+      },
+      {
+        "values": {
+          "pct": 74
+        },
+        "expect": 4
+      },
+      {
+        "values": {
+          "pct": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "pct",
+        "label": "Percentage",
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "id": "tl-2",
+    "title": "PADS TL-2 Use of Technology / Class notes",
+    "cases": [
+      {
+        "values": {
+          "pct": 90
+        },
+        "expect": 8
+      },
+      {
+        "values": {
+          "pct": 84
+        },
+        "expect": 6
+      },
+      {
+        "values": {
+          "pct": 74
+        },
+        "expect": 4
+      },
+      {
+        "values": {
+          "pct": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "pct",
+        "label": "Percentage",
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "id": "tl-3",
+    "title": "PADS TL-3 HOD Feedback",
+    "cases": [
+      {
+        "values": {
+          "pct": 90
+        },
+        "expect": 8
+      },
+      {
+        "values": {
+          "pct": 84
+        },
+        "expect": 6
+      },
+      {
+        "values": {
+          "pct": 74
+        },
+        "expect": 4
+      },
+      {
+        "values": {
+          "pct": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "pct",
+        "label": "Percentage",
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "id": "tl-4",
+    "title": "PADS TL-4 Student Feedback",
+    "cases": [
+      {
+        "values": {
+          "pct": 90
+        },
+        "expect": 8
+      },
+      {
+        "values": {
+          "pct": 84
+        },
+        "expect": 6
+      },
+      {
+        "values": {
+          "pct": 74
+        },
+        "expect": 4
+      },
+      {
+        "values": {
+          "pct": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "pct",
+        "label": "Percentage",
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "id": "tl-5",
+    "title": "PADS TL-5 Activities for uplifting slow learners",
+    "cases": [
+      {
+        "values": {
+          "count": 2
+        },
+        "expect": 8
+      },
+      {
+        "values": {
+          "count": 3
+        },
+        "expect": 8
+      },
+      {
+        "values": {
+          "count": 1
+        },
+        "expect": 4
+      },
+      {
+        "values": {
+          "count": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "count",
+        "label": "Activities",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "tl-6",
+    "title": "PADS TL-6 Course result outcome aggregate (2 and 1 credit)",
+    "cases": [
+      {
+        "values": {
+          "pct": 100
+        },
+        "expect": 6
+      },
+      {
+        "values": {
+          "pct": 95
+        },
+        "expect": 4
+      },
+      {
+        "values": {
+          "pct": 88
+        },
+        "expect": 2
+      },
+      {
+        "values": {
+          "pct": 85
+        },
+        "expect": 0
+      },
+      {
+        "values": {
+          "pct": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "pct",
+        "label": "Percentage",
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "id": "tl-7",
+    "title": "PADS TL-7 Course result outcome aggregate (4 credit analytical)",
+    "cases": [
+      {
+        "values": {
+          "pct": 90
+        },
+        "expect": 10
+      },
+      {
+        "values": {
+          "pct": 86
+        },
+        "expect": 8
+      },
+      {
+        "values": {
+          "pct": 75
+        },
+        "expect": 6
+      },
+      {
+        "values": {
+          "pct": 70
+        },
+        "expect": 0
+      },
+      {
+        "values": {
+          "pct": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "pct",
+        "label": "Percentage",
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "id": "tl-8",
+    "title": "PADS TL-8 Course result outcome aggregate (3 credit non-analytical)",
+    "cases": [
+      {
+        "values": {
+          "pct": 100
+        },
+        "expect": 8
+      },
+      {
+        "values": {
+          "pct": 95
+        },
+        "expect": 6
+      },
+      {
+        "values": {
+          "pct": 88
+        },
+        "expect": 4
+      },
+      {
+        "values": {
+          "pct": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "pct",
+        "label": "Percentage",
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "id": "tl-9",
+    "title": "PADS TL-9 Student course attendance",
+    "cases": [
+      {
+        "values": {
+          "pct": 95
+        },
+        "expect": 4
+      },
+      {
+        "values": {
+          "pct": 85
+        },
+        "expect": 3
+      },
+      {
+        "values": {
+          "pct": 78
+        },
+        "expect": 2
+      },
+      {
+        "values": {
+          "pct": 75
+        },
+        "expect": 0
+      },
+      {
+        "values": {
+          "pct": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "pct",
+        "label": "Percentage",
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "id": "tl-10",
+    "title": "PADS TL-10 Conducting professional courses and training",
+    "cases": [
+      {
+        "values": {
+          "count": 2
+        },
+        "expect": 10
+      },
+      {
+        "values": {
+          "count": 3
+        },
+        "expect": 10
+      },
+      {
+        "values": {
+          "count": 1
+        },
+        "expect": 5
+      },
+      {
+        "values": {
+          "count": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "count",
+        "label": "Activities",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "tl-11",
+    "title": "PADS TL-11 Faculty Development Certification",
+    "cases": [
+      {
+        "values": {
+          "kind": "Post Doc"
+        },
+        "expect": 24
+      },
+      {
+        "values": {
+          "kind": "Online course"
+        },
+        "expect": 4
+      },
+      {
+        "values": {
+          "kind": "None"
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "kind",
+        "label": "Course type",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "id": "tl-12",
+    "title": "PADS TL-12 PhD Status",
+    "cases": [
+      {
+        "values": {
+          "status": "PhD with guideship and guiding"
+        },
+        "expect": 14
+      },
+      {
+        "values": {
+          "status": "Completed PhD"
+        },
+        "expect": 8
+      },
+      {
+        "values": {
+          "status": "None"
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "status",
+        "label": "Status",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "id": "tl-13",
+    "title": "PADS TL-13 NET / SET Qualified",
+    "cases": [
+      {
+        "values": {
+          "status": "NET"
+        },
+        "expect": 8
+      },
+      {
+        "values": {
+          "status": "SET"
+        },
+        "expect": 4
+      },
+      {
+        "values": {
+          "status": "None"
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "status",
+        "label": "Status",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "id": "tl-14",
+    "title": "PADS TL-14 Training Program hours per year",
+    "cases": [
+      {
+        "values": {
+          "hours": 13
+        },
+        "expect": 6
+      },
+      {
+        "values": {
+          "hours": 9
+        },
+        "expect": 4
+      },
+      {
+        "values": {
+          "hours": 5
+        },
+        "expect": 2
+      },
+      {
+        "values": {
+          "hours": 4
+        },
+        "expect": 0
+      },
+      {
+        "values": {
+          "hours": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "hours",
+        "label": "Hours",
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "id": "rd-1",
+    "title": "PADS RD-1 Paper publication Scopus / WOS / SAE",
+    "cases": [
+      {
+        "values": {
+          "role": "Primary author",
+          "indexed": "Scopus and WOS"
+        },
+        "expect": 24
+      },
+      {
+        "values": {
+          "role": "Co-author",
+          "indexed": "Scopus and WOS"
+        },
+        "expect": 12
+      },
+      {
+        "values": {
+          "role": "Co-author",
+          "indexed": "Scopus or WOS or SAE"
+        },
+        "expect": 6
+      },
+      {
+        "values": {
+          "role": "None",
+          "indexed": "None"
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "role",
+        "label": "Author role",
+        "type": "text"
+      },
+      {
+        "id": "indexed",
+        "label": "Indexing",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "id": "rd-2",
+    "title": "PADS RD-2 Paper publication others (UGC/ICI)",
+    "cases": [
+      {
+        "values": {
+          "role": "Primary author",
+          "count": 4
+        },
+        "expect": 18
+      },
+      {
+        "values": {
+          "role": "Co-author",
+          "count": 1
+        },
+        "expect": 3
+      },
+      {
+        "values": {
+          "role": "None",
+          "count": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "role",
+        "label": "Author role",
+        "type": "text"
+      },
+      {
+        "id": "count",
+        "label": "Papers",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "rd-3",
+    "title": "PADS RD-3 Book or chapter publishing (ISBN)",
+    "cases": [
+      {
+        "values": {
+          "role": "Primary author",
+          "kind": "Book"
+        },
+        "expect": 25
+      },
+      {
+        "values": {
+          "role": "Primary author",
+          "kind": "More than 2 chapters"
+        },
+        "expect": 10
+      },
+      {
+        "values": {
+          "role": "None",
+          "kind": "None"
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "role",
+        "label": "Author role",
+        "type": "text"
+      },
+      {
+        "id": "kind",
+        "label": "Publication type",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "id": "rd-4",
+    "title": "PADS RD-4 Conference paper outside India",
+    "cases": [
+      {
+        "values": {
+          "count": 1
+        },
+        "expect": 10
+      },
+      {
+        "values": {
+          "count": 2
+        },
+        "expect": 10
+      },
+      {
+        "values": {
+          "count": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "count",
+        "label": "Papers",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "rd-5",
+    "title": "PADS RD-5 Guiding student Scopus / WOS publication",
+    "cases": [
+      {
+        "values": {
+          "count": 1
+        },
+        "expect": 5
+      },
+      {
+        "values": {
+          "count": 2
+        },
+        "expect": 5
+      },
+      {
+        "values": {
+          "count": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "count",
+        "label": "Papers",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "rd-6",
+    "title": "PADS RD-6 Funded project submission",
+    "cases": [
+      {
+        "values": {
+          "submitted": 3,
+          "presented": 1
+        },
+        "expect": 22
+      },
+      {
+        "values": {
+          "submitted": 4,
+          "presented": 4
+        },
+        "expect": 24
+      },
+      {
+        "values": {
+          "submitted": 2,
+          "presented": 0
+        },
+        "expect": 12
+      },
+      {
+        "values": {
+          "submitted": 0,
+          "presented": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "submitted",
+        "label": "Projects submitted",
+        "type": "integer"
+      },
+      {
+        "id": "presented",
+        "label": "Projects presented",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "rd-7",
+    "title": "PADS RD-7 Externally funded project",
+    "cases": [
+      {
+        "values": {
+          "amount": 20
+        },
+        "expect": 24
+      },
+      {
+        "values": {
+          "amount": 3
+        },
+        "expect": 10
+      },
+      {
+        "values": {
+          "amount": 0.5
+        },
+        "expect": 4
+      },
+      {
+        "values": {
+          "amount": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "amount",
+        "label": "Amount (lakh)",
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "id": "rd-8",
+    "title": "PADS RD-8 Patent",
+    "cases": [
+      {
+        "values": {
+          "status": "Licensed"
+        },
+        "expect": 24
+      },
+      {
+        "values": {
+          "status": "Filed"
+        },
+        "expect": 8
+      },
+      {
+        "values": {
+          "status": "None"
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "status",
+        "label": "Status",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "id": "rd-9",
+    "title": "PADS RD-9 Increase in h index",
+    "cases": [
+      {
+        "values": {
+          "value": 3
+        },
+        "expect": 6
+      },
+      {
+        "values": {
+          "value": 1
+        },
+        "expect": 3
+      },
+      {
+        "values": {
+          "value": 2
+        },
+        "expect": 0
+      },
+      {
+        "values": {
+          "value": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "value",
+        "label": "Increase",
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "id": "rd-10",
+    "title": "PADS RD-10 Increase in citations",
+    "cases": [
+      {
+        "values": {
+          "value": 6
+        },
+        "expect": 6
+      },
+      {
+        "values": {
+          "value": 3
+        },
+        "expect": 3
+      },
+      {
+        "values": {
+          "value": 2
+        },
+        "expect": 0
+      },
+      {
+        "values": {
+          "value": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "value",
+        "label": "Citations",
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "id": "rd-11",
+    "title": "PADS RD-11 Conference presentation at IIT / IISC / NIT",
+    "cases": [
+      {
+        "values": {
+          "count": 1
+        },
+        "expect": 5
+      },
+      {
+        "values": {
+          "count": 2
+        },
+        "expect": 5
+      },
+      {
+        "values": {
+          "count": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "count",
+        "label": "Papers",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "rd-12",
+    "title": "PADS RD-12 Conference + extended Scopus / WOS / SAE publication",
+    "cases": [
+      {
+        "values": {
+          "count": 3
+        },
+        "expect": 30
+      },
+      {
+        "values": {
+          "count": 2
+        },
+        "expect": 30
+      },
+      {
+        "values": {
+          "count": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "count",
+        "label": "Papers",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "rd-13",
+    "title": "PADS RD-13 Product development (commercial)",
+    "cases": [
+      {
+        "values": {
+          "status": "Commercialized"
+        },
+        "expect": 16
+      },
+      {
+        "values": {
+          "status": "In-Process"
+        },
+        "expect": 4
+      },
+      {
+        "values": {
+          "status": "None"
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "status",
+        "label": "Status",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "id": "rd-14",
+    "title": "PADS RD-14 Product development from student projects",
+    "cases": [
+      {
+        "values": {
+          "status": "Commercialized"
+        },
+        "expect": 10
+      },
+      {
+        "values": {
+          "status": "In-Process"
+        },
+        "expect": 1
+      },
+      {
+        "values": {
+          "status": "None"
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "status",
+        "label": "Status",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "id": "rd-15",
+    "title": "PADS RD-15 Facilitation of student involvement in RIG",
+    "cases": [
+      {
+        "values": {
+          "students": 10
+        },
+        "expect": 14
+      },
+      {
+        "values": {
+          "students": 5
+        },
+        "expect": 7
+      },
+      {
+        "values": {
+          "students": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "students",
+        "label": "Students",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "rd-16",
+    "title": "PADS RD-16 Facilitation of student involvement in Forge",
+    "cases": [
+      {
+        "values": {
+          "students": 10
+        },
+        "expect": 14
+      },
+      {
+        "values": {
+          "students": 5
+        },
+        "expect": 7
+      },
+      {
+        "values": {
+          "students": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "students",
+        "label": "Students",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "ei-1",
+    "title": "PADS EI-1 Industrial / Research consultancy (financial)",
+    "cases": [
+      {
+        "values": {
+          "amount": 5
+        },
+        "expect": 24
+      },
+      {
+        "values": {
+          "amount": 2
+        },
+        "expect": 16
+      },
+      {
+        "values": {
+          "amount": 0.5
+        },
+        "expect": 8
+      },
+      {
+        "values": {
+          "amount": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "amount",
+        "label": "Amount (lakh)",
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "id": "ei-2",
+    "title": "PADS EI-2 FDP participation (7+ days)",
+    "cases": [
+      {
+        "values": {
+          "count": 3
+        },
+        "expect": 24
+      },
+      {
+        "values": {
+          "count": 1
+        },
+        "expect": 12
+      },
+      {
+        "values": {
+          "count": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "count",
+        "label": "FDPs",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "ei-3",
+    "title": "PADS EI-3 MOU signed",
+    "cases": [
+      {
+        "values": {
+          "count": 3
+        },
+        "expect": 20
+      },
+      {
+        "values": {
+          "count": 1
+        },
+        "expect": 10
+      },
+      {
+        "values": {
+          "count": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "count",
+        "label": "MOUs",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "ei-4",
+    "title": "PADS EI-4 Consultancy (institutional branding)",
+    "cases": [
+      {
+        "values": {
+          "count": 3
+        },
+        "expect": 4
+      },
+      {
+        "values": {
+          "count": 1
+        },
+        "expect": 2
+      },
+      {
+        "values": {
+          "count": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "count",
+        "label": "Works",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "ei-5",
+    "title": "PADS EI-5 Sabbatical program",
+    "cases": [
+      {
+        "values": {
+          "count": 1
+        },
+        "expect": 8
+      },
+      {
+        "values": {
+          "count": 2
+        },
+        "expect": 8
+      },
+      {
+        "values": {
+          "count": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "count",
+        "label": "Programs",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "ei-6",
+    "title": "PADS EI-6 International award",
+    "cases": [
+      {
+        "values": {
+          "count": 3
+        },
+        "expect": 12
+      },
+      {
+        "values": {
+          "count": 1
+        },
+        "expect": 6
+      },
+      {
+        "values": {
+          "count": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "count",
+        "label": "Awards",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "ei-7",
+    "title": "PADS EI-7 National / State award",
+    "cases": [
+      {
+        "values": {
+          "count": 3
+        },
+        "expect": 6
+      },
+      {
+        "values": {
+          "count": 1
+        },
+        "expect": 3
+      },
+      {
+        "values": {
+          "count": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "count",
+        "label": "Awards",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "ei-8",
+    "title": "PADS EI-8 Editorial board member (Scopus/WOS)",
+    "cases": [
+      {
+        "values": {
+          "count": 1
+        },
+        "expect": 14
+      },
+      {
+        "values": {
+          "count": 5
+        },
+        "expect": 14
+      },
+      {
+        "values": {
+          "count": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "count",
+        "label": "Journal roles",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "ei-9",
+    "title": "PADS EI-9 Reviewer (Scopus/WOS)",
+    "cases": [
+      {
+        "values": {
+          "count": 1
+        },
+        "expect": 9
+      },
+      {
+        "values": {
+          "count": 5
+        },
+        "expect": 9
+      },
+      {
+        "values": {
+          "count": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "count",
+        "label": "Journal roles",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "ei-10",
+    "title": "PADS EI-10 Editor or reviewer (other journal)",
+    "cases": [
+      {
+        "values": {
+          "count": 1
+        },
+        "expect": 5
+      },
+      {
+        "values": {
+          "count": 5
+        },
+        "expect": 5
+      },
+      {
+        "values": {
+          "count": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "count",
+        "label": "Journal roles",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "ei-11",
+    "title": "PADS EI-11 NGO collaboration",
+    "cases": [
+      {
+        "values": {
+          "count": 3
+        },
+        "expect": 10
+      },
+      {
+        "values": {
+          "count": 1
+        },
+        "expect": 5
+      },
+      {
+        "values": {
+          "count": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "count",
+        "label": "Collaborations",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "o-1",
+    "title": "PADS O-1 Heading independent body",
+    "cases": [
+      {
+        "values": {
+          "count": 3
+        },
+        "expect": 30
+      },
+      {
+        "values": {
+          "count": 1
+        },
+        "expect": 15
+      },
+      {
+        "values": {
+          "count": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "count",
+        "label": "Responsibilities",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "o-2",
+    "title": "PADS O-2 Ranking / accreditation responsibility",
+    "cases": [
+      {
+        "values": {
+          "role": "Primary member",
+          "count": 3
+        },
+        "expect": 30
+      },
+      {
+        "values": {
+          "role": "Committee member",
+          "count": 1
+        },
+        "expect": 3
+      },
+      {
+        "values": {
+          "role": "None",
+          "count": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "role",
+        "label": "Role",
+        "type": "text"
+      },
+      {
+        "id": "count",
+        "label": "Responsibilities",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "o-3",
+    "title": "PADS O-3 Organizing conference",
+    "cases": [
+      {
+        "values": {
+          "role": "Main organizer",
+          "attendees": 250
+        },
+        "expect": 10
+      },
+      {
+        "values": {
+          "role": "Team member",
+          "attendees": 250
+        },
+        "expect": 5
+      },
+      {
+        "values": {
+          "role": "Main organizer",
+          "attendees": 30
+        },
+        "expect": 4
+      },
+      {
+        "values": {
+          "role": "None",
+          "attendees": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "role",
+        "label": "Role",
+        "type": "text"
+      },
+      {
+        "id": "attendees",
+        "label": "Attendees",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "o-4",
+    "title": "PADS O-4 Organizing AICTE / sponsored FDP",
+    "cases": [
+      {
+        "values": {
+          "role": "Main organizer",
+          "funding": 6
+        },
+        "expect": 10
+      },
+      {
+        "values": {
+          "role": "Team member",
+          "funding": 6
+        },
+        "expect": 5
+      },
+      {
+        "values": {
+          "role": "Main organizer",
+          "funding": 4
+        },
+        "expect": 5
+      },
+      {
+        "values": {
+          "role": "None",
+          "funding": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "role",
+        "label": "Role",
+        "type": "text"
+      },
+      {
+        "id": "funding",
+        "label": "Funding (lakh)",
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "id": "o-5",
+    "title": "PADS O-5 Organizing workshop / seminar",
+    "cases": [
+      {
+        "values": {
+          "role": "Main organizer",
+          "attendees": 250
+        },
+        "expect": 10
+      },
+      {
+        "values": {
+          "role": "Team member",
+          "attendees": 250
+        },
+        "expect": 5
+      },
+      {
+        "values": {
+          "role": "None",
+          "attendees": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "role",
+        "label": "Role",
+        "type": "text"
+      },
+      {
+        "id": "attendees",
+        "label": "Attendees",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "o-6",
+    "title": "PADS O-6 Alumni entrepreneur projects",
+    "cases": [
+      {
+        "values": {
+          "count": 2
+        },
+        "expect": 20
+      },
+      {
+        "values": {
+          "count": 1
+        },
+        "expect": 10
+      },
+      {
+        "values": {
+          "count": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "count",
+        "label": "Projects",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "o-7",
+    "title": "PADS O-7 Outreach program expert",
+    "cases": [
+      {
+        "values": {
+          "attendees": 250
+        },
+        "expect": 10
+      },
+      {
+        "values": {
+          "attendees": 30
+        },
+        "expect": 4
+      },
+      {
+        "values": {
+          "attendees": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "attendees",
+        "label": "Attendees",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "o-8",
+    "title": "PADS O-8 Professional external audit member",
+    "cases": [
+      {
+        "values": {
+          "count": 2
+        },
+        "expect": 28
+      },
+      {
+        "values": {
+          "count": 1
+        },
+        "expect": 14
+      },
+      {
+        "values": {
+          "count": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "count",
+        "label": "Audits",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "o-9",
+    "title": "PADS O-9 Blogs on education",
+    "cases": [
+      {
+        "values": {
+          "count": 2
+        },
+        "expect": 6
+      },
+      {
+        "values": {
+          "count": 1
+        },
+        "expect": 3
+      },
+      {
+        "values": {
+          "count": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "count",
+        "label": "Blogs",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "o-10",
+    "title": "PADS O-10 External expert / guest lecture",
+    "cases": [
+      {
+        "values": {
+          "role": "Lecturing"
+        },
+        "expect": 8.5
+      },
+      {
+        "values": {
+          "role": "Academic Council"
+        },
+        "expect": 9
+      },
+      {
+        "values": {
+          "role": "S and H Arts"
+        },
+        "expect": 7.5
+      },
+      {
+        "values": {
+          "role": "None"
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "role",
+        "label": "Role",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "id": "sd-1",
+    "title": "PADS SD-1 Organizing local visits",
+    "cases": [
+      {
+        "values": {
+          "count": 2
+        },
+        "expect": 6
+      },
+      {
+        "values": {
+          "count": 1
+        },
+        "expect": 3
+      },
+      {
+        "values": {
+          "count": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "count",
+        "label": "Visits",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "sd-2",
+    "title": "PADS SD-2 Placing student in core industry",
+    "cases": [
+      {
+        "values": {
+          "count": 3
+        },
+        "expect": 24
+      },
+      {
+        "values": {
+          "count": 1
+        },
+        "expect": 8
+      },
+      {
+        "values": {
+          "count": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "count",
+        "label": "Students",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "sd-3",
+    "title": "PADS SD-3 Referred internship",
+    "cases": [
+      {
+        "values": {
+          "count": 3
+        },
+        "expect": 12
+      },
+      {
+        "values": {
+          "count": 1
+        },
+        "expect": 4
+      },
+      {
+        "values": {
+          "count": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "count",
+        "label": "Students",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "sd-4",
+    "title": "PADS SD-4 Student research development",
+    "cases": [
+      {
+        "values": {
+          "count": 2
+        },
+        "expect": 6
+      },
+      {
+        "values": {
+          "count": 1
+        },
+        "expect": 3
+      },
+      {
+        "values": {
+          "count": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "count",
+        "label": "Activities",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "sd-5",
+    "title": "PADS SD-5 Student mentoring",
+    "cases": [
+      {
+        "values": {
+          "count": 2
+        },
+        "expect": 8
+      },
+      {
+        "values": {
+          "count": 1
+        },
+        "expect": 4
+      },
+      {
+        "values": {
+          "count": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "count",
+        "label": "Sessions",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "sd-6",
+    "title": "PADS SD-6 Leadership and skill development",
+    "cases": [
+      {
+        "values": {
+          "count": 2
+        },
+        "expect": 6
+      },
+      {
+        "values": {
+          "count": 1
+        },
+        "expect": 3
+      },
+      {
+        "values": {
+          "count": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "count",
+        "label": "Activities",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "ec-1",
+    "title": "PADS EC-1 Student accomplishments (co-curricular)",
+    "cases": [
+      {
+        "values": {
+          "students": 9
+        },
+        "expect": 10
+      },
+      {
+        "values": {
+          "students": 3
+        },
+        "expect": 5
+      },
+      {
+        "values": {
+          "students": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "students",
+        "label": "Students",
+        "type": "integer"
+      }
+    ]
+  },
+  {
+    "id": "ec-2",
+    "title": "PADS EC-2 Student accomplishments (extra-curricular)",
+    "cases": [
+      {
+        "values": {
+          "students": 9
+        },
+        "expect": 8
+      },
+      {
+        "values": {
+          "students": 3
+        },
+        "expect": 4
+      },
+      {
+        "values": {
+          "students": 0
+        },
+        "expect": 0,
+        "note": "zero fallback / below minimum"
+      }
+    ],
+    "fields": [
+      {
+        "id": "students",
+        "label": "Students",
+        "type": "integer"
+      }
+    ]
+  }
+]

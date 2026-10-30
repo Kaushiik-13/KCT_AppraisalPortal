@@ -1,0 +1,3 @@
+Synthetic invalid evidence for the PADS TL-1 verification.
+This file is intentionally a text file, not an accepted PDF/PPTX/XLS/XLSX upload.
+It contains no personal data.

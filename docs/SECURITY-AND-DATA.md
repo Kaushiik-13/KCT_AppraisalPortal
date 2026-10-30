@@ -40,6 +40,10 @@ Plan authentication, tenant-scoped authorization, trustworthy faculty/reviewer i
 
 The included PRISMA paper retains its original attribution and license notice; see [sample notes](../public/samples/README.txt). Mock index coverage is test data and must not be presented as verified indexing. This repository currently does not define a separate project-wide software license.
 
+`public/samples/PADS.xlsx` is an unmodified, blank PADS Academic Review 2021 template supplied by the project owner. Its appraisee/appraiser identity fields are empty and it contains no personal submissions. It is a reference fixture for Framework Studio rule mapping; whether the institution has approved those rules for live scoring is not verified.
+
+`public/samples/pads/` contains synthetic TL-1 verification artifacts (two generated PDFs, one generated text file, one saved-draft configuration) and the 59 individual-KPI reference set in `public/samples/pads/kpis/`: 59 configuration-only saved drafts, `cases.json` (201 expected scoring cases), `index.json` (workbook source map), and `README.md`. None of these files contain real staff, student, appraisal, or institutional submission data; the cases are synthetic input values and expected point totals. They are reference-only policy encodings, not an approved institutional scoring rule or an appraisal submission. Screenshots in `docs/assets/pads-tl1/` and `docs/assets/pads-kpis/` show synthetic data only.
+
 The prediction fixtures use pseudonymous `SYN-KCT-*` keys and an explicit synthetic flag. They are generated from a reference PADS role/KRA configuration and contain no names, email addresses, submissions or uploaded evidence. Synthetic model metrics must not be represented as real KCT accuracy. Real appraisal data must not be placed in these fixture paths; production ingestion requires institutional authorization, tenant isolation, retention rules and an approved security design.
 
 AI adapter diagnostic logs include only selected model, finish reason and answer-presence boolean. They do not log instructions, evidence, keys or internal reasoning.
