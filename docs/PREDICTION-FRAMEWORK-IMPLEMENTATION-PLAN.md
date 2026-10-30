@@ -1,8 +1,8 @@
 # Prediction Framework implementation plan
 
-Status: **synthetic dataset and backend readiness foundation implemented; prediction runtime not implemented**
+Status: **synthetic dataset, generation UI and readiness foundation implemented; prediction runtime not implemented**
 
-Active readiness branch: `codex/prediction-readiness` (based on `codex/prediction-prototype`)
+Active UI branch: `codex/prediction-readiness-ui` (based on `codex/prediction-readiness`)
 
 Initial prototype organization: KCT
 
@@ -871,7 +871,7 @@ Exit: every required field has an owner, source, type, timing rule, and validati
 
 ### Phase 1: synthetic dataset and readiness engine
 
-Implementation status: synthetic fixtures plus the backend validator, Scenario A/B/C selection, latest-cycle split, leakage-safe feature contract and readiness API are implemented. The data-mapping/readiness UI is not implemented.
+Implementation status: synthetic fixtures plus the configurable generation UI, backend validator, Scenario A/B/C selection, latest-cycle split, leakage-safe feature contract and readiness API/UI are implemented. Real-data mapping is not implemented.
 
 Deliverables:
 
@@ -883,6 +883,8 @@ Deliverables:
 Exit: fixtures reproduce reliably and each triggers the expected readiness result.
 
 ### Phase 2: Prediction Studio foundation
+
+Implementation status: partially implemented. Overview, eight-decision synthetic setup, generation, preview/download and readiness presentation are complete. Persistent organization configuration and real data-source mapping remain planned.
 
 Deliverables:
 

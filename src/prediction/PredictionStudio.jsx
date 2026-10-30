@@ -1,0 +1,268 @@
+"use client";
+
+import { useMemo, useRef, useState } from "react";
+import {
+  ArrowLeft,
+  BarChart3,
+  Database,
+  Layers3,
+  Settings2,
+  ShieldCheck,
+} from "lucide-react";
+import { rowsToCsv } from "./csv.js";
+import DatasetPreview from "./DatasetPreview.jsx";
+import PredictionOverview from "./PredictionOverview.jsx";
+import SyntheticDatasetWizard from "./SyntheticDatasetWizard.jsx";
+
+const INITIAL_CONFIGURATION = {
+  seed: 20261029,
+  activeCycleStartYear: 2026,
+  activeEmployeeCount: 40,
+  activeElapsedFraction: 0.33,
+  limitedEmployees: 30,
+  limitedCycleCount: 2,
+  sufficientEmployees: 60,
+  sufficientCycleCount: 4,
+  checkpointCount: 4,
+  includeInvalidCases: true,
+  patternWeights: {
+    steady: 22,
+    early_fast: 12,
+    late_improvement: 14,
+    stalled: 10,
+    irregular: 12,
+    high_consistent: 12,
+    low_consistent: 10,
+    evidence_delayed: 8,
+  },
+};
+
+const SCREENS = [
+  { id: "overview", label: "Overview", description: "Status and next action", icon: BarChart3 },
+  { id: "setup", label: "Dataset setup", description: "Eight generation decisions", icon: Settings2 },
+  { id: "data", label: "Data & readiness", description: "Preview, filter and validate", icon: ShieldCheck },
+];
+
+function downloadText(name, content, type) {
+  const url = URL.createObjectURL(new Blob([content], { type }));
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = name;
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
+
+async function readResponse(response) {
+  const result = await response.json();
+  if (!response.ok) {
+    const error = new Error(result.error || "The request could not be completed.");
+    error.issues = result.issues || [];
+    throw error;
+  }
+  return result;
+}
+
+export default function PredictionStudio({ organization, policy }) {
+  const [screen, setScreen] = useState("overview");
+  const [configuration, setConfiguration] = useState(INITIAL_CONFIGURATION);
+  const [generated, setGenerated] = useState(null);
+  const [selectedDataset, setSelectedDataset] = useState("sufficient");
+  const [readiness, setReadiness] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [readinessLoading, setReadinessLoading] = useState(false);
+  const [errors, setErrors] = useState([]);
+  const [dirty, setDirty] = useState(true);
+  const readinessRequest = useRef(0);
+
+  const estimatedRows = useMemo(() => (
+    configuration.activeEmployeeCount
+    + configuration.limitedEmployees * configuration.limitedCycleCount * configuration.checkpointCount
+    + configuration.sufficientEmployees * configuration.sufficientCycleCount * configuration.checkpointCount
+    + (configuration.includeInvalidCases ? 12 : 0)
+  ), [configuration]);
+
+  const updateConfiguration = (field, value) => {
+    setConfiguration((previous) => ({ ...previous, [field]: value }));
+    setDirty(true);
+    setErrors([]);
+  };
+
+  const updatePattern = (pattern, value) => {
+    setConfiguration((previous) => ({
+      ...previous,
+      patternWeights: { ...previous.patternWeights, [pattern]: value },
+    }));
+    setDirty(true);
+    setErrors([]);
+  };
+
+  const runReadiness = async (generation, datasetId) => {
+    const requestId = readinessRequest.current + 1;
+    readinessRequest.current = requestId;
+    const dataset = generation.datasets[datasetId];
+    setReadinessLoading(true);
+    setReadiness(null);
+    try {
+      const response = await fetch("/api/prediction/datasets/readiness", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          snapshot: {
+            id: dataset.snapshotId,
+            organizationId: generation.organization.id,
+            policyVersion: generation.policy.version,
+            frameworkVersion: generation.frameworkVersion,
+            rows: dataset.rows,
+          },
+          policy: generation.policy,
+          featureSelection: generation.defaultFeatureSelection,
+        }),
+      });
+      const result = await readResponse(response);
+      if (readinessRequest.current === requestId) setReadiness(result);
+      return result;
+    } catch (error) {
+      if (readinessRequest.current === requestId) setErrors([error.message]);
+      return null;
+    } finally {
+      if (readinessRequest.current === requestId) setReadinessLoading(false);
+    }
+  };
+
+  const generate = async () => {
+    setBusy(true);
+    setErrors([]);
+    try {
+      const response = await fetch("/api/prediction/datasets/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ configuration }),
+      });
+      const result = await readResponse(response);
+      setGenerated(result);
+      setSelectedDataset("sufficient");
+      setDirty(false);
+      setScreen("data");
+      await runReadiness(result, "sufficient");
+    } catch (error) {
+      setErrors(error.issues?.length ? error.issues : [error.message]);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const selectDataset = async (datasetId) => {
+    setSelectedDataset(datasetId);
+    await runReadiness(generated, datasetId);
+  };
+
+  const downloadCsv = () => {
+    const dataset = generated.datasets[selectedDataset];
+    downloadText(dataset.fileName, rowsToCsv(dataset.rows, generated.columns), "text/csv;charset=utf-8");
+  };
+
+  const downloadMetadata = () => {
+    const datasets = Object.fromEntries(Object.entries(generated.datasets).map(([id, dataset]) => [id, {
+      snapshotId: dataset.snapshotId,
+      fileName: dataset.fileName,
+      checksum: dataset.checksum,
+      summary: dataset.summary,
+    }]));
+    downloadText(
+      `${generated.snapshotGroupId}-metadata.json`,
+      `${JSON.stringify({
+        synthetic: true,
+        snapshotGroupId: generated.snapshotGroupId,
+        organization: generated.organization,
+        policyVersion: generated.policy.version,
+        generatorVersion: generated.generatorVersion,
+        frameworkVersion: generated.frameworkVersion,
+        configuration: generated.configuration,
+        datasets,
+      }, null, 2)}\n`,
+      "application/json;charset=utf-8",
+    );
+  };
+
+  return (
+    <div className="prediction-shell">
+      <aside className="prediction-sidebar">
+        <a className="prediction-brand" href="/" aria-label="Back to Framework Studio">
+          <span><Layers3 size={23} /></span>
+          <div><strong>AFPI</strong><small>Prediction Framework</small></div>
+        </a>
+        <div className="prediction-sidebar-label">PROTOTYPE SCREENS</div>
+        <nav aria-label="Prediction screens">
+          {SCREENS.map((item, index) => {
+            const Icon = item.icon;
+            const disabled = item.id === "data" && !generated;
+            return (
+              <button
+                key={item.id}
+                className={screen === item.id ? "active" : ""}
+                onClick={() => setScreen(item.id)}
+                disabled={disabled}
+              >
+                <Icon size={18} />
+                <span><strong>{item.label}</strong><small>{item.description}</small></span>
+                <em>{String(index + 1).padStart(2, "0")}</em>
+              </button>
+            );
+          })}
+        </nav>
+        <div className="prediction-sidebar-note">
+          <Database size={18} />
+          <div><strong>Synthetic data only</strong><p>No real employee records are used or saved.</p></div>
+        </div>
+      </aside>
+
+      <main className="prediction-main">
+        <header className="prediction-header">
+          <div>
+            <a href="/"><ArrowLeft size={16} />Framework Studio</a>
+            <span>/</span>
+            <strong>{SCREENS.find((item) => item.id === screen)?.label}</strong>
+          </div>
+          <div className="prediction-header-status">
+            <span className={generated ? "ready" : ""} />
+            {generated ? "Synthetic snapshot ready" : "Configuration not generated"}
+          </div>
+        </header>
+
+        {screen === "overview" ? (
+          <PredictionOverview
+            organization={organization}
+            policy={policy}
+            generated={generated}
+            readiness={readiness}
+            onConfigure={() => setScreen("setup")}
+            onOpenData={() => setScreen("data")}
+          />
+        ) : screen === "setup" ? (
+          <SyntheticDatasetWizard
+            configuration={configuration}
+            estimatedRows={estimatedRows}
+            busy={busy}
+            dirty={dirty}
+            errors={errors}
+            onChange={updateConfiguration}
+            onPatternChange={updatePattern}
+            onGenerate={generate}
+          />
+        ) : generated ? (
+          <DatasetPreview
+            key={selectedDataset}
+            generated={generated}
+            selectedDataset={selectedDataset}
+            readiness={readiness}
+            readinessLoading={readinessLoading}
+            onSelectDataset={selectDataset}
+            onDownloadCsv={downloadCsv}
+            onDownloadMetadata={downloadMetadata}
+            onConfigure={() => setScreen("setup")}
+          />
+        ) : null}
+      </main>
+    </div>
+  );
+}

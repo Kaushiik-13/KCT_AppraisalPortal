@@ -13,11 +13,19 @@ The current Publication plugin has ten steps, no simulated index or AI node, a C
 
 Tests use Node's built-in test runner over `src/*.test.js` and `server/*.test.js`. A passing build verifies bundling, not browser behavior. There is no lint script or committed full browser automation suite.
 
-Most recent automated baseline: **185 passing tests** and a successful production build on 30 October 2026 after merging the updated `codex/prediction-prototype` base into `codex/prediction-readiness`. The 175-test merged prototype result, 167-test PADS KPI result, 120-test readiness backend result, 110-test synthetic prediction dataset result and 109-test dataset-foundation result, 102-test reports from 27–28 October, 101-test report from 7 October, and earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) remain historical checkpoints.
+Most recent automated baseline: **189 passing tests** and a successful production build on 30 October 2026 after merging the updated `codex/prediction-readiness` base into `codex/prediction-readiness-ui`. The 185-test readiness result, 175-test merged prototype result, 167-test PADS KPI result, 124-test readiness-UI result, 120-test readiness backend result, 110-test synthetic prediction dataset result and 109-test dataset-foundation result, 102-test reports from 27–28 October, 101-test report from 7 October, and earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) remain historical checkpoints.
 
 ## Branch synchronization — 30 October 2026
 
-Merged `main` at `ebbb301` into `codex/prediction-prototype`, then merged the updated prototype into `codex/prediction-readiness`. The four documentation conflicts (`CHANGE-HISTORY.md`, `DECISIONS.md`, `SECURITY-AND-DATA.md`, `TESTING.md`) retain both the PADS verification records and the synthetic prediction dataset records; the prediction prototype decision was renumbered D-25 to follow the new PADS decisions D-23 and D-24. The merged prototype suite passed **175/175** tests; the readiness merge passed **185/185** tests and `npm.cmd run build` completed successfully with Next.js 16.3.8. The synchronization adds no new application behavior; it combines the PADS fixtures and tests from `main` with the prediction fixtures and tests on the branch.
+Merged `main` at `ebbb301` into `codex/prediction-prototype`, then propagated the updated base through `codex/prediction-readiness` and `codex/prediction-readiness-ui`. The four documentation conflicts (`CHANGE-HISTORY.md`, `DECISIONS.md`, `SECURITY-AND-DATA.md`, `TESTING.md`) retain both the PADS verification records and the synthetic prediction dataset records; the prediction prototype decision was renumbered D-25 to follow the new PADS decisions D-23 and D-24. The merged prototype suite passed **175/175** tests, the readiness merge passed **185/185**, and the readiness-UI merge passed **189/189**; `npm.cmd run build` completed successfully with Next.js 16.3.8. The synchronization adds no new application behavior; it combines the PADS fixtures and tests from `main` with the prediction fixtures and tests on the branch.
+
+## Prediction Studio screens 1–3 — 29 October 2026
+
+Four generation-route tests cover validated configuration bounds, derived cycle/checkpoint settings, deterministic all-scenario output, useful setting errors, same-origin enforcement, JSON requirements and body limits. `npm.cmd test` passed all **124 tests**. `npm.cmd run build` passed with Next.js 16.3.8 and produced static `/prediction` plus the dynamic generation and readiness endpoints.
+
+A local browser walkthrough opened the overview, reviewed all eight decisions, generated 1,252 rows across four scenarios, and displayed the sufficient-history latest-cycle split. Switching to no history produced Scenario A with a rule-based estimate and blocked model training. Invalid history produced a blocked result with named findings. A role filter reduced the preview from 12 to 6 matching rows without changing the readiness result. Server requests returned HTTP 200. Downloads were not clicked during this walkthrough; serialization remains covered by automated tests.
+
+These checks demonstrate synthetic prototype behavior only. They do not train a model, validate prediction accuracy or authorize real employee data.
 
 ## Prediction readiness backend — 29 October 2026
 

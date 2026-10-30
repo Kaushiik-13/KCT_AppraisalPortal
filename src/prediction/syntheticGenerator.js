@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { rowsToCsv as serializeRowsToCsv } from "./csv.js";
 
 const PATTERN_CURVES = {
   steady: [0.24, 0.5, 0.76, 1],
@@ -75,6 +76,10 @@ export const SYNTHETIC_COLUMNS = [
   "fixture_case_id",
   "injected_defect"
 ];
+
+export function rowsToCsv(rows, columns = SYNTHETIC_COLUMNS) {
+  return serializeRowsToCsv(rows, columns);
+}
 
 const round = (value, digits = 2) => Number(value.toFixed(digits));
 const clamp = (value, minimum, maximum) => Math.min(maximum, Math.max(minimum, value));
@@ -341,16 +346,6 @@ export function generateSyntheticDatasets({ organization, policy, defaults }) {
     sufficient,
     invalid: invalidRows(limited, current),
   };
-}
-
-function csvValue(value) {
-  if (value === null || value === undefined) return "";
-  const text = String(value);
-  return /[",\r\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
-}
-
-export function rowsToCsv(rows, columns = SYNTHETIC_COLUMNS) {
-  return `${columns.join(",")}\n${rows.map((row) => columns.map((column) => csvValue(row[column])).join(",")).join("\n")}\n`;
 }
 
 export function sha256(content) {

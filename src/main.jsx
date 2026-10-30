@@ -25,6 +25,7 @@ import {
   Calendar,
   ToggleLeft,
   Upload,
+  BrainCircuit,
 } from "lucide-react";
 import WorkflowView from "./WorkflowStudio";
 import useDraft from "./useDraft";
@@ -284,6 +285,13 @@ export default function App() {
           </span>
           <span className="stage-number">03</span>
         </button>
+        <a className="stage module-link" href="/prediction">
+          <BrainCircuit size={19} />
+          <span>
+            Prediction framework<small>Synthetic data and readiness</small>
+          </span>
+          <span className="stage-number">→</span>
+        </a>
       </aside>
       <main>
         <header className="app-header">

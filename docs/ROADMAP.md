@@ -49,20 +49,21 @@ Delivered on 6 October: migrated the PoC from Vite to Next.js 16 App Router, ret
 4. **Optional live index verification.** Only pursue Scopus/Web of Science adapters after the institution confirms API entitlement, authorized credentials, and approved use. Coverage gaps and failures must remain explicit; DOI lookup alone cannot establish index status.
 5. **Portable draft lifecycle.** Add validated import, multiple drafts, schema migrations, and cross-tab conflict handling.
 
-## Prediction Framework — planned 27 October 2026
+## Prediction Framework — in progress
 
-The detailed [Prediction Framework implementation plan](PREDICTION-FRAMEWORK-IMPLEMENTATION-PLAN.md) defines a new organization-scoped module for predicting the final approved overall score. The seeded synthetic dataset foundation plus the backend readiness API, Scenario A/B/C selection, time-based split and leakage-safe feature contract are implemented. No prediction screen, trained model, inference API or employee dashboard is implemented yet.
+The detailed [Prediction Framework implementation plan](PREDICTION-FRAMEWORK-IMPLEMENTATION-PLAN.md) defines a new organization-scoped module for predicting the final approved overall score. The seeded synthetic dataset foundation, configurable generation route, first three Prediction Studio screens, backend readiness API, Scenario A/B/C selection, time-based split and leakage-safe feature contract are implemented. No trained model, inference API or employee dashboard is implemented yet.
 
-The [Prediction prototype implementation plan](PREDICTION-PROTOTYPE-IMPLEMENTATION-PLAN.md) defines the KCT review slice. Phase 1 provides configuration-driven KCT/PADS KRA-level fixtures for no history, limited history, sufficient history and invalid data. The backend portion of Phase 2 validates those fixtures, selects scenarios, creates the latest-cycle holdout and blocks unsafe features. Detailed KPI scoring-band conversion, configuration/readiness screens, established scikit-learn candidates, model evaluation, approval/publication, sandbox and employee view remain planned.
+The [Prediction prototype implementation plan](PREDICTION-PROTOTYPE-IMPLEMENTATION-PLAN.md) defines the KCT review slice. Phase 1 provides configuration-driven KCT/PADS KRA-level fixtures for no history, limited history, sufficient history and invalid data. Phase 2 now presents those fixtures, selects scenarios, creates the latest-cycle holdout and blocks unsafe features through the shared UI/API contract. Detailed KPI scoring-band conversion, persistent organization configuration, established algorithm candidates, model evaluation, approval/publication, sandbox and employee view remain planned.
 
 The planned sequence is:
 
 1. Obtain KCT KRA/KPI, scoring, role, cycle, and checkpoint definitions.
 2. **Implemented foundation:** create reproducible synthetic KCT fixtures for no-history, limited-history, sufficient-history, and invalid-data cases. Current fixtures use KRA-level role caps; detailed current KPI policy conversion remains open.
 3. **Implemented backend gate:** validate synthetic snapshots, select Scenario A/B/C, produce a time-based split and block target/identity/generator leakage.
-4. Build configuration and readiness screens, then the rule-based estimate, training, evaluation, approval, test, publication, employee dashboard and basic retraining screens.
-5. Evaluate established candidate algorithms through time-based holdout testing rather than selecting one before the data contract exists.
-6. Stabilize prediction before beginning the Recommendation Framework.
+4. **Implemented prototype screens:** configure generation, generate all four scenarios, preview/filter/download them and display the shared readiness result.
+5. Build the rule-based estimate, training, evaluation, approval, test, publication, employee dashboard and basic retraining screens.
+6. Evaluate established candidate algorithms through time-based holdout testing rather than selecting one before the data contract exists.
+7. Stabilize prediction before beginning the Recommendation Framework.
 
 The three runtime modes are a transparent rule-based estimate when history is unavailable, an evaluated low-confidence baseline when history is limited, and an approved organization-specific model when sufficient compatible history passes quality gates.
 

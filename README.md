@@ -2,7 +2,7 @@
 
 A desktop proof of concept for creating configurable KPI forms, verification workflows, and scoring policies. The aim is to let different institutions compose their own KPIs from shared tools. Publication verification is the first worked example, not the only supported workflow.
 
-Application baseline: **7 October 2026**. Prediction Framework planning was added on **27 October 2026**. This is a PoC, not a production appraisal platform.
+Application baseline: **29 October 2026**. The first three Prediction Framework prototype screens are implemented. This is a PoC, not a production appraisal platform.
 
 ## Run locally
 
@@ -49,7 +49,7 @@ See [setup](docs/SETUP.md) for environment configuration, the production server,
 - Organization-defined formula and conditional scoring policies with immutable local versions.
 - Execution traces, terminal review packages, legacy publication review decisions, and browser-local draft autosave.
 - A collapsible sidebar and confirmed Clear saved draft action.
-- Reproducible synthetic KCT/PADS prediction fixtures plus implemented readiness, Scenario A/B/C selection, time-based split and leakage-safe feature contracts; no prediction UI or trained model yet.
+- A Prediction Framework prototype at `/prediction` with overview, eight-decision synthetic dataset setup, deterministic generation, preview/download, Scenario A/B/C readiness, time-based split and leakage-safe feature contracts. No trained model or live prediction exists yet.
 
 ## Boundaries
 
