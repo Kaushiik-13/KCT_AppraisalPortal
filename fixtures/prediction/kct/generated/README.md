@@ -13,4 +13,6 @@ Run `npm.cmd run generate:prediction-data` from the repository root to regenerat
 | `active-employee-snapshots.json` | Sandbox/dashboard input records |
 | `generation-report.json` | Configuration summary, counts, checksums and limitations |
 
+Expected Scenario A/B/C, split and invalid-block outcomes are recorded separately in `../expected/readiness-cases.json`. The readiness implementation is documented in `docs/PREDICTION-READINESS.md`.
+
 The first fixture operates at KRA level using PADS role-specific caps and a 200-point overall cap. Detailed KPI scoring bands remain pending confirmation and conversion of the current institution-approved policy.

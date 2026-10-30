@@ -1,0 +1,48 @@
+{
+  "profileId": "synthetic-demonstration-v1",
+  "cases": [
+    {
+      "fixture": "no-history-current",
+      "scenario": "A",
+      "status": "ready-rule-based",
+      "modelTraining": false,
+      "requiredWarningCodes": ["NO_COMPLETED_HISTORY"]
+    },
+    {
+      "fixture": "limited-history",
+      "scenario": "B",
+      "status": "ready-for-training",
+      "modelTraining": true,
+      "trainCycles": ["2024-25"],
+      "testCycles": ["2025-26"],
+      "requiredWarningCodes": ["LIMITED_HISTORY_LOW_CONFIDENCE"]
+    },
+    {
+      "fixture": "sufficient-history",
+      "scenario": "C",
+      "status": "ready-for-training",
+      "modelTraining": true,
+      "trainCycles": ["2022-23", "2023-24", "2024-25"],
+      "testCycles": ["2025-26"],
+      "requiredWarningCodes": []
+    },
+    {
+      "fixture": "invalid-history",
+      "scenario": null,
+      "status": "blocked",
+      "modelTraining": false,
+      "requiredBlockCodes": [
+        "ACTIVE_TARGET_PRESENT",
+        "CHECKPOINT_OUTSIDE_CYCLE",
+        "DECREASING_CUMULATIVE_SCORE",
+        "DUPLICATE_CANONICAL_KEY",
+        "MISSING_CURRENT_SCORE",
+        "MISSING_TARGET",
+        "POLICY_VERSION_MISMATCH",
+        "RECORD_NOT_SYNTHETIC",
+        "SCORE_OUT_OF_RANGE",
+        "UNKNOWN_ROLE"
+      ]
+    }
+  ]
+}

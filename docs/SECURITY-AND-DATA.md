@@ -12,6 +12,7 @@
 | Selected AI input excerpts and instructions | Browser to same-origin Next.js route, then OpenRouter in live mode |
 | OpenRouter key | Server environment / ignored `.env.local` |
 | Synthetic prediction fixtures | Committed CSV/JSON files under `fixtures/prediction/kct/generated/`; no real employee identity or evidence |
+| Synthetic readiness request/result | Same-origin JSON request to the Next.js readiness route; evaluated in memory and not persisted |
 
 The PDF binary is not uploaded by the app's AI path, but selected extracted text may be sent externally. A local draft is not encrypted storage, a cloud backup, or an audit log. Saved policies/instructions can contain personal text if the creator enters it.
 
@@ -45,6 +46,8 @@ The included PRISMA paper retains its original attribution and license notice; s
 `public/samples/pads/` contains synthetic TL-1 verification artifacts (two generated PDFs, one generated text file, one saved-draft configuration) and the 59 individual-KPI reference set in `public/samples/pads/kpis/`: 59 configuration-only saved drafts, `cases.json` (201 expected scoring cases), `index.json` (workbook source map), and `README.md`. None of these files contain real staff, student, appraisal, or institutional submission data; the cases are synthetic input values and expected point totals. They are reference-only policy encodings, not an approved institutional scoring rule or an appraisal submission. Screenshots in `docs/assets/pads-tl1/` and `docs/assets/pads-kpis/` show synthetic data only.
 
 The prediction fixtures use pseudonymous `SYN-KCT-*` keys and an explicit synthetic flag. They are generated from a reference PADS role/KRA configuration and contain no names, email addresses, submissions or uploaded evidence. Synthetic model metrics must not be represented as real KCT accuracy. Real appraisal data must not be placed in these fixture paths; production ingestion requires institutional authorization, tenant isolation, retention rules and an approved security design.
+
+The prototype prediction-readiness endpoint enforces same-origin requests in production, JSON input, a 6 MB body limit, explicit synthetic flags and no-store responses. These controls do not provide authentication, tenant authorization or durable audit storage. The endpoint accepts rows and a policy contract in the request only for the synthetic prototype; a production service must resolve immutable organization-scoped snapshots and policy releases server-side.
 
 AI adapter diagnostic logs include only selected model, finish reason and answer-presence boolean. They do not log instructions, evidence, keys or internal reasoning.
 

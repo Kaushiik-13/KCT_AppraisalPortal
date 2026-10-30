@@ -121,6 +121,21 @@ The invalid fixture includes missing target/current score, duplicate canonical k
 
 For the sufficient fixture, the intended first split trains on `2022-23`, `2023-24` and `2024-25`, then tests on `2025-26`.
 
+## Implemented readiness interpretation
+
+The backend readiness layer now applies this dictionary through `evaluatePredictionReadiness`:
+
+| Fixture | Scenario | Result |
+|---|---|---|
+| No-history current | A | Rule-based estimate only; no supervised training |
+| Limited history | B | Latest cycle held out; low-confidence candidate training permitted when gates pass |
+| Sufficient history | C | Latest cycle held out; candidate evaluation permitted when gates pass |
+| Invalid history | Blocked | Stable block/warning codes and rejected-row summaries |
+
+The committed default profile uses completed employee-cycle counts, not checkpoint-row counts. Twenty cases/two cycles enable limited-history prototype training; 200 cases/four cycles classify sufficient history. These are demonstration defaults and not production thresholds.
+
+The raw feature matrix permits role, checkpoint order/timing, current/previous progress, score change, evidence count, mandatory status/route and policy-defined KRA score/cap fields. It excludes the final target, target timing, identities, cycle/split fields, validation dates, compatibility metadata, fixture metadata, provenance, missing-count summary and `generation_pattern`. See [Prediction readiness](PREDICTION-READINESS.md).
+
 ## Regeneration
 
 ```powershell

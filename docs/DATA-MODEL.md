@@ -99,6 +99,20 @@ One completed-history row represents an employee-cycle checkpoint and repeats th
 
 These fixtures are test/demo data, not browser draft data, runtime predictions, model artifacts or real employee records.
 
+## Prediction readiness result
+
+`evaluatePredictionReadiness` consumes a frozen synthetic snapshot, policy contract, compatibility scope and explicit feature selection. It returns a non-persisted result with:
+
+- `status`: `ready-rule-based`, `ready-for-training`, `fallback-only` or `blocked`.
+- `scenario`: `A`, `B`, `C` or `null`.
+- Row/case/cycle counts and rejected-row reason codes.
+- A latest-cycle time-based split when valid.
+- Separate rule-based and model-training eligibility.
+- Allowed, selected and excluded feature contracts.
+- Blocks, warnings and quality summaries.
+
+The initial raw feature matrix includes only completed rows in train/test partitions, exposes `final_approved_score` as target only, keeps employee-cycle groups intact and records `preprocessingFitScope: "train-only"`. It is an in-memory training input contract, not a trained model or persisted artifact. See [Prediction readiness](PREDICTION-READINESS.md).
+
 ## Plugin and reusable configuration
 
 Plugin nodes use kind `plugin`, with config `{plugin: "publication", tool: <operation ID>, settings: <operation config>}`. Existing legacy kinds/Action wrappers remain readable. `use_form_value` stores `fieldId` and a cached `valueType`; execution resolves the current field and emits source metadata. `extract_evidence` stores `mode` (`fields`, `content`, or `both`) and stable field entries `{id,name,type,label}`. `compare_evidence` stores one or more `{id,name,valueType,operator,ignoreCase}` pairs; each pair creates left/right mapping ports. Apply-policy stores `policyVersion` and a snapshot of formula component definitions; each component ID becomes a numeric mapping port. The runner resolves the saved policy version and records its calculation snapshot.
