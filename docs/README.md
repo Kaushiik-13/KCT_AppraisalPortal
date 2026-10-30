@@ -8,6 +8,8 @@ Application baseline: **30 October 2026**. Prediction Framework screens 1–10 a
 - [User guide](USER-GUIDE.md): Framework Studio authoring plus Prediction Framework setup, readiness, training, approval, publication, employee prediction, and retraining readiness.
 - [Publication KPI](PUBLICATION-KPI.md): complete example and unresolved scoring decisions.
 - [Training KPI](TRAINING-KPI.md): build a generic workflow and scoring policy.
+- [PADS TL-1 walkthrough](PADS-TL1-WALKTHROUGH.md): reference-only end-to-end verification of one PADS KPI, with source mapping, expected scores, screenshots, and limits.
+- [PADS individual KPI verification](PADS-INDIVIDUAL-KPIS.md): all 59 individual PADS rows — committed fixtures, the 201-case automated suite, the workbook row map, and what remains out of scope.
 
 ## Technical references
 

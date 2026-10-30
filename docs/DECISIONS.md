@@ -87,7 +87,15 @@ For new workflows, check DOI/Crossref metadata, PDF consistency, first authorshi
 
 Remove AI evaluation from the new Publication template. The Clear branch applies the selected saved scoring policy and passes its provisional score to Appraiser review. Needs review and Ineligible skip scoring and join that same review node, with the outcome and reasons shown to the appraiser. Do not invent point values; a missing or unmatched saved policy remains setup-required or pending.
 
-## D-23 — End-to-end synthetic prediction review prototype
+## D-23 — PADS TL-1 reference fixture
+
+Use `TL-1 Teaching Pedagogy & Content Preparation` as the single initial-KPI verification row because it has a complete three-band rule set and an 8-point maximum. Treat `> 85` as 85 and above for integer percentages, but record this as an unapproved mapping question. Extract the synthetic percentage from a deliberate `Teaching score: <number>` line; this is a test convention, not an institutional evidence format. Keep the workflow terminal at Appraiser review with no decision branches. Commit only synthetic artifacts and screenshots, not the 59-row local set or any personal data. Scope excludes min/max validation, other KPIs, KRA totals, role caps, and mandatory eligibility; a related review-package defect is tracked separately rather than expanded into this deliverable.
+
+## D-24 — Commit and automate the 59-row PADS policy set
+
+Promote the 59 local saved drafts and their 201 expected cases verified through the UI on 29 October 2026 into committed reference fixtures under `public/samples/pads/kpis/`, with `cases.json`, a workbook-derived `index.json`, and a README load procedure. This supersedes the D-23 instruction to keep the 59-row set out of the repository: without it, the only coverage lived in ignored artifacts and could not regress. Verify through `runWorkflow` in `src/padsAllKpis.test.js` rather than 59 stored screenshots, so all 201 cases are re-executed on every `npm test`; one prior RD-12 screenshot is kept as visual evidence only. Keep the five institutional rows 173-177 out of scope and record what PADS leaves undefined and what AFPI would need (1-5 institutional score field, duty/role eligibility, evidence or notes, supervisor or panel review, one claim per duty per period, audit history, aggregation). Keep full PADS aggregation, KRA weights, role maxima, the 200-point cap, mandatory eligibility, and dual self/supervisor scores out of scope. Fixtures remain reference-only: they are a working interpretation, not institutional approval, and contain no personal data.
+
+## D-25 — End-to-end synthetic prediction review prototype
 
 Deliver the first Prediction Framework review as a complete local demonstration rather than configuration-only screens. The path covers eight synthetic-dataset decisions, seeded PADS-aware generation, readiness, time-based splitting, established candidate training, held-out testing, simulated approval/publication, a prediction sandbox, and a simulated employee view.
 
