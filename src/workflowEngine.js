@@ -34,6 +34,22 @@ export function normalizeDoi(value) {
   const match = text.match(/10\.\d{4,9}\/[-._;()/:a-z0-9]+/i);
   return match ? match[0].replace(/[.,;:]+$/, "").toLowerCase() : "";
 }
+const reviewPolicy = (version) => {
+  if (!version) return version;
+  return {
+    ...version,
+    maxPoints: version.maxPoints === "" ? null : version.maxPoints,
+    rules: (version.rules || []).map((rule) => ({
+      ...rule,
+      points: rule.points === "" ? null : rule.points,
+      multiplier: rule.multiplier === "" ? null : rule.multiplier,
+    })),
+    components: (version.components || []).map((component) => ({
+      ...component,
+      weight: component.weight === "" ? null : component.weight,
+    })),
+  };
+};
 export function validDate(value) {
   return (
     /^\d{4}-\d{2}-\d{2}$/.test(value || "") &&
@@ -107,7 +123,7 @@ export async function lookupPublication(doi, fetcher = fetch) {
     clearTimeout(timer);
   }
 }
-export function validateSubmission(fields, values) {
+export function validateSubmission(fields, values, { allowMissingRequired = false } = {}) {
   const errors = [];
   if (!fields.length) return ["Add input fields first."];
   for (const f of fields) {
@@ -118,7 +134,8 @@ export function validateSubmission(fields, values) {
       (typeof v === "string" && !v.trim()) ||
       (Array.isArray(v) && !v.length);
     if (!f.label.trim()) errors.push("Every field needs a name.");
-    if (f.required && empty) errors.push(`${f.label} is required.`);
+    if (f.required && empty && !allowMissingRequired)
+      errors.push(`${f.label} is required.`);
     if (empty) continue;
     if (
       ["number", "integer"].includes(f.type) &&
@@ -128,6 +145,14 @@ export function validateSubmission(fields, values) {
       errors.push(
         `${f.label}: enter a valid ${f.type === "integer" ? "whole number" : "number"}.`,
       );
+    if (["number", "integer"].includes(f.type)) {
+      const min = f.min === "" || f.min === undefined ? null : Number(f.min);
+      const max = f.max === "" || f.max === undefined ? null : Number(f.max);
+      if (Number.isFinite(min) && Number(v) < min)
+        errors.push(`${f.label}: enter a value of at least ${min}.`);
+      if (Number.isFinite(max) && Number(v) > max)
+        errors.push(`${f.label}: enter a value of at most ${max}.`);
+    }
     if (f.type === "url") {
       try {
         if (!["http:", "https:"].includes(new URL(v).protocol)) throw Error();
@@ -220,10 +245,16 @@ export function validateWorkflow(nodes, fields) {
     for (const p of d.inputs) {
       const s = n.mappings[p.key];
       if (!s && !p.optional) errors.push(`${n.name}: choose ${p.label}.`);
-      if (s && !sourceChoices(n, p, nodes, fields).some((c) => c.value === s))
+      if (s && !sourceChoices(n, p, nodes, fields).some((c) => c.value === s)) {
+        const cause = s.startsWith("field|")
+          ? "the input field was removed or is incompatible"
+          : s.startsWith("node|")
+            ? "the earlier workflow step was removed, moved later, or is incompatible"
+            : "the source is no longer compatible";
         errors.push(
-          `${n.name}: ${p.label} uses a removed, later, or incompatible source.`,
+          `${n.name}: ${p.label} cannot use its saved source because ${cause}. Choose another source.`,
         );
+      }
     }
     if (n.kind === "lookup" && !n.mappings.doi && !n.mappings.url)
       errors.push(`${n.name}: choose a DOI or URL source.`);
@@ -840,7 +871,25 @@ export async function executeNode(node, input, ctx) {
         role: node.config.role,
         instructions: node.config.instructions,
         package: {
-          submission: { values: ctx.values },
+          submission: {
+            values: ctx.values,
+            fields: (ctx.fields || []).map((f) => ({
+              id: f.id,
+              label: f.label,
+              type: f.type,
+              required: f.required,
+            })),
+            labelledValues: Object.fromEntries(
+              (ctx.fields || []).map((f) => [
+                f.id,
+                {
+                  label: f.label,
+                  type: f.type,
+                  value: ctx.values[f.id] ?? null,
+                },
+              ]),
+            ),
+          },
           extraction: Object.values(ctx.outputs).flatMap((output) =>
             output.evidence ? [output.evidence] : [],
           ),
@@ -850,12 +899,16 @@ export async function executeNode(node, input, ctx) {
           aiRecommendation: Object.values(ctx.outputs).flatMap((output) =>
             output.assistance ? [output.assistance] : [],
           ),
-          scoring: Object.values(ctx.outputs).flatMap((output) =>
-            output.scoring || output.score
-              ? [output.scoring || output.score]
-              : [],
-          ),
-          policyVersions: ctx.policyVersions || [],
+          scoring: Object.values(ctx.outputs).flatMap((output) => {
+            const scoring = output.scoring || output.score;
+            if (!scoring) return [];
+            return [
+              scoring.policy
+                ? { ...scoring, policy: reviewPolicy(scoring.policy) }
+                : scoring,
+            ];
+          }),
+          policyVersions: (ctx.policyVersions || []).map(reviewPolicy),
         },
       },
     };
@@ -869,7 +922,9 @@ export async function executeNode(node, input, ctx) {
 
   switch (node.kind) {
     case "submit": {
-      const errors = validateSubmission(ctx.fields, ctx.values);
+      const errors = validateSubmission(ctx.fields, ctx.values, {
+        allowMissingRequired: ctx.allowMissingRequired,
+      });
       if (errors.length) throw Error(errors.join(" "));
       return {
         submission: {
@@ -1166,6 +1221,7 @@ async function continueWorkflow(options, state) {
     scoringPolicy,
     records = [],
     policyVersions = [],
+    allowMissingRequired = false,
     extract,
     lookup = lookupPublication,
     ai = liveAssistance,
@@ -1211,6 +1267,7 @@ async function continueWorkflow(options, state) {
         ai,
         outputs,
         policyVersions,
+        allowMissingRequired,
       });
       outputs[id] = output;
       trace.push({

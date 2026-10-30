@@ -27,9 +27,10 @@ export const newScoringRule = () => ({
   conditions: [
     { source: "result|outcome", type: "text", operator: "eq", expected: "" },
   ],
-  points: "12",
+  // A new rule is neutral until the creator chooses marks and an outcome.
+  points: "",
   multiplier: "1",
-  outcome: "Eligible",
+  outcome: "",
 });
 const scalarTypes = ["text", "number", "date", "boolean"];
 export function policySources(fields, nodes) {
@@ -114,6 +115,55 @@ function scalar(v, type) {
       : null;
   return type === "text" && typeof v === "string" ? v : null;
 }
+function conditionSourceLabel(source, fields = []) {
+  if (source?.startsWith("field|")) {
+    const field = fields.find((f) => f.id === source.slice("field|".length));
+    return field
+      ? `Input "${field.label}"`
+      : "The input field used by this condition";
+  }
+  if (source?.startsWith("node|"))
+    return "The workflow output used by this condition";
+  return "The condition source";
+}
+
+// Workflow Conditions choose the path; a saved rule policy decides the recorded
+// marks. Warn when both read the same input so creators can resolve the duplicate
+// threshold before shipping a KPI.
+export function detectVerdictOverlaps(policy, nodes = [], fields = []) {
+  const active = (policy?.versions || []).find(
+    (v) => v.version === policy.activeVersion,
+  );
+  if (!active || (active.mode || "rules") !== "rules") return [];
+  const conditions = nodes.filter(
+    (n) => n.kind === "condition" && n.mappings?.value,
+  );
+  const seen = new Set(),
+    overlaps = [];
+  for (const rule of active.rules || []) {
+    for (const c of rule.conditions || []) {
+      if (!c.source?.startsWith("field|")) continue;
+      for (const node of conditions) {
+        if (node.mappings.value !== c.source) continue;
+        const key = `${rule.id}|${node.id}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        const fieldId = c.source.slice("field|".length);
+        overlaps.push({
+          rule: rule.name,
+          ruleId: rule.id,
+          condition: node.name,
+          conditionId: node.id,
+          fieldId,
+          field:
+            fields.find((f) => f.id === fieldId)?.label || `input ${fieldId}`,
+        });
+      }
+    }
+  }
+  return overlaps;
+}
+
 const nonnegative = (v) =>
   v !== "" &&
   v !== null &&
@@ -233,7 +283,7 @@ export function validateScoringVersion(value, fields, nodes) {
         const source = sources.find((s) => s.value === c.source);
         if (!source || source.type !== c.type)
           errors.push(
-            `${r.name}: a condition source was removed or changed type.`,
+            `${r.name}: ${conditionSourceLabel(c.source, fields)} was removed or changed type. Choose another source.`,
           );
         if (
           ![

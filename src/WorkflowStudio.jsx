@@ -7,9 +7,11 @@ import {
   resumeWorkflow,
   validateRunConfiguration,
 } from "./workflowEngine";
+import { detectVerdictOverlaps } from "./scoringPolicy";
 import TreeBuilder from "./TreeBuilder";
 import { SubmissionFields, RunResults } from "./WorkflowTest";
 export default function WorkflowStudio({
+  name,
   policy,
   nodes,
   setNodes,
@@ -22,18 +24,24 @@ export default function WorkflowStudio({
 }) {
   const [view, setView] = useState("build");
   const [run, setRun] = useState(null);
+  const [runCount, setRunCount] = useState(0);
   const [busy, setBusy] = useState(false);
   const busyRef = useRef(false);
   const [progress, setProgress] = useState("");
   const [records, setRecords] = useState([]);
   const [history, setHistory] = useState([]);
   const [notice, setNotice] = useState("");
+  const [allowMissingRequired, setAllowMissingRequired] = useState(false);
   const captured = useRef(null);
   const reviewed = useRef(new Set());
   const [focusId, setFocusId] = useState("");
   const issues = useMemo(
     () => validateRunConfiguration({ nodes, fields, policy }),
     [nodes, fields, policy],
+  );
+  const verdictOverlaps = useMemo(
+    () => detectVerdictOverlaps(policy, nodes, fields),
+    [policy, nodes, fields],
   );
   const publication = nodes.some((n) =>
     ["extract", "lookup", "index"].includes(
@@ -71,6 +79,7 @@ export default function WorkflowStudio({
     setNotice("");
     setRun(null);
     setView("test");
+    setRunCount((count) => count + 1);
     captured.current = { nodes, fields, values, policy };
     try {
       const result = await runWorkflow({
@@ -79,6 +88,7 @@ export default function WorkflowStudio({
         fields,
         values,
         records,
+        allowMissingRequired,
         extract: async (file) => {
           const { readEvidence } = await import("./documentReader");
           return readEvidence(file, setProgress);
@@ -189,7 +199,7 @@ export default function WorkflowStudio({
       new Blob(
         [
           JSON.stringify(
-            { format: "afpi-workflow-v1", fields, nodes, policy },
+            { format: "afpi-workflow-v1", name, fields, nodes, policy },
             null,
             2,
           ),
@@ -249,13 +259,35 @@ export default function WorkflowStudio({
           Test & review
         </button>
         <span>
-          {publication ? "Publication checks" : "Session testing"} · {records.length}{" "}
-          session records
+          {publication ? "Publication checks" : "Session testing"} · {runCount}{" "}
+          test {runCount === 1 ? "run" : "runs"} · {records.length} duplicate{" "}
+          {records.length === 1 ? "record" : "records"}
         </span>
       </div>
       {notice && (
         <div className="studio-warning" role="status">
           {notice}
+        </div>
+      )}
+      {verdictOverlaps.length > 0 && (
+        <div className="studio-warning" role="status">
+          <strong>Workflow and scoring policy read the same input.</strong>
+          <ul>
+            {verdictOverlaps.map((overlap) => (
+              <li
+                key={`${overlap.ruleId || overlap.rule}-${overlap.conditionId || overlap.condition}`}
+              >
+                Scoring rule <strong>{overlap.rule}</strong> and workflow
+                condition <strong>{overlap.condition}</strong> both read{" "}
+                <strong>{overlap.field}</strong>.
+              </li>
+            ))}
+          </ul>
+          <p>
+            The workflow result chooses the path. When a saved rule policy is
+            active, the policy result is the marks record. Review the duplicate
+            threshold or remove one of the checks.
+          </p>
         </div>
       )}
       {view === "build" ? (
@@ -361,6 +393,21 @@ export default function WorkflowStudio({
               onValue={onValue}
               disabled={busy}
             />
+            <label className="check-row test-simulate">
+              <input
+                type="checkbox"
+                checked={allowMissingRequired}
+                onChange={(e) => setAllowMissingRequired(e.target.checked)}
+                disabled={busy}
+              />
+              <span>
+                Simulate missing required values for this test
+                <small>
+                  Leave a required field blank, then run to exercise the Needs
+                  review branch. The setting is not saved.
+                </small>
+              </span>
+            </label>
             <button
               className="btn primary"
               disabled={busy || !nodes.length || issues.length > 0}

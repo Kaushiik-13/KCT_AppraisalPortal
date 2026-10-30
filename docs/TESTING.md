@@ -14,11 +14,15 @@ The current Publication plugin has ten steps, no simulated index or AI node, a C
 
 Tests use Node's built-in test runner over `src/*.test.js`, `src/prediction/*.test.js`, and `server/*.test.js`. A passing build verifies bundling, not browser behavior. There is no lint script or committed full browser automation suite.
 
-Most recent automated baseline: **215 passing JavaScript tests plus 5 passing Python tests** and a successful production build on 30 October 2026 after merging the updated `codex/prediction-governance-sandbox` base into `codex/prediction-employee-dashboard`. The merged test command also collects five nested prediction-service tests that the governance baseline did not run. The 202-test governance result, 196-test model-training result, 189-test readiness-UI result, 185-test readiness result, 175-test merged prototype result, 167-test PADS KPI result, 150-test employee-dashboard result, 137-test governance result, 131-test training result, 124-test screens 1–3 result, 120-test readiness backend result, 110-test synthetic prediction dataset result and 109-test dataset-foundation result, 102-test reports from 27–28 October, 101-test report from 7 October, and earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) remain historical checkpoints.
+Most recent automated baseline: **226 passing JavaScript tests plus 5 passing Python tests** and a successful production build on 30 October 2026 after merging the prediction stack and the final `main` into `fix/creator-walkthrough-issues`. The merged test command collects the creator-walkthrough regression tests and five nested prediction-service tests that the governance baseline did not run. The 215-test employee-dashboard result, 202-test governance result, 196-test model-training result, 189-test readiness-UI result, 185-test readiness result, 175-test merged prototype result, 167-test PADS KPI result, 150-test employee-dashboard result, 137-test governance result, 131-test training result, 124-test screens 1–3 result, 120-test readiness backend result, 110-test synthetic prediction dataset result and 109-test dataset-foundation result, 102-test reports from 27–28 October, 101-test report from 7 October, and earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) remain historical checkpoints.
 
 ## Branch synchronization — 30 October 2026
 
 Merged `main` at `ebbb301` into `codex/prediction-prototype`, then propagated the updated base through `codex/prediction-readiness`, `codex/prediction-readiness-ui`, `codex/prediction-model-training`, `codex/prediction-governance-sandbox` and `codex/prediction-employee-dashboard`. The four documentation conflicts (`CHANGE-HISTORY.md`, `DECISIONS.md`, `SECURITY-AND-DATA.md`, `TESTING.md`) retain both the PADS verification records and the synthetic prediction dataset records; the prediction prototype decision was renumbered D-25 to follow the new PADS decisions D-23 and D-24. The merged prototype suite passed **175/175** tests, readiness **185/185**, readiness-UI **189/189**, model-training **196/196** JavaScript tests plus **4/4** Python tests, governance **202/202** JavaScript tests plus **5/5** Python tests, and employee dashboard **215/215** JavaScript tests plus **5/5** Python tests; `npm.cmd run build` completed successfully with Next.js 16.3.8. The synchronization adds no new application behavior; it combines the PADS fixtures and tests from `main` with the prediction fixtures and tests on the branch.
+
+## Creator walkthrough merge — 30 October 2026
+
+Merged `main` into `fix/creator-walkthrough-issues` after landing the six-PR prediction stack (#12, #13, #14, #15, #16 and #18). Conflicts in `README.md`, `docs/CHANGE-HISTORY.md` and `docs/DECISIONS.md` retain both the creator-walkthrough and prediction records. Renumbered the prediction decisions to unique IDs D-25 through D-30 and the creator-walkthrough decision to D-31. `npm.cmd test` passed all **226 JavaScript tests**; `npm.cmd run test:prediction-ml` passed all **5 Python tests**; `npm.cmd run build` passed with Next.js 16.3.8; `git diff --check` passed. Browser re-verification of responsive, focus and multi-tab behavior remains outstanding.
 
 ## Employee prediction and retraining readiness — 30 October 2026
 
@@ -95,6 +99,42 @@ Institutional rows 173–177 (`BOS coordinator/Placement Coordinator`, `NAAC cri
 Limits: all 59 rows are form-value policies, so no PDF evidence, extraction comparison, or network path is exercised. Author role is Primary/Co-author only (no third-author 25% share); TL-11 scores one course; TL-12 omits the additive PhD/guideship components; role and eligibility wording (primary coordinator, RD-5 co-author, RD-12 combined conference-plus-publication, O-4's 40-attendee minimum) has no validating field; O-2/O-3/O-5/O-7/O-10 cannot reach their multi-event maxima; RD-6 uses enumerated combinations; negative values fall through the zero fallback without range validation. PADS KRA weights and totals, role maxima, the 200-point cap, mandatory assessment eligibility, dual self/supervisor scores, descriptive/overall review, HR observations, panel review, and any cross-KPI aggregation remain unimplemented.
 
 Evidence: `public/samples/pads/kpis/`, [PADS individual KPI verification](PADS-INDIVIDUAL-KPIS.md), and the prior RD-12 zero-case screenshot `docs/assets/pads-kpis/rd-12-zero-points.png` (a 29 October UI capture, not a new walkthrough).
+
+## Publication, extraction, duplicate and AI-mode coverage — 30 October 2026
+
+Extends the independent creator walkthrough ([#3](https://github.com/Kaushiik-13/KCT_AppraisalPortal/issues/3)) to the paths its two sessions did not cover; those two sessions and their 19 findings are recorded in the [creator walkthrough](CREATOR-WALKTHROUGH.md). Build `ebbb301`, dev server on `127.0.0.1:5173`, throwaway managed Chromium profile (no relay), Chromium only. Storage was cleared between scenarios with the browser API; every value was synthetic. No application code changed, so the automated suite was not rerun for this record. The AI modes were first exercised without a key (`GET /api/ai-status` → `{"configured":false,"model":"openrouter/free"}`); a key was then added in the gitignored `.env.local` and live generation was exercised (`configured:true`).
+
+Scenarios and observed results:
+
+| Scenario | Observed |
+|---|---|
+| Publication clear path, PRISMA sample | Crossref returned the record; extraction read 15 pages with page-1 evidence for title, DOI, journal, authors and date; comparison, first author, period and duplicates all `clear`; saved `pub-v1` scored **10 points**; Appraiser review was awaiting a decision; approving recorded a session decision and the header changed to `1 session records`. |
+| Repeat submission, same DOI and faculty | Duplicate check `candidate` (1 matching prior submission) → decision `uncertain` → review, **9 of 10 steps ran**, scoring skipped, recommendation pending. |
+| Seed record only, after reload | `0 session records`, draft restored, seed persisted; duplicate check `candidate`, evidence listed `Matthew J. Page · 10.1371/journal.pmed.1003583`; decision `uncertain`; scoring skipped. |
+| Assessment period set to 2022 | Period `ineligible` → decision `ineligible`; scoring skipped; review showed the 0-point ineligible fallback and the decision form. |
+| Crossref request aborted in the browser | Lookup `unknown`; comparison, author, period and duplicate `uncertain` → needs review; scoring skipped; no fabricated publication data. |
+| Unreadable one-page PDF (`evidence-tl1-unreadable.pdf`) | Step reported `PDF read` with placeholder title `untitled`, DOI `Not found`, authors `anonymous`, dates `Not found`; comparison `uncertain` → needs review. Extraction placeholders are presented as candidates, not as unknowns ([#39](https://github.com/Kaushiik-13/KCT_AppraisalPortal/issues/39)). |
+| AI evaluation, simulated mode | Step status `simulated`; Result value `Simulated AI response. No model was called…`; no provider request. |
+| AI evaluation, disabled mode | Step status `not-connected`; Result value `Live AI is not connected. Findings have been passed…`; workflow continued. |
+| AI evaluation, OpenRouter mode without key | Step status `not-connected`; explicit `OpenRouter key is missing…`; workflow continued to Result. No fabricated advice. |
+| AI evaluation, OpenRouter live (key in `.env.local`) | First attempt aborted at the 45 s server timeout and reported `AI assistance timed out. Continue with human review.`; the immediate retry returned `advisory` in ~3.1 s. Model used: `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free`; two bullets labelled synthetic as instructed; response text carried into the Result value. |
+| Publication plugin contents | Ten steps; no AI evaluation, no simulated index or Scopus/Web of Science step. |
+
+Also verified: the preflight rejects a scoring rule sourced from `Final workflow outcome` when no Result precedes the Apply scoring policy step, with `final outcome is unavailable before Result. Use inputs or earlier outputs.` — the correct guidance for the Publication plugin, whose clear path reaches review rather than a Result.
+
+Wording defect seen in this pass (low): the skipped-step summary uses a plural verb for one step — `Apply scoring policy have not run on this path.` (`src/WorkflowTest.jsx:426`, [#37](https://github.com/Kaushiik-13/KCT_AppraisalPortal/issues/37)).
+
+Limits: the live free model timed out once at the 45 s server abort before succeeding on retry, so latency is provider-dependent and the rate-limit path was not exercised; OpenRouter selected a different free model for a direct key probe (`nvidia/nemotron-3.5-super-vl:free`), confirming that the routed model varies; Crossref success is live but the failure path was forced by aborting the request, not by a provider outage; no Firefox/WebKit, screen reader or colour-vision checks; one browser session, so multi-tab behaviour is unchanged from the walkthrough record. Screenshots from this pass were not committed.
+
+## Creator walkthrough follow-up verification — 30 October 2026
+
+Implemented the #22–#40 follow-up fixes on branch `fix/creator-walkthrough-issues`. Automated verification:
+
+- `npm test`: **178/178 passed**.
+- `npm run build`: passed (Next.js 16.3.8 production build).
+- New regression coverage checks: multi-tab revision conflict and same-writer revision advance; import validation for both export shapes and rejection of unrelated JSON; optional numeric bounds in persisted drafts and runtime validation; required-field bypass for the Needs review branch; neutral new-rule defaults; duplicate workflow/policy source detection with field labels; named missing-condition-source messages; Result steps not pre-mapping unrelated fields; review-package labels and normalized `maxPoints`; and unreadable-PDF metadata placeholders staying `Not found`.
+
+Not performed in this change: a fresh Chromium walkthrough of the responsive layout, focus ring, multi-tab banner, import controls, or the new test-only required-field toggle. The existing walkthrough and coverage-pass records above remain the browser evidence; their 19 findings are marked resolved here only for the code paths covered by the automated checks. Screen-reader, Firefox/WebKit, and colour-vision checks remain unavailable.
 
 ## PADS individual-KPI Framework Studio verification — 29 October 2026
 

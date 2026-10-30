@@ -28,8 +28,12 @@
 | AI unavailable/rate-limited | Retry later or use the configured review path; no paid fallback is configured |
 | AI not following expected task | Check saved instructions, selected input, mode, trace, and context limits |
 | Review disabled after an edit | Run a fresh test with current configuration/values |
-| Whiteboard feels cramped | Hide sidebar; close block library/settings; use zoom and Fit tree width |
-| Export cannot be reopened | Import UI is not implemented; export is a configuration artifact for reference |
+| Whiteboard feels cramped | Hide sidebar; close block library/settings; use zoom and Fit tree width; narrow windows stack the builder and overlay the settings drawer |
+| Export cannot be reopened | Use **Import draft** in the header for `afpi-workflow.json` or `afpi-kpi-draft.json`; choose a file produced by this app |
+| Draft changed in another tab | Resolve the banner: **Reload other version** or **Keep my version**. Do not keep typing in both tabs |
+| Required field blocks the Needs review test | Leave the field blank and enable **Simulate missing required values for this test**; the bypass is not saved |
+| Numeric value rejected unexpectedly | Check the field's minimum and maximum in Inputs; both preview and workflow validation enforce them |
+| Field removal warning names dependencies | Cancel and repair the referenced rules, conditions, or mappings, or confirm removal and rebuild them |
 
 Do not clear browser storage as a routine recovery step: it removes the only local draft. Clear saved draft is intentional reset, not repair. Never paste a secret key into logs or bug reports.
 

@@ -18,10 +18,15 @@ These records summarize accepted conversation choices and implemented behavior; 
 | D-12 | Keep two scoring paths temporarily | Preserve existing publication behavior while generalizing the builder |
 | D-13 | Desktop first, compact canvas | Mobile excluded; collapsible navigation and reduced chrome |
 | D-16 | Use Next.js App Router for deployment readiness | Preserve the browser workflow engine behind a client-only boundary; expose AI through Node route handlers and keep secrets server-side |
-| D-24 | Make prediction readiness a strict, configurable gate | Select Scenario A/B/C from compatible completed cases and cycles; block invalid/leaking data before training |
-| D-26 | Keep prototype training local, reproducible and baseline-gated | Compare established candidates on the latest-cycle holdout; do not persist or publish a model yet |
-| D-27 | Use explicit, scope-compatible prototype model governance | Keep artifacts server-side, require one-way approval/publication, supersede instead of delete, and keep prediction advisory |
-| D-28 | Separate employee inference from retraining eligibility | Refresh verified progress with the active model; count labels only after cycle closure and final approval; never auto-replace the active model |
+| D-23 | Use PADS TL-1 as the initial-KPI reference fixture | Verify one complete three-band KPI end to end; keep it reference-only |
+| D-24 | Commit and automate the 59-row PADS policy set | Replace ignored local drafts with committed fixtures and 201 re-executed cases |
+| D-25 | Deliver the prediction review as an end-to-end synthetic demonstration | Cover dataset, readiness, training, governance and employee flows without claiming real accuracy |
+| D-26 | Make prediction readiness a strict, configurable gate | Select Scenario A/B/C from compatible completed cases and cycles; block invalid/leaking data before training |
+| D-27 | Keep Prediction Studio thin over shared generation and readiness contracts | Browser owns editable choices and view state; server owns validation and canonical readiness |
+| D-28 | Keep prototype training local, reproducible and baseline-gated | Compare established candidates on the latest-cycle holdout; do not persist or publish a model yet |
+| D-29 | Use explicit, scope-compatible prototype model governance | Keep artifacts server-side, require one-way approval/publication, supersede instead of delete, and keep prediction advisory |
+| D-30 | Separate employee inference from retraining eligibility | Refresh verified progress with the active model; count labels only after cycle closure and final approval; never auto-replace the active model |
+| D-31 | Resolve creator walkthrough findings without inventing policy | Fix usability locally; browser re-verification and production controls remain outstanding |
 
 ## Unresolved domain questions
 
@@ -101,7 +106,7 @@ Deliver the first Prediction Framework review as a complete local demonstration 
 
 Use generic configuration and stable IDs so KCT/PADS remains the first fixture rather than hard-coded application behavior. Generate final targets through the configured scoring policy and future synthetic achievements. Use established scikit-learn regressors behind a local prototype service instead of implementing new ML mathematics. Treat every resulting metric and model as synthetic demonstration evidence, not real institutional accuracy.
 
-## D-24 — Configurable prediction readiness and strict leakage gate
+## D-26 — Configurable prediction readiness and strict leakage gate
 
 Implement readiness before model training. Validate synthetic provenance, organization/policy/framework compatibility, canonical keys, score/date/role/KRA contracts, target timing and cumulative checkpoint order. Return stable block/warning codes instead of silently repairing invalid training rows.
 
@@ -109,26 +114,42 @@ Use completed employee-cycles—not checkpoint-row count—to select readiness. 
 
 Hold out the latest completed cycle, keep each employee-cycle in one partition, fit later preprocessing on training data only, and exclude targets, target timing, identities, split metadata and generator-only labels from inputs. Readiness permits training or fallback; it does not approve, publish or claim model quality.
 
-## D-25 — Thin Prediction Studio over shared generation and readiness contracts
+## D-27 — Thin Prediction Studio over shared generation and readiness contracts
 
 Implement the first three prototype screens as a separate `/prediction` module linked from Framework Studio. The browser owns only editable generation choices, the current generated response, preview filters and the latest readiness result. Server routes own bounded generation and the canonical readiness decision; React components must not copy validation or scenario-selection rules.
 
 Generate all four scenarios together, keep them in memory, and allow complete CSV plus metadata download. Preview filters never alter the frozen snapshot evaluated by readiness. Keep KCT/PADS organization and policy terms in versioned configuration rather than UI components. This is a demonstrable data-preparation layer, not model training, approval or real-data ingestion.
 
-## D-26 — Local established-candidate training with transparent gates
+## D-28 — Local established-candidate training with transparent gates
 
 Implement screens 4–5 with a Node route that reruns canonical readiness and creates the checkpoint-safe matrix before invoking an isolated local Python/scikit-learn provider. Fit imputation, encoding and scaling only on earlier-cycle training rows; evaluate the latest completed cycle. Compare Ridge, Random Forest and Gradient Boosting with pace projection and role-plus-checkpoint median baselines using a fixed seed.
 
 Recommend a candidate only when its held-out MAE beats both baselines and its clamped outputs remain in the configured score range. Record metrics, parameters, counts, feature/split contracts and checksums in the in-memory response. Do not persist, approve, publish or use the fitted pipeline for inference in this phase. Every metric remains synthetic demonstration evidence.
 
-## D-27 — Explicit prototype governance and read-only inference
+## D-29 — Explicit prototype governance and read-only inference
 
 Register successful fitted pipelines only in server process memory and return public metadata without the serialized artifact. Permit approval only for the recommendation-eligible candidate, require an authenticated production replacement later, and make prototype approval/rejection final. Publication is a separate action that requires the exact organization, target, policy and framework scope. A newer compatible publication supersedes the prior record rather than deleting it; only one is active per scope.
 
 Inference always revalidates the selected synthetic history and active checkpoint. Scenario A uses the transparent pace rule without a model. Scenario B uses a compatible published model when available and otherwise a low-confidence transparent fallback. Scenario C requires the compatible approved and published organization model. Return score, empirical/transparent range, method, confidence, factors, versions and warnings, but never mutate verified evidence or the official appraisal score. The in-process registry, simulated reviewer and pickle artifact are local-review constraints, not a production storage/security design.
 
-## D-28 — Employee inference and retraining remain separate
+## D-30 — Employee inference and retraining remain separate
 
 Show one simulated employee the latest advisory result after a sandbox selection. A newer verified checkpoint calls the same inference contract again with the active compatible model; it does not call training, create a label or change the official score. Keep the active published model available while a later candidate is configured, trained and evaluated.
 
 Treat manual, cycle-close and periodic choices as retraining-eligibility triggers, not automatic training schedules. Active-cycle checkpoints never count as labels. A completed-cycle row becomes eligible only after the cycle closes and its final outcome is approved. Minimum new-case/cycle thresholds must also pass. Readiness cannot publish: evaluation, explicit approval and publication remain mandatory. The current screen is a session-only review simulation, not a durable scheduler, monitoring service or access-control boundary.
+
+## D-31 — Resolve the creator walkthrough findings
+
+Address the 19 usability findings recorded in the [creator walkthrough](CREATOR-WALKTHROUGH.md) without inventing institutional policy:
+
+- Name the verdict contract: the workflow result chooses the path; an active saved rule policy supplies the marks. Detect shared input sources between a saved rule and a workflow Condition and warn, rather than silently reconciling different thresholds.
+- Protect multi-tab editing with a revision plus writer identity in browser storage. A conflicting tab stops saving and chooses reload or keep-my-version; this is not a collaborative merge.
+- Add schema-validated import for both export shapes, and include the KPI name in workflow exports. Import remains local and excludes test values and files.
+- Add optional numeric min/max enforced by the submission preview and runtime validation.
+- Keep the Needs review branch testable with a session-only required-field bypass; it is not persisted and does not bypass invalid non-empty values.
+- Start new rules, dropdowns, file filters, conditions, and results neutral; never pre-map a Result value to an arbitrary form field.
+- Warn before deleting a referenced field and name the cause in source-validation messages.
+- Improve narrow-window layout, keep the save badge visible, overlay the Blocks library instead of shifting the canvas, and strengthen text-control focus indication.
+- Do not present PDF metadata placeholders or metadata from documents with no readable page as extraction candidates.
+
+The fixes are local PoC behavior. They do not add durable concurrency, authentication, OCR, or production evidence-trust controls. Browser re-verification of the responsive, focus, and multi-tab UI remains required before closing the walkthrough issue.

@@ -50,7 +50,9 @@ export default function BlockSettings({
         {node.mappings[input.key] &&
           !choices.some((c) => c.value === node.mappings[input.key]) && (
             <small className="error">
-              Source changed or is incompatible. Choose again.
+              {node.mappings[input.key].startsWith("field|")
+                ? "The input field used here was removed. Choose another field."
+                : "The workflow step used here was removed or moved later. Choose another source."}
             </small>
           )}
       </label>

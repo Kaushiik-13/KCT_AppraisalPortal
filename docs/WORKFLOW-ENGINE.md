@@ -11,13 +11,17 @@ Primary implementation: `src/workflowEngine.js`. Graph editing/layout: `src/tree
 5. The route selects the next step. Unselected paths do not execute.
 6. A new generic Human Review sends a terminal package, a Result completes, and an error stops the run with an issue. Only legacy routed reviews pause for continuation.
 
-Preflight can succeed with an empty test form; required values are checked at submission execution. Missing optional form values can flow into a Condition as unknown. An unavailable required node-output dependency is an execution error.
+Preflight can succeed with an empty test form; required values are checked at submission execution. Missing optional form values can flow into a Condition as unknown. An unavailable required node-output dependency is an execution error. Test & review can enable a session-only `allowMissingRequired` flag to bypass blank required values so the Needs review branch remains testable; it does not bypass invalid non-empty values and is never persisted.
+
+Numeric fields may declare optional `min`/`max` bounds. Both the submission preview and `validateSubmission` reject values outside them before any tool runs.
 
 ## Validation
 
 Checks include known kinds/tools, names, required mappings, compatible earlier sources, all declared route targets, date settings, policies, mock records, reachability, cycles, and required dependencies along every path reaching a step. A source earlier in the node array is not necessarily executed on every branch; path validation checks that distinction. Optional inputs may be absent on a path.
 
-The same preflight feeds Test & review's Finish setup list and the runner. Named issues can open a node's settings. Removing/changing fields or tools may make mappings invalid; the engine does not silently fabricate replacement evidence.
+The same preflight feeds Test & review's Finish setup list and the runner. Named issues can open a node's settings. Removing/changing fields or tools may make mappings invalid; the engine does not silently fabricate replacement evidence. Source errors name the cause: a removed input field, a workflow step removed or moved later, or an incompatible source. Condition and Result defaults are never auto-mapped to an arbitrary form value; the creator must choose a Result's optional value.
+
+Skipped-step summaries use singular or plural verbs correctly, so one skipped step reads “has not run” rather than “have not run”.
 
 ## Branch behavior
 
@@ -36,7 +40,9 @@ When the publication decision tool is placed inside a generic Action, that Actio
 
 ## Review and resumption
 
-New Human review nodes end execution with `sent-to-review`. They contain the original submission, extracted evidence, comparisons, AI recommendations, scoring calculations, and policy versions produced on the executed path. Framework Studio does not collect approve/reject/clarification actions or resume from this handoff. `resumeWorkflow` remains only for compatibility with older saved generic review nodes that still have routes.
+New Human review nodes end execution with `sent-to-review`. They contain the original submission with field labels alongside IDs, extracted evidence, comparisons, AI recommendations, scoring calculations, and an array of policy versions produced on the executed path; empty numeric policy values are normalized to `null`. Framework Studio does not collect approve/reject/clarification actions or resume from this handoff. `resumeWorkflow` remains only for compatibility with older saved generic review nodes that still have routes.
+
+The results panel labels the **Workflow result** (the path taken) separately from the **Policy result** (the marks record when a saved rule policy is active), and states that the policy result governs marks. Preflight and the Scoring policy stage warn when a saved rule and a workflow Condition read the same input, because their thresholds can disagree.
 
 `finalizeReview` handles the original publication review: approve, reject, clarify, or override. Ordinary approval requires a resolved score. Overrides require a reason and a non-negative score; the original recommendation is preserved. The UI prevents duplicate recording and stale review decisions.
 

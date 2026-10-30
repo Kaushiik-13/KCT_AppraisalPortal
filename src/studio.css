@@ -4,4 +4,4 @@
 
 .test-readiness{padding:15px;background:#f5f4fb;border:1px solid #e0dbef;border-radius:8px;font-size:12px;line-height:1.8;margin-bottom:18px}.test-readiness ul{padding-left:18px;margin:10px 0}.test-readiness li{margin:8px 0}.test-readiness li button{margin-left:8px}.test-readiness p{margin:8px 0;color:#657086}
 
-.studio-outcome{background:#f4f3fa;border:1px solid #dcd6ee;color:#51446f;padding:18px;margin:20px 0;border-radius:8px;line-height:1.8;font-size:13px}
+.studio-outcome{background:#f4f3fa;border:1px solid #dcd6ee;color:#51446f;padding:18px;margin:20px 0;border-radius:8px;line-height:1.8;font-size:13px}.verdict-note{font-size:11px;line-height:1.7;color:#6d7890;margin-top:7px}.test-simulate{align-items:flex-start;margin:14px 0 18px}.test-simulate>span{font-size:12px;line-height:1.7;color:#5f6d83}.test-simulate small{display:block;font-size:11px;color:#8a93a4;margin-top:3px;line-height:1.6}

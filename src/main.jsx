@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   PanelLeftClose,
   PanelLeftOpen,
@@ -52,9 +52,13 @@ const newField = (type = "text", label = "Untitled field") => ({
   required: false,
   help: "",
   example: "",
-  options: "Option 1\nOption 2",
-  accept: ".pdf,.pptx,.xls,.xlsx",
+  // Neutral defaults: a new dropdown has no choices and a file field accepts
+  // any format until the creator deliberately narrows either one.
+  options: "",
+  accept: "",
   multiple: false,
+  min: "",
+  max: "",
 });
 const typeIcon = (type) =>
   type === "file"
@@ -81,7 +85,12 @@ export default function App() {
     retrySave,
     download,
     clearDraft,
+    conflict,
+    reloadFromOtherTab,
+    keepMyVersion,
+    importDraft,
   } = useDraft();
+  const importInput = useRef(null);
   const [navCollapsed, setNavCollapsed] = useState(() => {
     try {
       return localStorage.getItem("afpi.sidebar.collapsed") === "true";
@@ -125,13 +134,25 @@ export default function App() {
         .filter(Boolean),
     ),
   ];
-  const configErrors = fields.flatMap((f, i) =>
-    !f.label.trim()
-      ? [`Field ${i + 1} needs a name.`]
-      : ["select", "multi"].includes(f.type) && !options(f).length
-        ? [`${f.label}: add at least one choice.`]
-        : [],
-  );
+  const numericBounds = (f) => {
+    const min = f.min === "" || f.min === undefined ? null : Number(f.min);
+    const max = f.max === "" || f.max === undefined ? null : Number(f.max);
+    return {
+      min: Number.isFinite(min) ? min : null,
+      max: Number.isFinite(max) ? max : null,
+    };
+  };
+  const configErrors = fields.flatMap((f, i) => {
+    if (!f.label.trim()) return [`Field ${i + 1} needs a name.`];
+    if (["select", "multi"].includes(f.type) && !options(f).length)
+      return [`${f.label}: add at least one choice.`];
+    if (["number", "integer"].includes(f.type)) {
+      const bounds = numericBounds(f);
+      if (bounds.min !== null && bounds.max !== null && bounds.min > bounds.max)
+        return [`${f.label}: the minimum cannot be greater than the maximum.`];
+    }
+    return [];
+  });
   const move = (index, direction) => {
     setFields((prev) => {
       const next = [...prev];
@@ -183,6 +204,13 @@ export default function App() {
             f.type === "integer"
               ? "Enter a whole number."
               : "Enter a valid number.";
+        else if (["number", "integer"].includes(f.type)) {
+          const bounds = numericBounds(f);
+          if (bounds.min !== null && Number(v) < bounds.min)
+            issues[f.id] = `Enter a value of at least ${bounds.min}.`;
+          else if (bounds.max !== null && Number(v) > bounds.max)
+            issues[f.id] = `Enter a value of at most ${bounds.max}.`;
+        }
         if (f.type === "url") {
           try {
             const u = new URL(v);
@@ -223,7 +251,42 @@ export default function App() {
     setErrors(issues);
     setTested(true);
   };
+  const fieldUsage = (id) => {
+    const source = `field|${id}`;
+    const policies = [policy?.draft, ...(policy?.versions || [])].filter(
+      Boolean,
+    );
+    const rules = policies
+      .flatMap((version) => version.rules || [])
+      .filter((r) => (r.conditions || []).some((c) => c.source === source))
+      .length;
+    const workflowConditions = nodes.filter(
+      (n) => n.kind === "condition" && n.mappings?.value === source,
+    ).length;
+    const stepMappings = nodes.filter(
+      (n) =>
+        n.kind !== "condition" &&
+        (n.config?.fieldId === id ||
+          Object.values(n.mappings || {}).includes(source)),
+    ).length;
+    return { rules, workflowConditions, stepMappings };
+  };
   const remove = () => {
+    const usage = fieldUsage(selected);
+    const dependencies = [
+      usage.rules && `${usage.rules} scoring ${usage.rules === 1 ? "rule" : "rules"}`,
+      usage.workflowConditions &&
+        `${usage.workflowConditions} workflow ${usage.workflowConditions === 1 ? "condition" : "conditions"}`,
+      usage.stepMappings &&
+        `${usage.stepMappings} step ${usage.stepMappings === 1 ? "mapping" : "mappings"}`,
+    ].filter(Boolean);
+    if (
+      dependencies.length &&
+      !window.confirm(
+        `This input is used by ${dependencies.join(", ")}. Removing it will break those references and they will need to be repaired. Remove it anyway?`,
+      )
+    )
+      return;
     setFields((prev) => prev.filter((f) => f.id !== selected));
     setValues((prev) => {
       const next = { ...prev };
@@ -232,6 +295,32 @@ export default function App() {
     });
     setSelected(fields.find((f) => f.id !== selected)?.id || null);
     setTested(false);
+  };
+  const importFile = async (event) => {
+    const input = event.target;
+    const file = input.files?.[0];
+    input.value = "";
+    if (!file) return;
+    if (
+      (fields.length || nodes.length) &&
+      !window.confirm(
+        "Importing replaces the current fields, workflow and scoring policy in this tab. Continue?",
+      )
+    )
+      return;
+    try {
+      const imported = importDraft(await file.text());
+      setValues({});
+      setErrors({});
+      setTested(false);
+      setSelected(imported.fields[0]?.id || null);
+      setTab("build");
+      setNotice(
+        `Imported ${file.name}. Review the restored fields, workflow and scoring policy before testing.`,
+      );
+    } catch (error) {
+      setNotice(`Import failed: ${error.message}`);
+    }
   };
   const duplicate = () => {
     const copy = {
@@ -323,10 +412,26 @@ export default function App() {
             <span className={`draft save-${save.status}`} role="status">
               {save.status === "saved"
                 ? "Saved on this browser"
-                : save.status === "error"
-                  ? "Could not save"
-                  : "Saving..."}
+                : save.status === "conflict"
+                  ? "Changed in another tab"
+                  : save.status === "error"
+                    ? "Could not save"
+                    : "Saving..."}
             </span>
+            <button
+              className="import-draft-button"
+              onClick={() => importInput.current?.click()}
+            >
+              <Upload size={14} />
+              Import draft
+            </button>
+            <input
+              ref={importInput}
+              type="file"
+              accept=".json,application/json"
+              onChange={importFile}
+              hidden
+            />
             <button className="clear-draft-button" onClick={clearDraft}>
               <Trash2 size={14} />
               Clear saved draft
@@ -360,9 +465,11 @@ export default function App() {
           <span className={`draft save-${save.status}`} role="status">
             {save.status === "saved"
               ? "Saved on this browser"
-              : save.status === "error"
-                ? "Could not save"
-                : "Saving..."}
+              : save.status === "conflict"
+                ? "Changed in another tab"
+                : save.status === "error"
+                  ? "Could not save"
+                  : "Saving..."}
           </span>
         </section>
         {save.status === "error" && (
@@ -376,6 +483,21 @@ export default function App() {
             </button>
           </div>
         )}
+        {conflict && (
+          <div className="notice save-error" role="alert">
+            <span>
+              This draft changed in another tab. Your edits are still open here.
+              Reload the other tab's version, or keep this version and overwrite
+              theirs.
+            </span>
+            <button className="btn" onClick={reloadFromOtherTab}>
+              Reload other version
+            </button>
+            <button className="btn" onClick={keepMyVersion}>
+              Keep my version
+            </button>
+          </div>
+        )}
         {restored && (
           <div className="draft-restored">
             Draft restored. Your fields, workflow and scoring settings are
@@ -384,32 +506,36 @@ export default function App() {
           </div>
         )}
         <div className="toolbar">
-          <div className="tabs">
-            <button
-              className={tab === "build" ? "active" : ""}
-              onClick={() => setTab("build")}
-            >
-              <PencilRuler size={17} />
-              Form builder
-            </button>
-            <button
-              className={tab === "preview" ? "active" : ""}
-              onClick={() => {
-                setTab("preview");
-                setTested(false);
-              }}
-            >
-              <Eye size={17} />
-              Submission preview
-            </button>
-            <button
-              className={tab === "workflow" ? "active" : ""}
-              onClick={() => setTab("workflow")}
-            >
-              <GitBranch size={17} />
-              Workflow nodes
-            </button>
-          </div>
+          {tab === "policy" ? (
+            <span className="toolbar-context">Scoring policy stage</span>
+          ) : (
+            <div className="tabs">
+              <button
+                className={tab === "build" ? "active" : ""}
+                onClick={() => setTab("build")}
+              >
+                <PencilRuler size={17} />
+                Form builder
+              </button>
+              <button
+                className={tab === "preview" ? "active" : ""}
+                onClick={() => {
+                  setTab("preview");
+                  setTested(false);
+                }}
+              >
+                <Eye size={17} />
+                Submission preview
+              </button>
+              <button
+                className={tab === "workflow" ? "active" : ""}
+                onClick={() => setTab("workflow")}
+              >
+                <GitBranch size={17} />
+                Workflow nodes
+              </button>
+            </div>
+          )}
           <span>
             {fields.length} fields <span className="separator">/</span>{" "}
             {fields.filter((f) => f.required).length} required
@@ -586,6 +712,30 @@ export default function App() {
                   placeholder="Show a valid example"
                 />
               </label>
+                  {["number", "integer"].includes(field.type) && (
+                    <div className="two-columns">
+                      <label>
+                        Minimum <span className="optional">Optional</span>
+                        <input
+                          type="number"
+                          step={field.type === "integer" ? "1" : "any"}
+                          value={field.min || ""}
+                          onChange={(e) => update({ min: e.target.value })}
+                          placeholder="No minimum"
+                        />
+                      </label>
+                      <label>
+                        Maximum <span className="optional">Optional</span>
+                        <input
+                          type="number"
+                          step={field.type === "integer" ? "1" : "any"}
+                          value={field.max || ""}
+                          onChange={(e) => update({ max: e.target.value })}
+                          placeholder="No maximum"
+                        />
+                      </label>
+                    </div>
+                  )}
                   {["select", "multi"].includes(field.type) && (
                     <label>
                       Choices
@@ -801,6 +951,20 @@ export default function App() {
                                     : f.type
                               }
                               step={f.type === "integer" ? "1" : "any"}
+                              min={
+                                ["number", "integer"].includes(f.type) &&
+                                f.min !== "" &&
+                                f.min !== undefined
+                                  ? f.min
+                                  : undefined
+                              }
+                              max={
+                                ["number", "integer"].includes(f.type) &&
+                                f.max !== "" &&
+                                f.max !== undefined
+                                  ? f.max
+                                  : undefined
+                              }
                               value={v ?? ""}
                               onChange={(e) => setValue(f.id, e.target.value)}
                             />
@@ -849,6 +1013,7 @@ export default function App() {
           </div>
         )}
         <WorkflowView
+          name={name}
           policy={policy}
           nodes={nodes}
           setNodes={setNodes}
