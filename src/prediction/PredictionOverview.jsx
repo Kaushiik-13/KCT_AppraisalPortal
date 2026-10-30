@@ -19,14 +19,16 @@ function SummaryCard({ icon: Icon, label, value, detail, tone = "default" }) {
   );
 }
 
-export default function PredictionOverview({ organization, policy, generated, readiness, trainingResult, governedModel, onConfigure, onOpenData, onOpenModel, onOpenComparison, onOpenGovernance }) {
+export default function PredictionOverview({ organization, policy, generated, readiness, trainingResult, governedModel, publishedModel, employeeContext, retrainingStatus, onConfigure, onOpenData, onOpenModel, onOpenComparison, onOpenGovernance, onOpenEmployee, onOpenRetraining }) {
   const datasetCount = generated ? Object.keys(generated.datasets).length : 0;
   const nextAction = !generated
     ? "Configure synthetic data"
     : readiness?.status === "blocked"
       ? "Resolve readiness blockers"
-    : governedModel?.lifecycle === "published"
-      ? "Try prediction sandbox"
+    : publishedModel && employeeContext
+      ? "Open employee prediction"
+      : publishedModel
+        ? "Try prediction sandbox"
       : governedModel?.lifecycle === "approved"
         ? "Publish approved model"
         : trainingResult
@@ -54,7 +56,9 @@ export default function PredictionOverview({ organization, policy, generated, re
             ) : null}
             {readiness?.eligibility?.modelTraining ? <button className="prediction-btn" onClick={onOpenModel}>Configure model</button> : null}
             {trainingResult ? <button className="prediction-btn" onClick={onOpenComparison}>Open comparison</button> : null}
-            {governedModel ? <button className="prediction-btn" onClick={onOpenGovernance}>{governedModel.lifecycle === "published" ? "Open sandbox" : governedModel.lifecycle === "approved" ? "Publish model" : "Open evaluation"}</button> : null}
+            {governedModel || publishedModel ? <button className="prediction-btn" onClick={onOpenGovernance}>{governedModel?.lifecycle === "approved" ? "Publish model" : governedModel && governedModel.lifecycle !== "published" ? "Open evaluation" : "Open sandbox"}</button> : null}
+            {publishedModel && employeeContext ? <button className="prediction-btn" onClick={onOpenEmployee}>Employee prediction</button> : null}
+            {publishedModel ? <button className="prediction-btn" onClick={onOpenRetraining}>Retraining settings</button> : null}
           </div>
         </div>
         <div className="prediction-flow-card" aria-label="Prototype flow">
@@ -65,7 +69,9 @@ export default function PredictionOverview({ organization, policy, generated, re
             <li className={readiness ? "done" : generated ? "active" : ""}><i />Readiness gate</li>
             <li className={trainingResult ? "done" : readiness?.eligibility?.modelTraining ? "active" : ""}><i />Model training</li>
             <li className={governedModel?.lifecycle === "approved" || governedModel?.lifecycle === "published" ? "done" : trainingResult ? "active" : ""}><i />Approval</li>
-            <li className={governedModel?.lifecycle === "published" ? "done" : governedModel?.lifecycle === "approved" ? "active" : ""}><i />Publication and sandbox</li>
+            <li className={publishedModel ? "done" : governedModel?.lifecycle === "approved" ? "active" : ""}><i />Publication and sandbox</li>
+            <li className={employeeContext ? "done" : publishedModel ? "active" : ""}><i />Employee prediction</li>
+            <li className={retrainingStatus?.candidateTrainingEligible ? "done" : publishedModel ? "active" : ""}><i />Retraining readiness</li>
           </ol>
         </div>
       </div>
@@ -107,7 +113,7 @@ export default function PredictionOverview({ organization, policy, generated, re
           icon={Gauge}
           label="Next action"
           value={nextAction}
-          detail={governedModel?.lifecycle === "published" ? governedModel.publication.version : trainingResult ? "Held-out metrics are ready to review" : "Proceed only when the readiness gate allows training"}
+          detail={publishedModel ? `${publishedModel.publication.version} remains active` : trainingResult ? "Held-out metrics are ready to review" : "Proceed only when the readiness gate allows training"}
         />
       </div>
 
@@ -115,7 +121,7 @@ export default function PredictionOverview({ organization, policy, generated, re
         <ShieldCheck size={19} />
         <div>
           <strong>Synthetic demonstration only</strong>
-          <p>Readiness confirms software contracts. It does not prove real KCT accuracy or approve a model.</p>
+          <p>Readiness confirms software contracts. Employee dashboard access runs inference only and never retrains a model or changes the official score.</p>
         </div>
       </div>
     </section>

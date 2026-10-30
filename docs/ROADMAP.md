@@ -51,9 +51,9 @@ Delivered on 6 October: migrated the PoC from Vite to Next.js 16 App Router, ret
 
 ## Prediction Framework — in progress
 
-The detailed [Prediction Framework implementation plan](PREDICTION-FRAMEWORK-IMPLEMENTATION-PLAN.md) defines a new organization-scoped module for predicting the final approved overall score. The seeded synthetic dataset foundation and Prediction Studio screens 1–8 are implemented through readiness, local established-candidate training, held-out comparison, simulated approval/publication and a read-only inference API/sandbox. Model artifacts and lifecycle records are process-memory only; no durable registry, real-data model or employee dashboard is implemented yet.
+The detailed [Prediction Framework implementation plan](PREDICTION-FRAMEWORK-IMPLEMENTATION-PLAN.md) defines a new organization-scoped module for predicting the final approved overall score. The seeded synthetic dataset foundation and Prediction Studio screens 1–10 are implemented through readiness, local established-candidate training, held-out comparison, simulated approval/publication, read-only sandbox/employee inference and retraining-readiness settings. Model artifacts and lifecycle records are process-memory only; there is no durable registry, real-data model, production employee authorization, scheduler or monitoring service.
 
-The [Prediction prototype implementation plan](PREDICTION-PROTOTYPE-IMPLEMENTATION-PLAN.md) defines the KCT review slice. Phases 1–4 now provide configuration-driven fixtures, readiness, local comparison of pace/grouped baselines with Ridge, Random Forest and Gradient Boosting, a private in-process artifact registry, guarded approval/publication and Scenario A/B/C sandbox inference. Detailed KPI scoring-band conversion, durable organization configuration, employee view, monitoring and retraining remain planned.
+The [Prediction prototype implementation plan](PREDICTION-PROTOTYPE-IMPLEMENTATION-PLAN.md) defines the KCT review slice. Phases 1–5 now provide configuration-driven fixtures, readiness, local comparison of pace/grouped baselines with Ridge, Random Forest and Gradient Boosting, a private in-process artifact registry, guarded approval/publication, Scenario A/B/C sandbox inference, a simulated employee view and retraining eligibility demonstration. Detailed KPI scoring-band conversion, durable organization configuration, production identity/data integration, monitoring and scheduled retraining remain planned.
 
 The planned sequence is:
 
@@ -63,8 +63,9 @@ The planned sequence is:
 4. **Implemented prototype screens:** configure generation, generate all four scenarios, preview/filter/download them and display the shared readiness result.
 5. **Implemented local comparison:** configure features/candidates/seed, train established algorithms, evaluate the latest-cycle holdout and recommend only when both transparent baselines are beaten.
 6. **Implemented prototype governance and sandbox:** rule-based estimate, evaluation/approval, explicit publication, compatibility guards and read-only Scenario A/B/C prediction.
-7. Build the employee dashboard, durable organization/model storage, monitoring and basic retraining screens.
-8. Stabilize prediction before beginning the Recommendation Framework.
+7. **Implemented review UI:** simulated employee dashboard, verified-progress inference refresh, manual/cycle-close/periodic retraining settings and the closed-plus-approved label gate.
+8. Build durable organization/model storage, employee authorization, monitoring and scheduled retraining before production use.
+9. Stabilize prediction before beginning the Recommendation Framework.
 
 The three runtime modes are a transparent rule-based estimate when history is unavailable, an evaluated low-confidence baseline when history is limited, and an approved organization-specific model when sufficient compatible history passes quality gates.
 

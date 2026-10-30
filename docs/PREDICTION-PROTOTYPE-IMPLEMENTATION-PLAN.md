@@ -1,8 +1,8 @@
 # Prediction prototype implementation plan
 
-Status: **Phases 1–4 implemented; screens 1–8 are usable, while the employee view, durable storage, monitoring and retraining remain planned**
+Status: **Phases 1–5 implemented; screens 1–10 are usable, while durable storage, production identity, monitoring and scheduled retraining remain planned**
 
-Active governance branch: `codex/prediction-governance-sandbox` (based on `codex/prediction-model-training`)
+Active employee/retraining branch: `codex/prediction-employee-dashboard` (based on `codex/prediction-governance-sandbox`)
 
 Initial organization: KCT
 
@@ -10,11 +10,11 @@ Policy source: PADS configuration
 
 Initial target: final approved overall score out of 200
 
-Review goal: demonstrate configuration → synthetic data → readiness → training → testing → approval → live prediction
+Review goal: demonstrate configuration → synthetic data → readiness → training → testing → approval → live prediction → verified-progress refresh → retraining readiness
 
 This document is the implementation-ready delivery plan for the first end-to-end review prototype. The broader product architecture, production safeguards, three readiness scenarios, lifecycle and long-term phases remain defined in the [Prediction Framework implementation plan](PREDICTION-FRAMEWORK-IMPLEMENTATION-PLAN.md).
 
-The seeded KCT/PADS KRA-level generator and four scenario fixtures were implemented on 29 October 2026. The [prediction readiness contract](PREDICTION-READINESS.md) validates them, selects Scenario A/B/C, creates a latest-cycle holdout and blocks leakage-prone features. Screens 1–8 now configure generation, render readiness, compare established candidates, simulate approval/publication, and run read-only predictions through a private in-process registry. The employee view, durable persistence, monitoring and retraining remain planned.
+The seeded KCT/PADS KRA-level generator and four scenario fixtures were implemented on 29 October 2026. The [prediction readiness contract](PREDICTION-READINESS.md) validates them, selects Scenario A/B/C, creates a latest-cycle holdout and blocks leakage-prone features. Screens 1–10 now configure generation, render readiness, compare established candidates, simulate approval/publication, run read-only sandbox/employee predictions, and demonstrate retraining eligibility through a private in-process registry and browser session. Durable persistence, production identity, monitoring and scheduled retraining remain planned.
 
 ## 1. Prototype outcome
 
@@ -686,6 +686,10 @@ Deliverables:
 - End-to-end review script and user guide.
 
 Exit: the review journey works from configuration through live prediction, and the official score remains unchanged.
+
+Current result: implemented. The employee screen refreshes prediction from a later verified synthetic checkpoint without retraining or changing the active model/run. Retraining settings support manual, cycle-close and periodic checks, require closed and finally approved rows before labels count, and keep the active model published while a future candidate remains subject to evaluation, approval and publication. See [Prediction employee view and retraining](PREDICTION-EMPLOYEE-AND-RETRAINING.md) and the [review script](PREDICTION-DEMO-SCRIPT.md).
+
+Exit: met for the local synthetic review. Authentication, durable scheduling, real final-outcome ingestion and monitoring remain outside the prototype.
 
 ## 15. Verification plan
 

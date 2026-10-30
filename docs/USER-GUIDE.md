@@ -67,7 +67,7 @@ For a document-content KPI, choose Full content or Both in Extract evidence, map
 
 ## Use the Prediction Framework prototype
 
-Open **Prediction framework** from the Framework Studio sidebar, or visit `/prediction`. The current prototype covers synthetic data preparation, readiness, model configuration, local training, held-out comparison, simulated approval/publication, and a read-only prediction sandbox. All records and metrics are synthetic.
+Open **Prediction framework** from the Framework Studio sidebar, or visit `/prediction`. The current prototype covers synthetic data preparation, readiness, model configuration, local training, held-out comparison, simulated approval/publication, read-only sandbox and employee prediction, and retraining-readiness settings. All records and metrics are synthetic.
 
 ### Overview
 
@@ -143,3 +143,22 @@ Screen 8 selects a synthetic active checkpoint and one history scenario, then **
 - **Invalid history:** is blocked and lists the readiness findings.
 
 The result shows a score within 0–200, an expected range, method/confidence, checkpoint factors, policy/framework/model versions, timestamp, and warnings. Changing the employee or scenario clears the old result. The sandbox is advisory and explicitly reports that the official verified score was not changed.
+
+### Employee prediction
+
+After a successful sandbox prediction, choose **Open employee prediction view**. Screen 9 is scoped to that one simulated employee and shows the current verified score, predicted final score/range, time remaining, policy-labelled KRA progress, factors, compatibility versions and last calculation time. It does not expose model approval controls or another employee selector.
+
+Choose **Load newer verified progress** to create a later synthetic checkpoint and refresh the estimate. This calls prediction again with the same active model; it does not train or publish anything. Confirm that the current score and prediction can change while the active model version/training run stay the same and the official score remains unchanged.
+
+### Retraining readiness
+
+Screen 10 configures when a future retraining review may become eligible:
+
+- **Manual** permits an administrator-requested check.
+- **Cycle close** checks eligibility after the simulated cycle closes.
+- **Periodic** calculates the next check from the chosen interval.
+- Minimum new approved cases and completed cycles must also pass.
+
+Active-cycle checkpoints are never labels. First choose **Simulate cycle closure**, then confirm the final outcomes are approved. Until both conditions are true, the completed rows are not counted. **Check retraining readiness** calculates eligibility only; it does not train or publish a model.
+
+The current published model remains active while any future candidate is trained and evaluated. Replacement still requires evaluation, explicit approval and publication. The settings, counters and last check are browser-session demonstrations, not a real scheduler or durable audit record. See [Prediction employee view and retraining](PREDICTION-EMPLOYEE-AND-RETRAINING.md) for the full contract.

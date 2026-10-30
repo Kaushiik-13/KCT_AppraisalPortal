@@ -21,6 +21,7 @@ These records summarize accepted conversation choices and implemented behavior; 
 | D-24 | Make prediction readiness a strict, configurable gate | Select Scenario A/B/C from compatible completed cases and cycles; block invalid/leaking data before training |
 | D-26 | Keep prototype training local, reproducible and baseline-gated | Compare established candidates on the latest-cycle holdout; do not persist or publish a model yet |
 | D-27 | Use explicit, scope-compatible prototype model governance | Keep artifacts server-side, require one-way approval/publication, supersede instead of delete, and keep prediction advisory |
+| D-28 | Separate employee inference from retraining eligibility | Refresh verified progress with the active model; count labels only after cycle closure and final approval; never auto-replace the active model |
 
 ## Unresolved domain questions
 
@@ -125,3 +126,9 @@ Recommend a candidate only when its held-out MAE beats both baselines and its cl
 Register successful fitted pipelines only in server process memory and return public metadata without the serialized artifact. Permit approval only for the recommendation-eligible candidate, require an authenticated production replacement later, and make prototype approval/rejection final. Publication is a separate action that requires the exact organization, target, policy and framework scope. A newer compatible publication supersedes the prior record rather than deleting it; only one is active per scope.
 
 Inference always revalidates the selected synthetic history and active checkpoint. Scenario A uses the transparent pace rule without a model. Scenario B uses a compatible published model when available and otherwise a low-confidence transparent fallback. Scenario C requires the compatible approved and published organization model. Return score, empirical/transparent range, method, confidence, factors, versions and warnings, but never mutate verified evidence or the official appraisal score. The in-process registry, simulated reviewer and pickle artifact are local-review constraints, not a production storage/security design.
+
+## D-28 — Employee inference and retraining remain separate
+
+Show one simulated employee the latest advisory result after a sandbox selection. A newer verified checkpoint calls the same inference contract again with the active compatible model; it does not call training, create a label or change the official score. Keep the active published model available while a later candidate is configured, trained and evaluated.
+
+Treat manual, cycle-close and periodic choices as retraining-eligibility triggers, not automatic training schedules. Active-cycle checkpoints never count as labels. A completed-cycle row becomes eligible only after the cycle closes and its final outcome is approved. Minimum new-case/cycle thresholds must also pass. Readiness cannot publish: evaluation, explicit approval and publication remain mandatory. The current screen is a session-only review simulation, not a durable scheduler, monitoring service or access-control boundary.

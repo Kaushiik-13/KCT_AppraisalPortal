@@ -2,7 +2,7 @@
 
 A desktop proof of concept for creating configurable KPI forms, verification workflows, and scoring policies. The aim is to let different institutions compose their own KPIs from shared tools. Publication verification is the first worked example, not the only supported workflow.
 
-Application baseline: **29 October 2026**. Prediction Framework screens 1–8 are implemented through synthetic model approval, publication, and read-only prediction. This is a PoC, not a production appraisal platform.
+Application baseline: **30 October 2026**. Prediction Framework screens 1–10 are implemented through synthetic model approval, publication, employee prediction refresh, and retraining-readiness settings. This is a PoC, not a production appraisal platform.
 
 ## Run locally
 
@@ -37,6 +37,8 @@ See [setup](docs/SETUP.md) for environment configuration, the production server,
 | Understand prediction readiness | [Prediction readiness contract](docs/PREDICTION-READINESS.md) |
 | Understand model training and comparison | [Prediction training contract](docs/PREDICTION-TRAINING.md) |
 | Understand model governance and prediction | [Prediction governance and inference](docs/PREDICTION-GOVERNANCE-AND-INFERENCE.md) |
+| Understand employee prediction and retraining | [Prediction employee view and retraining](docs/PREDICTION-EMPLOYEE-AND-RETRAINING.md) |
+| Run the prediction review | [Prediction demo script](docs/PREDICTION-DEMO-SCRIPT.md) |
 | Review the synthetic dataset audit | [Prediction dataset audit](docs/PREDICTION-DATASET-AUDIT-2026-10-29.md) |
 | Work on the code | [Contributing](CONTRIBUTING.md) |
 | See remaining work | [Roadmap](docs/ROADMAP.md) |
@@ -51,7 +53,7 @@ See [setup](docs/SETUP.md) for environment configuration, the production server,
 - Organization-defined formula and conditional scoring policies with immutable local versions.
 - Execution traces, terminal review packages, legacy publication review decisions, and browser-local draft autosave.
 - A collapsible sidebar and confirmed Clear saved draft action.
-- A Prediction Framework prototype at `/prediction` with overview, eight-decision synthetic dataset setup, deterministic generation, preview/download, Scenario A/B/C readiness, time-based split, leakage-safe model configuration, local scikit-learn training, held-out comparison, simulated approval/publication, and a read-only prediction sandbox. Model records and artifacts are process-memory synthetic demonstrations and disappear on server restart.
+- A Prediction Framework prototype at `/prediction` with overview, eight-decision synthetic dataset setup, deterministic generation, preview/download, Scenario A/B/C readiness, time-based split, leakage-safe model configuration, local scikit-learn training, held-out comparison, simulated approval/publication, read-only sandbox and employee prediction, plus retraining-readiness settings. Model records and artifacts are process-memory synthetic demonstrations and disappear on server restart.
 
 ## Boundaries
 
