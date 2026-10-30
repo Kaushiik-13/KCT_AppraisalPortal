@@ -49,6 +49,32 @@ Limits: all 59 rows are form-value policies, so no PDF evidence, extraction comp
 
 Evidence: `public/samples/pads/kpis/`, [PADS individual KPI verification](PADS-INDIVIDUAL-KPIS.md), and the prior RD-12 zero-case screenshot `docs/assets/pads-kpis/rd-12-zero-points.png` (a 29 October UI capture, not a new walkthrough).
 
+## Publication, extraction, duplicate and AI-mode coverage — 30 October 2026
+
+Extends the independent creator walkthrough ([#3](https://github.com/Kaushiik-13/KCT_AppraisalPortal/issues/3)) to the paths its two sessions did not cover; those two sessions and their 19 findings are recorded in the [creator walkthrough](CREATOR-WALKTHROUGH.md). Build `ebbb301`, dev server on `127.0.0.1:5173`, throwaway managed Chromium profile (no relay), Chromium only. Storage was cleared between scenarios with the browser API; every value was synthetic. No application code changed, so the automated suite was not rerun for this record. The AI modes were first exercised without a key (`GET /api/ai-status` → `{"configured":false,"model":"openrouter/free"}`); a key was then added in the gitignored `.env.local` and live generation was exercised (`configured:true`).
+
+Scenarios and observed results:
+
+| Scenario | Observed |
+|---|---|
+| Publication clear path, PRISMA sample | Crossref returned the record; extraction read 15 pages with page-1 evidence for title, DOI, journal, authors and date; comparison, first author, period and duplicates all `clear`; saved `pub-v1` scored **10 points**; Appraiser review was awaiting a decision; approving recorded a session decision and the header changed to `1 session records`. |
+| Repeat submission, same DOI and faculty | Duplicate check `candidate` (1 matching prior submission) → decision `uncertain` → review, **9 of 10 steps ran**, scoring skipped, recommendation pending. |
+| Seed record only, after reload | `0 session records`, draft restored, seed persisted; duplicate check `candidate`, evidence listed `Matthew J. Page · 10.1371/journal.pmed.1003583`; decision `uncertain`; scoring skipped. |
+| Assessment period set to 2022 | Period `ineligible` → decision `ineligible`; scoring skipped; review showed the 0-point ineligible fallback and the decision form. |
+| Crossref request aborted in the browser | Lookup `unknown`; comparison, author, period and duplicate `uncertain` → needs review; scoring skipped; no fabricated publication data. |
+| Unreadable one-page PDF (`evidence-tl1-unreadable.pdf`) | Step reported `PDF read` with placeholder title `untitled`, DOI `Not found`, authors `anonymous`, dates `Not found`; comparison `uncertain` → needs review. Extraction placeholders are presented as candidates, not as unknowns ([#39](https://github.com/Kaushiik-13/KCT_AppraisalPortal/issues/39)). |
+| AI evaluation, simulated mode | Step status `simulated`; Result value `Simulated AI response. No model was called…`; no provider request. |
+| AI evaluation, disabled mode | Step status `not-connected`; Result value `Live AI is not connected. Findings have been passed…`; workflow continued. |
+| AI evaluation, OpenRouter mode without key | Step status `not-connected`; explicit `OpenRouter key is missing…`; workflow continued to Result. No fabricated advice. |
+| AI evaluation, OpenRouter live (key in `.env.local`) | First attempt aborted at the 45 s server timeout and reported `AI assistance timed out. Continue with human review.`; the immediate retry returned `advisory` in ~3.1 s. Model used: `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free`; two bullets labelled synthetic as instructed; response text carried into the Result value. |
+| Publication plugin contents | Ten steps; no AI evaluation, no simulated index or Scopus/Web of Science step. |
+
+Also verified: the preflight rejects a scoring rule sourced from `Final workflow outcome` when no Result precedes the Apply scoring policy step, with `final outcome is unavailable before Result. Use inputs or earlier outputs.` — the correct guidance for the Publication plugin, whose clear path reaches review rather than a Result.
+
+Wording defect seen in this pass (low): the skipped-step summary uses a plural verb for one step — `Apply scoring policy have not run on this path.` (`src/WorkflowTest.jsx:426`, [#37](https://github.com/Kaushiik-13/KCT_AppraisalPortal/issues/37)).
+
+Limits: the live free model timed out once at the 45 s server abort before succeeding on retry, so latency is provider-dependent and the rate-limit path was not exercised; OpenRouter selected a different free model for a direct key probe (`nvidia/nemotron-3.5-super-vl:free`), confirming that the routed model varies; Crossref success is live but the failure path was forced by aborting the request, not by a provider outage; no Firefox/WebKit, screen reader or colour-vision checks; one browser session, so multi-tab behaviour is unchanged from the walkthrough record. Screenshots from this pass were not committed.
+
 ## PADS individual-KPI Framework Studio verification — 29 October 2026
 
 Built and exercised **59 of the 64 KPI rows** in `public/samples/PADS.xlsx` (sheet `PADS Template`): 14 Teaching & Learning, 16 Research & Development, 11 External Interface, 10 Operations, 6 Student Development and 2 Extra & Co-Curricular. The workbook's seventh KRA, `INSTITUTIONAL OR DEPARTMENTAL CONTRIBUTIONS AND OUTCOMES`, has five optional rows with no Max Points that use `Supervisor Scoring (on 5 pt. scale)`, so they were not built. The request referred to 55, but the template contains 64 KPI rows, 59 with an explicit Max Points value.
