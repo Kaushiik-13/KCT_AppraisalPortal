@@ -1,0 +1,983 @@
+{
+  "source": "public/samples/PADS.xlsx",
+  "sheet": "PADS Template",
+  "columns": {
+    "kra": "A",
+    "slNo": "B",
+    "kpi": "C",
+    "criteria": "D",
+    "points": "E"
+  },
+  "kpis": [
+    {
+      "id": "tl-1",
+      "title": "PADS TL-1 Teaching Pedagogy & Content Preparation",
+      "kra": "TL",
+      "workbookRow": 13,
+      "slNo": 1,
+      "fields": [
+        "pct"
+      ],
+      "caseCount": 4,
+      "expectedPoints": [
+        0,
+        4,
+        6,
+        8
+      ]
+    },
+    {
+      "id": "tl-2",
+      "title": "PADS TL-2 Use of Technology / Class notes",
+      "kra": "TL",
+      "workbookRow": 16,
+      "slNo": 2,
+      "fields": [
+        "pct"
+      ],
+      "caseCount": 4,
+      "expectedPoints": [
+        0,
+        4,
+        6,
+        8
+      ]
+    },
+    {
+      "id": "tl-3",
+      "title": "PADS TL-3 HOD Feedback",
+      "kra": "TL",
+      "workbookRow": 20,
+      "slNo": 3,
+      "fields": [
+        "pct"
+      ],
+      "caseCount": 4,
+      "expectedPoints": [
+        0,
+        4,
+        6,
+        8
+      ]
+    },
+    {
+      "id": "tl-4",
+      "title": "PADS TL-4 Student Feedback",
+      "kra": "TL",
+      "workbookRow": 23,
+      "slNo": 4,
+      "fields": [
+        "pct"
+      ],
+      "caseCount": 4,
+      "expectedPoints": [
+        0,
+        4,
+        6,
+        8
+      ]
+    },
+    {
+      "id": "tl-5",
+      "title": "PADS TL-5 Activities for uplifting slow learners",
+      "kra": "TL",
+      "workbookRow": 27,
+      "slNo": 5,
+      "fields": [
+        "count"
+      ],
+      "caseCount": 4,
+      "expectedPoints": [
+        0,
+        4,
+        8
+      ]
+    },
+    {
+      "id": "tl-6",
+      "title": "PADS TL-6 Course result outcome aggregate (2 and 1 credit)",
+      "kra": "TL",
+      "workbookRow": 28,
+      "slNo": 6,
+      "fields": [
+        "pct"
+      ],
+      "caseCount": 5,
+      "expectedPoints": [
+        0,
+        2,
+        4,
+        6
+      ]
+    },
+    {
+      "id": "tl-7",
+      "title": "PADS TL-7 Course result outcome aggregate (4 credit analytical)",
+      "kra": "TL",
+      "workbookRow": 31,
+      "slNo": 7,
+      "fields": [
+        "pct"
+      ],
+      "caseCount": 5,
+      "expectedPoints": [
+        0,
+        6,
+        8,
+        10
+      ]
+    },
+    {
+      "id": "tl-8",
+      "title": "PADS TL-8 Course result outcome aggregate (3 credit non-analytical)",
+      "kra": "TL",
+      "workbookRow": 34,
+      "slNo": 8,
+      "fields": [
+        "pct"
+      ],
+      "caseCount": 4,
+      "expectedPoints": [
+        0,
+        4,
+        6,
+        8
+      ]
+    },
+    {
+      "id": "tl-9",
+      "title": "PADS TL-9 Student course attendance",
+      "kra": "TL",
+      "workbookRow": 38,
+      "slNo": 9,
+      "fields": [
+        "pct"
+      ],
+      "caseCount": 5,
+      "expectedPoints": [
+        0,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "id": "tl-10",
+      "title": "PADS TL-10 Conducting professional courses and training",
+      "kra": "TL",
+      "workbookRow": 41,
+      "slNo": 10,
+      "fields": [
+        "count"
+      ],
+      "caseCount": 4,
+      "expectedPoints": [
+        0,
+        5,
+        10
+      ]
+    },
+    {
+      "id": "tl-11",
+      "title": "PADS TL-11 Faculty Development Certification",
+      "kra": "TL",
+      "workbookRow": 43,
+      "slNo": 11,
+      "fields": [
+        "kind"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        4,
+        24
+      ]
+    },
+    {
+      "id": "tl-12",
+      "title": "PADS TL-12 PhD Status",
+      "kra": "TL",
+      "workbookRow": 48,
+      "slNo": 12,
+      "fields": [
+        "status"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        8,
+        14
+      ]
+    },
+    {
+      "id": "tl-13",
+      "title": "PADS TL-13 NET / SET Qualified",
+      "kra": "TL",
+      "workbookRow": 53,
+      "slNo": 13,
+      "fields": [
+        "status"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        4,
+        8
+      ]
+    },
+    {
+      "id": "tl-14",
+      "title": "PADS TL-14 Training Program hours per year",
+      "kra": "TL",
+      "workbookRow": 55,
+      "slNo": 14,
+      "fields": [
+        "hours"
+      ],
+      "caseCount": 5,
+      "expectedPoints": [
+        0,
+        2,
+        4,
+        6
+      ]
+    },
+    {
+      "id": "rd-1",
+      "title": "PADS RD-1 Paper publication Scopus / WOS / SAE",
+      "kra": "RD",
+      "workbookRow": 64,
+      "slNo": 1,
+      "fields": [
+        "role",
+        "indexed"
+      ],
+      "caseCount": 4,
+      "expectedPoints": [
+        0,
+        6,
+        12,
+        24
+      ]
+    },
+    {
+      "id": "rd-2",
+      "title": "PADS RD-2 Paper publication others (UGC/ICI)",
+      "kra": "RD",
+      "workbookRow": 66,
+      "slNo": 2,
+      "fields": [
+        "role",
+        "count"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        3,
+        18
+      ]
+    },
+    {
+      "id": "rd-3",
+      "title": "PADS RD-3 Book or chapter publishing (ISBN)",
+      "kra": "RD",
+      "workbookRow": 67,
+      "slNo": 3,
+      "fields": [
+        "role",
+        "kind"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        10,
+        25
+      ]
+    },
+    {
+      "id": "rd-4",
+      "title": "PADS RD-4 Conference paper outside India",
+      "kra": "RD",
+      "workbookRow": 70,
+      "slNo": 4,
+      "fields": [
+        "count"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        10
+      ]
+    },
+    {
+      "id": "rd-5",
+      "title": "PADS RD-5 Guiding student Scopus / WOS publication",
+      "kra": "RD",
+      "workbookRow": 72,
+      "slNo": 5,
+      "fields": [
+        "count"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        5
+      ]
+    },
+    {
+      "id": "rd-6",
+      "title": "PADS RD-6 Funded project submission",
+      "kra": "RD",
+      "workbookRow": 74,
+      "slNo": 6,
+      "fields": [
+        "submitted",
+        "presented"
+      ],
+      "caseCount": 4,
+      "expectedPoints": [
+        0,
+        12,
+        22,
+        24
+      ]
+    },
+    {
+      "id": "rd-7",
+      "title": "PADS RD-7 Externally funded project",
+      "kra": "RD",
+      "workbookRow": 75,
+      "slNo": 7,
+      "fields": [
+        "amount"
+      ],
+      "caseCount": 4,
+      "expectedPoints": [
+        0,
+        4,
+        10,
+        24
+      ]
+    },
+    {
+      "id": "rd-8",
+      "title": "PADS RD-8 Patent",
+      "kra": "RD",
+      "workbookRow": 80,
+      "slNo": 8,
+      "fields": [
+        "status"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        8,
+        24
+      ]
+    },
+    {
+      "id": "rd-9",
+      "title": "PADS RD-9 Increase in h index",
+      "kra": "RD",
+      "workbookRow": 85,
+      "slNo": 9,
+      "fields": [
+        "value"
+      ],
+      "caseCount": 4,
+      "expectedPoints": [
+        0,
+        3,
+        6
+      ]
+    },
+    {
+      "id": "rd-10",
+      "title": "PADS RD-10 Increase in citations",
+      "kra": "RD",
+      "workbookRow": 87,
+      "slNo": 10,
+      "fields": [
+        "value"
+      ],
+      "caseCount": 4,
+      "expectedPoints": [
+        0,
+        3,
+        6
+      ]
+    },
+    {
+      "id": "rd-11",
+      "title": "PADS RD-11 Conference presentation at IIT / IISC / NIT",
+      "kra": "RD",
+      "workbookRow": 89,
+      "slNo": 11,
+      "fields": [
+        "count"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        5
+      ]
+    },
+    {
+      "id": "rd-12",
+      "title": "PADS RD-12 Conference + extended Scopus / WOS / SAE publication",
+      "kra": "RD",
+      "workbookRow": 90,
+      "slNo": 12,
+      "fields": [
+        "count"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        30
+      ]
+    },
+    {
+      "id": "rd-13",
+      "title": "PADS RD-13 Product development (commercial)",
+      "kra": "RD",
+      "workbookRow": 92,
+      "slNo": 13,
+      "fields": [
+        "status"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        4,
+        16
+      ]
+    },
+    {
+      "id": "rd-14",
+      "title": "PADS RD-14 Product development from student projects",
+      "kra": "RD",
+      "workbookRow": 96,
+      "slNo": 14,
+      "fields": [
+        "status"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        1,
+        10
+      ]
+    },
+    {
+      "id": "rd-15",
+      "title": "PADS RD-15 Facilitation of student involvement in RIG",
+      "kra": "RD",
+      "workbookRow": 99,
+      "slNo": 15,
+      "fields": [
+        "students"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        7,
+        14
+      ]
+    },
+    {
+      "id": "rd-16",
+      "title": "PADS RD-16 Facilitation of student involvement in Forge",
+      "kra": "RD",
+      "workbookRow": 100,
+      "slNo": 16,
+      "fields": [
+        "students"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        7,
+        14
+      ]
+    },
+    {
+      "id": "ei-1",
+      "title": "PADS EI-1 Industrial / Research consultancy (financial)",
+      "kra": "EI",
+      "workbookRow": 107,
+      "slNo": 1,
+      "fields": [
+        "amount"
+      ],
+      "caseCount": 4,
+      "expectedPoints": [
+        0,
+        8,
+        16,
+        24
+      ]
+    },
+    {
+      "id": "ei-2",
+      "title": "PADS EI-2 FDP participation (7+ days)",
+      "kra": "EI",
+      "workbookRow": 110,
+      "slNo": 2,
+      "fields": [
+        "count"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        12,
+        24
+      ]
+    },
+    {
+      "id": "ei-3",
+      "title": "PADS EI-3 MOU signed",
+      "kra": "EI",
+      "workbookRow": 112,
+      "slNo": 3,
+      "fields": [
+        "count"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        10,
+        20
+      ]
+    },
+    {
+      "id": "ei-4",
+      "title": "PADS EI-4 Consultancy (institutional branding)",
+      "kra": "EI",
+      "workbookRow": 114,
+      "slNo": 4,
+      "fields": [
+        "count"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        2,
+        4
+      ]
+    },
+    {
+      "id": "ei-5",
+      "title": "PADS EI-5 Sabbatical program",
+      "kra": "EI",
+      "workbookRow": 115,
+      "slNo": 5,
+      "fields": [
+        "count"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        8
+      ]
+    },
+    {
+      "id": "ei-6",
+      "title": "PADS EI-6 International award",
+      "kra": "EI",
+      "workbookRow": 116,
+      "slNo": 6,
+      "fields": [
+        "count"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        6,
+        12
+      ]
+    },
+    {
+      "id": "ei-7",
+      "title": "PADS EI-7 National / State award",
+      "kra": "EI",
+      "workbookRow": 117,
+      "slNo": 7,
+      "fields": [
+        "count"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        3,
+        6
+      ]
+    },
+    {
+      "id": "ei-8",
+      "title": "PADS EI-8 Editorial board member (Scopus/WOS)",
+      "kra": "EI",
+      "workbookRow": 118,
+      "slNo": 8,
+      "fields": [
+        "count"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        14
+      ]
+    },
+    {
+      "id": "ei-9",
+      "title": "PADS EI-9 Reviewer (Scopus/WOS)",
+      "kra": "EI",
+      "workbookRow": 119,
+      "slNo": 9,
+      "fields": [
+        "count"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        9
+      ]
+    },
+    {
+      "id": "ei-10",
+      "title": "PADS EI-10 Editor or reviewer (other journal)",
+      "kra": "EI",
+      "workbookRow": 120,
+      "slNo": 10,
+      "fields": [
+        "count"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        5
+      ]
+    },
+    {
+      "id": "ei-11",
+      "title": "PADS EI-11 NGO collaboration",
+      "kra": "EI",
+      "workbookRow": 122,
+      "slNo": 11,
+      "fields": [
+        "count"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        5,
+        10
+      ]
+    },
+    {
+      "id": "o-1",
+      "title": "PADS O-1 Heading independent body",
+      "kra": "O",
+      "workbookRow": 129,
+      "slNo": 1,
+      "fields": [
+        "count"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        15,
+        30
+      ]
+    },
+    {
+      "id": "o-2",
+      "title": "PADS O-2 Ranking / accreditation responsibility",
+      "kra": "O",
+      "workbookRow": 130,
+      "slNo": 2,
+      "fields": [
+        "role",
+        "count"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        3,
+        30
+      ]
+    },
+    {
+      "id": "o-3",
+      "title": "PADS O-3 Organizing conference",
+      "kra": "O",
+      "workbookRow": 131,
+      "slNo": 3,
+      "fields": [
+        "role",
+        "attendees"
+      ],
+      "caseCount": 4,
+      "expectedPoints": [
+        0,
+        4,
+        5,
+        10
+      ]
+    },
+    {
+      "id": "o-4",
+      "title": "PADS O-4 Organizing AICTE / sponsored FDP",
+      "kra": "O",
+      "workbookRow": 134,
+      "slNo": 4,
+      "fields": [
+        "role",
+        "funding"
+      ],
+      "caseCount": 4,
+      "expectedPoints": [
+        0,
+        5,
+        10
+      ]
+    },
+    {
+      "id": "o-5",
+      "title": "PADS O-5 Organizing workshop / seminar",
+      "kra": "O",
+      "workbookRow": 137,
+      "slNo": 5,
+      "fields": [
+        "role",
+        "attendees"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        5,
+        10
+      ]
+    },
+    {
+      "id": "o-6",
+      "title": "PADS O-6 Alumni entrepreneur projects",
+      "kra": "O",
+      "workbookRow": 140,
+      "slNo": 6,
+      "fields": [
+        "count"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        10,
+        20
+      ]
+    },
+    {
+      "id": "o-7",
+      "title": "PADS O-7 Outreach program expert",
+      "kra": "O",
+      "workbookRow": 141,
+      "slNo": 7,
+      "fields": [
+        "attendees"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        4,
+        10
+      ]
+    },
+    {
+      "id": "o-8",
+      "title": "PADS O-8 Professional external audit member",
+      "kra": "O",
+      "workbookRow": 144,
+      "slNo": 8,
+      "fields": [
+        "count"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        14,
+        28
+      ]
+    },
+    {
+      "id": "o-9",
+      "title": "PADS O-9 Blogs on education",
+      "kra": "O",
+      "workbookRow": 146,
+      "slNo": 9,
+      "fields": [
+        "count"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        3,
+        6
+      ]
+    },
+    {
+      "id": "o-10",
+      "title": "PADS O-10 External expert / guest lecture",
+      "kra": "O",
+      "workbookRow": 147,
+      "slNo": 10,
+      "fields": [
+        "role"
+      ],
+      "caseCount": 4,
+      "expectedPoints": [
+        0,
+        7.5,
+        8.5,
+        9
+      ]
+    },
+    {
+      "id": "sd-1",
+      "title": "PADS SD-1 Organizing local visits",
+      "kra": "SD",
+      "workbookRow": 154,
+      "slNo": 1,
+      "fields": [
+        "count"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        3,
+        6
+      ]
+    },
+    {
+      "id": "sd-2",
+      "title": "PADS SD-2 Placing student in core industry",
+      "kra": "SD",
+      "workbookRow": 155,
+      "slNo": 2,
+      "fields": [
+        "count"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        8,
+        24
+      ]
+    },
+    {
+      "id": "sd-3",
+      "title": "PADS SD-3 Referred internship",
+      "kra": "SD",
+      "workbookRow": 156,
+      "slNo": 3,
+      "fields": [
+        "count"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        4,
+        12
+      ]
+    },
+    {
+      "id": "sd-4",
+      "title": "PADS SD-4 Student research development",
+      "kra": "SD",
+      "workbookRow": 157,
+      "slNo": 4,
+      "fields": [
+        "count"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        3,
+        6
+      ]
+    },
+    {
+      "id": "sd-5",
+      "title": "PADS SD-5 Student mentoring",
+      "kra": "SD",
+      "workbookRow": 158,
+      "slNo": 5,
+      "fields": [
+        "count"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        4,
+        8
+      ]
+    },
+    {
+      "id": "sd-6",
+      "title": "PADS SD-6 Leadership and skill development",
+      "kra": "SD",
+      "workbookRow": 159,
+      "slNo": 6,
+      "fields": [
+        "count"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        3,
+        6
+      ]
+    },
+    {
+      "id": "ec-1",
+      "title": "PADS EC-1 Student accomplishments (co-curricular)",
+      "kra": "EC",
+      "workbookRow": 166,
+      "slNo": 1,
+      "fields": [
+        "students"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        5,
+        10
+      ]
+    },
+    {
+      "id": "ec-2",
+      "title": "PADS EC-2 Student accomplishments (extra-curricular)",
+      "kra": "EC",
+      "workbookRow": 167,
+      "slNo": 2,
+      "fields": [
+        "students"
+      ],
+      "caseCount": 3,
+      "expectedPoints": [
+        0,
+        4,
+        8
+      ]
+    }
+  ],
+  "excluded": {
+    "kra": "INSTITUTIONAL OR DEPARTMENTAL CONTRIBUTIONS AND OUTCOMES",
+    "workbookRows": [
+      173,
+      174,
+      175,
+      176,
+      177
+    ],
+    "reason": "PADS scores these duties on a 5-point supervisor scale and provides no Max Points, evidence fields, role eligibility, caps, or aggregation rules. AFPI would need a 1-5 institutional score field, duty/role eligibility, evidence or notes, supervisor or panel review, one claim per duty per period, audit history, and aggregation into the institutional KRA."
+  }
+}

@@ -11,6 +11,18 @@
 | 5 | Formula and conditional scoring policies, caps, saved versions |
 | 6 | Publication/training acceptance checks and setup guidance |
 
+## Verified 29 October 2026 — PADS individual KPI scores
+
+Built and exercised 59 of the 64 KPI rows in `public/samples/PADS.xlsx` (14 TL, 16 RD, 11 EI, 10 Operations, 6 SD, 2 EC) as saved `v1` rules policies. The five optional `INSTITUTIONAL OR DEPARTMENTAL CONTRIBUTIONS AND OUTCOMES` rows use a separate 5-point supervisor scale and were not built. 201 UI checks covering award tiers, zero/boundary cases and below-threshold fallbacks passed. RD-6 uses enumerated combinations because the formula mode cannot express its base-plus-increment rule. Supplementary edge checks confirmed required-field blocking, pending review for missing evidence and human-review handoff; negative values are not range-validated. This verifies individual KPI rule encoding and UI scoring only; PADS KRA weights/totals, role maxima, the 200-point cap, mandatory eligibility, dual self/supervisor scores, descriptive review and the five institutional rows remain unimplemented. Some KPI nuances remain simplified; see [testing](TESTING.md).
+
+## Verified 30 October 2026 — PADS 59-KPI committed fixtures and automated coverage
+
+The 59 individual KPI policies checked through the UI on 29 October 2026 are now committed reference fixtures: `public/samples/pads/kpis/` holds one saved draft per row (`tl-1` … `ec-2`), the 201 expected scoring cases (`cases.json`), a 59-row source map with workbook rows and expected-point sets (`index.json`), and a load/usage README. `src/padsAllKpis.test.js` runs all 201 cases through the workflow engine and asserts the exact points, so the coverage no longer depends on ignored local artifacts. Focused file **60/60**; full suite **167/167**; production build passed. Institutional rows 173–177 stay excluded, with the PADS gap and the AFPI requirements recorded in `index.json`, the sample README, the test header, and [PADS individual KPI verification](PADS-INDIVIDUAL-KPIS.md). No application behavior changed.
+
+## Verified 30 October 2026 — PADS TL-1 initial KPI end-to-end
+
+Built one committed reference fixture for `TL-1 Teaching Pedagogy & Content Preparation` from `public/samples/PADS.xlsx` (sheet `PADS Template`, columns `A–E`, rows 13–15): Inputs → Scoring policy → Workflow → Test & review with synthetic clear, unreadable, missing, and invalid evidence. The clear path scored **8 points** and reached a terminal Appraiser handoff; band checks covered `85 → 8`, `84 → 6`, `75 → 6`, `74 → 4`, `65 → 4`, `64 → 0`; missing/invalid inputs blocked; the unreadable PDF remained explicitly unverified and was sent to review with a provisional 8. Five focused tests were added; the full suite passed **107/107** and the production build succeeded. Evidence and screenshots: [PADS TL-1 walkthrough](PADS-TL1-WALKTHROUGH.md). This is one reference-only KPI, not a full PADS implementation or independent creator-usability review (#3). A review-package defect found during the test was filed as [#17](https://github.com/Kaushiik-13/KCT_AppraisalPortal/issues/17) rather than fixed here. The 29 October note that range validation is absent still applies; min/max validation was not added.
+
 ## Delivered 7 October 2026 — Framework Studio evidence workflow
 
 - Replaced creator-facing typed Read tools with Use form value.
@@ -33,7 +45,7 @@ Delivered on 6 October: migrated the PoC from Vite to Next.js 16 App Router, ret
 
 1. **Creator usability review.** Have the project owner build a KPI from scratch and record confusing steps. Do not assume seeded test workflows prove independent authoring is easy.
 2. **Persist final scoring and review handoffs.** Define the canonical durable final-score record, how pending facts are resolved, and the separate Human Review module's assignment and outcome contract before production.
-3. **Agree institutional rules.** Resolve co-author conflict, corresponding-author precedence, SAE treatment, date precedence, caps, and journal-versus-paper indexing evidence.
+3. **Agree institutional rules and PADS aggregation.** Resolve co-author conflict, corresponding-author precedence, SAE treatment, date precedence, caps, and journal-versus-paper indexing evidence. Decide whether AFPI will implement PADS KRA totals and role-specific maxima, the 200-point cap, mandatory assessment eligibility, dual self/supervisor scores, descriptive/overall review, and the five institutional 5-point rows; the 59 individual rows now have committed fixtures and automated coverage, while PADS-wide aggregation and the institutional rows remain open.
 4. **Optional live index verification.** Only pursue Scopus/Web of Science adapters after the institution confirms API entitlement, authorized credentials, and approved use. Coverage gaps and failures must remain explicit; DOI lookup alone cannot establish index status.
 5. **Portable draft lifecycle.** Add validated import, multiple drafts, schema migrations, and cross-tab conflict handling.
 
