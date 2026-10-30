@@ -6,11 +6,15 @@ import {
   BarChart3,
   Database,
   Layers3,
+  LineChart,
   Settings2,
   ShieldCheck,
+  SlidersHorizontal,
 } from "lucide-react";
 import { rowsToCsv } from "./csv.js";
 import DatasetPreview from "./DatasetPreview.jsx";
+import ModelConfiguration from "./ModelConfiguration.jsx";
+import ModelTrainingComparison from "./ModelTrainingComparison.jsx";
 import PredictionOverview from "./PredictionOverview.jsx";
 import SyntheticDatasetWizard from "./SyntheticDatasetWizard.jsx";
 
@@ -41,7 +45,16 @@ const SCREENS = [
   { id: "overview", label: "Overview", description: "Status and next action", icon: BarChart3 },
   { id: "setup", label: "Dataset setup", description: "Eight generation decisions", icon: Settings2 },
   { id: "data", label: "Data & readiness", description: "Preview, filter and validate", icon: ShieldCheck },
+  { id: "model", label: "Model configuration", description: "Features, split and candidates", icon: SlidersHorizontal },
+  { id: "comparison", label: "Training results", description: "Held-out model comparison", icon: LineChart },
 ];
+
+const INITIAL_MODEL_CONFIGURATION = {
+  target: "final_approved_score",
+  featureSelection: [],
+  candidates: ["ridge", "random_forest", "gradient_boosting"],
+  seed: 20261029,
+};
 
 function downloadText(name, content, type) {
   const url = URL.createObjectURL(new Blob([content], { type }));
@@ -72,6 +85,9 @@ export default function PredictionStudio({ organization, policy }) {
   const [readinessLoading, setReadinessLoading] = useState(false);
   const [errors, setErrors] = useState([]);
   const [dirty, setDirty] = useState(true);
+  const [modelConfiguration, setModelConfiguration] = useState(INITIAL_MODEL_CONFIGURATION);
+  const [trainingResult, setTrainingResult] = useState(null);
+  const [trainingBusy, setTrainingBusy] = useState(false);
   const readinessRequest = useRef(0);
 
   const estimatedRows = useMemo(() => (
@@ -140,6 +156,8 @@ export default function PredictionStudio({ organization, policy }) {
       });
       const result = await readResponse(response);
       setGenerated(result);
+      setModelConfiguration({ ...INITIAL_MODEL_CONFIGURATION, featureSelection: result.defaultFeatureSelection });
+      setTrainingResult(null);
       setSelectedDataset("sufficient");
       setDirty(false);
       setScreen("data");
@@ -153,7 +171,49 @@ export default function PredictionStudio({ organization, policy }) {
 
   const selectDataset = async (datasetId) => {
     setSelectedDataset(datasetId);
+    setTrainingResult(null);
     await runReadiness(generated, datasetId);
+  };
+
+  const updateModelConfiguration = (field, value) => {
+    setModelConfiguration((previous) => ({ ...previous, [field]: value }));
+    setTrainingResult(null);
+    setErrors([]);
+  };
+
+  const toggleModelValue = (field, value) => {
+    const values = modelConfiguration[field];
+    updateModelConfiguration(field, values.includes(value) ? values.filter((item) => item !== value) : [...values, value]);
+  };
+
+  const trainModels = async () => {
+    const dataset = generated.datasets[selectedDataset];
+    setTrainingBusy(true);
+    setErrors([]);
+    try {
+      const response = await fetch("/api/prediction/training", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          snapshot: {
+            id: dataset.snapshotId,
+            organizationId: generated.organization.id,
+            policyVersion: generated.policy.version,
+            frameworkVersion: generated.frameworkVersion,
+            rows: dataset.rows,
+          },
+          policy: generated.policy,
+          configuration: modelConfiguration,
+        }),
+      });
+      const result = await readResponse(response);
+      setTrainingResult(result);
+      setScreen("comparison");
+    } catch (error) {
+      setErrors(error.issues?.length ? error.issues : [error.message]);
+    } finally {
+      setTrainingBusy(false);
+    }
   };
 
   const downloadCsv = () => {
@@ -195,7 +255,9 @@ export default function PredictionStudio({ organization, policy }) {
         <nav aria-label="Prediction screens">
           {SCREENS.map((item, index) => {
             const Icon = item.icon;
-            const disabled = item.id === "data" && !generated;
+            const disabled = (item.id === "data" && !generated)
+              || (item.id === "model" && !readiness?.eligibility?.modelTraining)
+              || (item.id === "comparison" && !trainingResult);
             return (
               <button
                 key={item.id}
@@ -235,8 +297,11 @@ export default function PredictionStudio({ organization, policy }) {
             policy={policy}
             generated={generated}
             readiness={readiness}
+            trainingResult={trainingResult}
             onConfigure={() => setScreen("setup")}
             onOpenData={() => setScreen("data")}
+            onOpenModel={() => setScreen("model")}
+            onOpenComparison={() => setScreen("comparison")}
           />
         ) : screen === "setup" ? (
           <SyntheticDatasetWizard
@@ -249,7 +314,7 @@ export default function PredictionStudio({ organization, policy }) {
             onPatternChange={updatePattern}
             onGenerate={generate}
           />
-        ) : generated ? (
+        ) : screen === "data" && generated ? (
           <DatasetPreview
             key={selectedDataset}
             generated={generated}
@@ -260,6 +325,27 @@ export default function PredictionStudio({ organization, policy }) {
             onDownloadCsv={downloadCsv}
             onDownloadMetadata={downloadMetadata}
             onConfigure={() => setScreen("setup")}
+            onConfigureModel={() => setScreen("model")}
+          />
+        ) : screen === "model" && generated ? (
+          <ModelConfiguration
+            generated={generated}
+            selectedDataset={selectedDataset}
+            readiness={readiness}
+            configuration={modelConfiguration}
+            busy={trainingBusy}
+            errors={errors}
+            onFeatureToggle={(field) => toggleModelValue("featureSelection", field)}
+            onCandidateToggle={(candidate) => toggleModelValue("candidates", candidate)}
+            onSeedChange={(value) => updateModelConfiguration("seed", value)}
+            onTrain={trainModels}
+            onBack={() => setScreen("data")}
+          />
+        ) : screen === "comparison" && trainingResult ? (
+          <ModelTrainingComparison
+            result={trainingResult}
+            onReconfigure={() => setScreen("model")}
+            onRunAgain={trainModels}
           />
         ) : null}
       </main>

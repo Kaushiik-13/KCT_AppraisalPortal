@@ -113,7 +113,13 @@ The Prediction Studio generation endpoint creates the same four scenario shapes 
 - Allowed, selected and excluded feature contracts.
 - Blocks, warnings and quality summaries.
 
-The initial raw feature matrix includes only completed rows in train/test partitions, exposes `final_approved_score` as target only, keeps employee-cycle groups intact and records `preprocessingFitScope: "train-only"`. It is an in-memory training input contract, not a trained model or persisted artifact. See [Prediction readiness](PREDICTION-READINESS.md).
+The raw feature matrix includes only completed rows in train/test partitions, exposes `final_approved_score` as target only, keeps employee-cycle groups intact and records `preprocessingFitScope: "train-only"`. See [Prediction readiness](PREDICTION-READINESS.md).
+
+## Prediction training result
+
+The in-memory training response records a deterministic run ID, configuration checksum, synthetic flag, snapshot ID, provider/seed, selected and excluded feature schema, time-based split/counts, two baseline results, candidate results and a recommendation gate. Each successful result contains MAE, RMSE, normalized MAE, optional R², held-out residual range evidence and configured-range evidence. Candidate parameters and bounded failure warnings are explicit.
+
+No dataset snapshot, fitted pipeline, training run or comparison is persisted. Repeating the same snapshot/configuration/seed reproduces the identity and metrics, but page reload discards the result. See [Prediction training](PREDICTION-TRAINING.md).
 
 ## Plugin and reusable configuration
 

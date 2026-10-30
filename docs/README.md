@@ -1,11 +1,11 @@
 # Documentation index
 
-Application baseline: **29 October 2026**. The Prediction Framework overview, synthetic-data setup and readiness screens are implemented. These documents distinguish planned features from the implemented Next.js PoC.
+Application baseline: **29 October 2026**. Prediction Framework screens 1–5 are implemented through local synthetic training and held-out comparison. These documents distinguish planned features from the implemented Next.js PoC.
 
 ## Product and user guides
 
 - [Project brief](PROJECT-BRIEF.md): purpose, roles, requirements, and scope.
-- [User guide](USER-GUIDE.md): Framework Studio authoring plus Prediction Framework setup, preview filters and readiness results.
+- [User guide](USER-GUIDE.md): Framework Studio authoring plus Prediction Framework setup, readiness, model configuration and comparison.
 - [Publication KPI](PUBLICATION-KPI.md): complete example and unresolved scoring decisions.
 - [Training KPI](TRAINING-KPI.md): build a generic workflow and scoring policy.
 - [PADS TL-1 walkthrough](PADS-TL1-WALKTHROUGH.md): reference-only end-to-end verification of one PADS KPI, with source mapping, expected scores, screenshots, and limits.
@@ -25,6 +25,7 @@ Application baseline: **29 October 2026**. The Prediction Framework overview, sy
 - [Prediction prototype implementation plan](PREDICTION-PROTOTYPE-IMPLEMENTATION-PLAN.md): implementation-ready KCT review slice covering the eight dataset decisions, generation method, ML service, screens, project structure, delivery order, verification, and demo flow.
 - [Prediction data dictionary](PREDICTION-DATA-DICTIONARY.md): implemented synthetic fixture grain, fields, KRA columns, scenarios, leakage exclusions, regeneration and current limitations.
 - [Prediction readiness and feature-safety contract](PREDICTION-READINESS.md): implemented Scenario A/B/C selection, data-quality findings, leakage exclusions, time-based split, API behavior and prototype limits.
+- [Prediction training and comparison contract](PREDICTION-TRAINING.md): implemented local provider boundary, preprocessing, candidates, metrics, recommendation gate, API behavior and limitations.
 - [Synthetic prediction dataset audit — 29 October 2026](PREDICTION-DATASET-AUDIT-2026-10-29.md): fixture inventory, verification evidence, checksums, findings and approved prototype uses.
 
 ## Engineering and planning
@@ -40,7 +41,7 @@ Application baseline: **29 October 2026**. The Prediction Framework overview, sy
 
 **KPI creator:** User guide → Training KPI → Publication KPI → Scoring → AI and API.
 
-**Developer:** Setup → Architecture → Data model → Workflow engine → Tools and extensions → Prediction Framework plan → Prediction prototype plan → Prediction readiness → Testing.
+**Developer:** Setup → Architecture → Data model → Workflow engine → Tools and extensions → Prediction Framework plan → Prediction prototype plan → Prediction readiness → Prediction training → Testing.
 
 **Project reviewer:** Project brief → Decisions → Security and data → Roadmap.
 

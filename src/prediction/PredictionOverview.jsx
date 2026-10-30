@@ -19,13 +19,17 @@ function SummaryCard({ icon: Icon, label, value, detail, tone = "default" }) {
   );
 }
 
-export default function PredictionOverview({ organization, policy, generated, readiness, onConfigure, onOpenData }) {
+export default function PredictionOverview({ organization, policy, generated, readiness, trainingResult, onConfigure, onOpenData, onOpenModel, onOpenComparison }) {
   const datasetCount = generated ? Object.keys(generated.datasets).length : 0;
   const nextAction = !generated
     ? "Configure synthetic data"
     : readiness?.status === "blocked"
       ? "Resolve readiness blockers"
-      : "Review generated data";
+      : trainingResult
+        ? "Review model comparison"
+        : readiness?.eligibility?.modelTraining
+          ? "Configure model training"
+          : "Review generated data";
   return (
     <section className="prediction-page-section" aria-labelledby="prediction-overview-title">
       <div className="prediction-hero">
@@ -44,6 +48,8 @@ export default function PredictionOverview({ organization, policy, generated, re
             {generated ? (
               <button className="prediction-btn" onClick={onOpenData}>Open data and readiness</button>
             ) : null}
+            {readiness?.eligibility?.modelTraining ? <button className="prediction-btn" onClick={onOpenModel}>Configure model</button> : null}
+            {trainingResult ? <button className="prediction-btn" onClick={onOpenComparison}>Open comparison</button> : null}
           </div>
         </div>
         <div className="prediction-flow-card" aria-label="Prototype flow">
@@ -52,7 +58,7 @@ export default function PredictionOverview({ organization, policy, generated, re
             <li className="done"><i />PADS configuration</li>
             <li className={generated ? "done" : "active"}><i />Synthetic datasets</li>
             <li className={readiness ? "done" : generated ? "active" : ""}><i />Readiness gate</li>
-            <li><i />Model training</li>
+            <li className={trainingResult ? "done" : readiness?.eligibility?.modelTraining ? "active" : ""}><i />Model training</li>
           </ol>
         </div>
       </div>
@@ -94,7 +100,7 @@ export default function PredictionOverview({ organization, policy, generated, re
           icon={Gauge}
           label="Next action"
           value={nextAction}
-          detail="Training is a later issue and is not started here"
+          detail={trainingResult ? "Held-out metrics are ready to review" : "Proceed only when the readiness gate allows training"}
         />
       </div>
 

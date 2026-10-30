@@ -5,6 +5,8 @@ artifacts/
 outputs/
 .codex-tmp/
 public/pdf.worker.min.mjs
+__pycache__/
+*.py[cod]
 
 .env
 .env.*

@@ -1,8 +1,8 @@
 # Prediction prototype implementation plan
 
-Status: **Phase 1 and Phase 2 implemented; screens 1–3 are usable, while training and prediction are not started**
+Status: **Phases 1–3 implemented; screens 1–5 are usable, while approval, publication and prediction remain planned**
 
-Active UI branch: `codex/prediction-readiness-ui` (based on `codex/prediction-readiness`)
+Active training branch: `codex/prediction-model-training` (based on `codex/prediction-readiness-ui`)
 
 Initial organization: KCT
 
@@ -14,7 +14,7 @@ Review goal: demonstrate configuration → synthetic data → readiness → trai
 
 This document is the implementation-ready delivery plan for the first end-to-end review prototype. The broader product architecture, production safeguards, three readiness scenarios, lifecycle and long-term phases remain defined in the [Prediction Framework implementation plan](PREDICTION-FRAMEWORK-IMPLEMENTATION-PLAN.md).
 
-The seeded KCT/PADS KRA-level generator and no-history, limited-history, sufficient-history and invalid fixtures were implemented on 29 October 2026. The [prediction data dictionary](PREDICTION-DATA-DICTIONARY.md) records the canonical schema. The [prediction readiness contract](PREDICTION-READINESS.md) validates the fixtures, selects Scenario A/B/C, creates a latest-cycle holdout and blocks leakage-prone features. Screens 1–3 now configure generation, preview/download scenarios and render the shared readiness result. Model training, approval, prediction and employee views remain planned.
+The seeded KCT/PADS KRA-level generator and four scenario fixtures were implemented on 29 October 2026. The [prediction readiness contract](PREDICTION-READINESS.md) validates them, selects Scenario A/B/C, creates a latest-cycle holdout and blocks leakage-prone features. Screens 1–5 now configure generation, render readiness, configure safe model inputs and compare established candidates with transparent baselines through the local provider. Approval, persistence, prediction and employee views remain planned.
 
 ## 1. Prototype outcome
 
@@ -656,7 +656,9 @@ Deliverables:
 - Reproducible preprocessing and training.
 - Evaluation metrics and comparison UI.
 
-Exit: the sufficient fixture trains and evaluates candidates without mixing cycles.
+Current result: implemented. The sufficient fixture trains and evaluates candidates without mixing cycles; the server reruns readiness and the recommendation must beat both transparent baselines.
+
+Exit: met for the local synthetic prototype. No trained pipeline is persisted or approved.
 
 ### Phase 4: approval, publication and prediction
 

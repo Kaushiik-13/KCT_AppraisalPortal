@@ -4,6 +4,7 @@
 
 ```powershell
 npm.cmd test
+npm.cmd run test:prediction-ml
 npm.cmd run build
 ```
 
@@ -13,11 +14,21 @@ The current Publication plugin has ten steps, no simulated index or AI node, a C
 
 Tests use Node's built-in test runner over `src/*.test.js` and `server/*.test.js`. A passing build verifies bundling, not browser behavior. There is no lint script or committed full browser automation suite.
 
-Most recent automated baseline: **189 passing tests** and a successful production build on 30 October 2026 after merging the updated `codex/prediction-readiness` base into `codex/prediction-readiness-ui`. The 185-test readiness result, 175-test merged prototype result, 167-test PADS KPI result, 124-test readiness-UI result, 120-test readiness backend result, 110-test synthetic prediction dataset result and 109-test dataset-foundation result, 102-test reports from 27–28 October, 101-test report from 7 October, and earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) remain historical checkpoints.
+Most recent automated baseline: **196 passing JavaScript tests plus 4 passing Python tests** and a successful production build on 30 October 2026 after merging the updated `codex/prediction-readiness-ui` base into `codex/prediction-model-training`. The 189-test readiness-UI result, 185-test readiness result, 175-test merged prototype result, 167-test PADS KPI result, 131-test model-training result, 124-test screens 1–3 result, 120-test readiness backend result, 110-test synthetic prediction dataset result and 109-test dataset-foundation result, 102-test reports from 27–28 October, 101-test report from 7 October, and earlier [Phase 6 report](../PHASE-6-VERIFICATION.md) remain historical checkpoints.
 
 ## Branch synchronization — 30 October 2026
 
-Merged `main` at `ebbb301` into `codex/prediction-prototype`, then propagated the updated base through `codex/prediction-readiness` and `codex/prediction-readiness-ui`. The four documentation conflicts (`CHANGE-HISTORY.md`, `DECISIONS.md`, `SECURITY-AND-DATA.md`, `TESTING.md`) retain both the PADS verification records and the synthetic prediction dataset records; the prediction prototype decision was renumbered D-25 to follow the new PADS decisions D-23 and D-24. The merged prototype suite passed **175/175** tests, the readiness merge passed **185/185**, and the readiness-UI merge passed **189/189**; `npm.cmd run build` completed successfully with Next.js 16.3.8. The synchronization adds no new application behavior; it combines the PADS fixtures and tests from `main` with the prediction fixtures and tests on the branch.
+Merged `main` at `ebbb301` into `codex/prediction-prototype`, then propagated the updated base through `codex/prediction-readiness`, `codex/prediction-readiness-ui` and `codex/prediction-model-training`. The four documentation conflicts (`CHANGE-HISTORY.md`, `DECISIONS.md`, `SECURITY-AND-DATA.md`, `TESTING.md`) retain both the PADS verification records and the synthetic prediction dataset records; the prediction prototype decision was renumbered D-25 to follow the new PADS decisions D-23 and D-24. The merged prototype suite passed **175/175** tests, readiness **185/185**, readiness-UI **189/189**, and model-training **196/196** JavaScript tests plus **4/4** Python tests; `npm.cmd run build` completed successfully with Next.js 16.3.8. The synchronization adds no new application behavior; it combines the PADS fixtures and tests from `main` with the prediction fixtures and tests on the branch.
+
+## Prediction model configuration and comparison — 29 October 2026
+
+Seven new JavaScript tests cover fixed-target/configuration validation, leakage rejection, candidate/seed/readiness/split guards, server-side readiness recomputation, completed-only time-split matrix construction, deterministic run identity, safe provider errors, output parsing and a real Node-to-Python Ridge integration. Four Python tests cover both baselines and all three candidate metrics, baseline-only inputs, configured-range evidence, deterministic metrics/recommendation for the same seed, and unsupported-candidate rejection.
+
+`npm.cmd test` passed all **131 JavaScript tests**. `npm.cmd run test:prediction-ml` passed all **4 Python tests**. `npm.cmd run build` passed with Next.js 16.3.8 and included dynamic `/api/prediction/training`. The React quality review found components declared at module scope, no new effects or dependency arrays, labelled controls/fieldsets, disabled-state guards and no large new client library.
+
+A local browser walkthrough generated the default 1,252 synthetic rows, confirmed Scenario C and its 2022–25 training/2025–26 holdout split, opened Screen 4, reviewed ten selected checkpoint-safe inputs plus three candidates, and completed Screen 5. The default synthetic run recommended Random Forest with MAE 9.60 after it beat pace MAE 20.83 and grouped-median MAE 24.38; Ridge and Gradient Boosting also completed. The screen showed RMSE, nMAE, R², residual ranges, seed, counts and parameters. This is one deterministic synthetic demonstration, not evidence of real KCT performance.
+
+The local provider requires Python/scikit-learn and is not packaged as a production Vercel training service. No approval, model artifact persistence, inference endpoint, subgroup/fairness validation, real employee data, download click or deployed training run was tested.
 
 ## Prediction Studio screens 1–3 — 29 October 2026
 

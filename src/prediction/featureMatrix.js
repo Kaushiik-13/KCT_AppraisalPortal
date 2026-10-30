@@ -1,6 +1,7 @@
 import { PREDICTION_TARGET, validateFeatureSelection } from "./datasetSchema.js";
 
 const groupKey = (row) => `${row.organization_id}|${row.employee_key}|${row.cycle_id}`;
+const BASELINE_FEATURES = ["role_code", "checkpoint_index", "elapsed_fraction", "current_overall_score"];
 
 export function buildCheckpointSafeFeatureMatrix({ rows, featureSelection, policy, split }) {
   const contract = validateFeatureSelection(featureSelection, policy);
@@ -18,6 +19,7 @@ export function buildCheckpointSafeFeatureMatrix({ rows, featureSelection, polic
     group: groupKey(row),
     cycleId: row.cycle_id,
     features: Object.fromEntries(contract.selected.map((field) => [field, row[field] ?? null])),
+    baseline: Object.fromEntries(BASELINE_FEATURES.map((field) => [field, row[field] ?? null])),
     target: row[PREDICTION_TARGET],
   });
   const train = completed.filter((row) => split.trainCycleIds.includes(row.cycle_id)).map(toExample);
@@ -32,6 +34,7 @@ export function buildCheckpointSafeFeatureMatrix({ rows, featureSelection, polic
   return {
     schema: {
       features: contract.selected,
+      baselineFeatures: BASELINE_FEATURES,
       target: PREDICTION_TARGET,
       excluded: contract.contract.excluded,
     },

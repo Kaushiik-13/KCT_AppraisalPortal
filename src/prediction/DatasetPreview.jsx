@@ -29,6 +29,7 @@ export default function DatasetPreview({
   onDownloadCsv,
   onDownloadMetadata,
   onConfigure,
+  onConfigureModel,
 }) {
   const dataset = generated.datasets[selectedDataset];
   const rows = dataset.rows;
@@ -61,6 +62,7 @@ export default function DatasetPreview({
           <button className="prediction-btn" onClick={onConfigure}><RefreshCw size={15} />Regenerate</button>
           <button className="prediction-btn" onClick={onDownloadMetadata}><Download size={15} />Metadata</button>
           <button className="prediction-btn primary" onClick={onDownloadCsv}><Download size={15} />Download CSV</button>
+          <button className="prediction-btn primary" disabled={!readiness?.eligibility?.modelTraining || readinessLoading} onClick={onConfigureModel}>Configure model</button>
         </div>
       </div>
 
