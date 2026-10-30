@@ -8,6 +8,7 @@ The maintained guides are now organized under `docs/`:
 4. [Scoring](docs/SCORING.md): distinguish publication scoring from standalone Result policies.
 5. [AI instructions and API](docs/AI-AND-API.md): use a custom AI purpose on any path.
 6. [Troubleshooting](docs/TROUBLESHOOTING.md): resolve setup, source, storage, and provider issues.
+7. [PADS TL-1 walkthrough](docs/PADS-TL1-WALKTHROUGH.md): reference-only verification of one PADS KPI with synthetic evidence and screenshots.
 
 One submission flows through the connected steps; twelve nodes do not mean twelve papers. Draft configuration autosaves, but test files, values, and review decisions remain session-only.
 

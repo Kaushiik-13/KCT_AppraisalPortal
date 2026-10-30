@@ -45,6 +45,8 @@ AI evaluation is an Action tool usable on any path. Select a primary input and u
 4. If the run ends at Human review, inspect the package sent to the separate module. Framework Studio does not ask for approve, reject, or clarification decisions.
 5. The original publication Appraiser review remains a legacy specialized flow for compatibility; new generic workflows use the terminal handoff.
 
+For a reference-only PADS example, follow the [TL-1 walkthrough](PADS-TL1-WALKTHROUGH.md). It uses a committed saved-draft fixture and synthetic evidence; it is not an approved institutional policy.
+
 For the original publication or an old routed-review draft, changing inputs, workflow, or policy makes an open review stale. Run again. Clarification does not edit the original evidence; correct inputs and start a fresh test.
 
 ## Save, recover, and clear
