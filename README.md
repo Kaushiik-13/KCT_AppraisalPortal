@@ -1,70 +1,57 @@
-# AFPI Framework Studio
+# AFPI — Adaptive Faculty Performance Intelligence
 
-A desktop proof of concept for creating configurable KPI forms, verification workflows, and scoring policies. The aim is to let different institutions compose their own KPIs from shared tools. Publication verification is the first worked example, not the only supported workflow.
+AFPI is a **research-oriented proof of concept** for configurable faculty appraisal workflows and advisory performance prediction. The two working areas are **Framework Studio** (configure, verify and score KPI evidence) and **Prediction Studio** (explore synthetic data readiness, model comparison and advisory scores).
 
-Application baseline: **30 October 2026**. Prediction Framework screens 1–10 are implemented through synthetic model approval, publication, employee prediction refresh, and retraining-readiness settings. This is a PoC, not a production appraisal platform.
+This repository is **not** an institution-approved appraisal system or a production multi-tenant platform. The current prototype does not provide user authentication, persistent organization records, secure tenant isolation, or durable model storage.
 
-## Run locally
+## Quick start
 
-```powershell
-npm.cmd ci
-npm.cmd run dev
+Prerequisite: Node.js 20.9+.
+
+```bash
+npm ci
+npm run dev
 ```
 
-Open `http://127.0.0.1:5173/`. On other shells, `npm` can replace `npm.cmd`.
+Open **http://127.0.0.1:5173/** for Framework Studio, or **http://127.0.0.1:5173/prediction** for Prediction Studio.
 
-```powershell
-npm.cmd test
-npm.cmd run build
+```bash
+npm test
+npm run build
 ```
 
-See [setup](docs/SETUP.md) for environment configuration, the production server, Vercel readiness, and the optional OpenRouter key.
+Local Prediction training additionally requires Python and the dependencies in `ml/prediction_service/requirements.txt`. See [setup](docs/SETUP.md); run `npm run test:prediction-ml` to verify the provider. Windows PowerShell users with restricted `npm.ps1` execution can use `npm.cmd` instead of `npm`.
 
-## Start here
+## Current capabilities
 
-| Need | Document |
+**Framework Studio**
+- Configure typed KPI inputs, saved scoring rules and formula policies, and a branching workflow of reusable Actions, Conditions, and review/result steps.
+- Extract text/data from PDF, PPTX, XLS and XLSX evidence; compare mapped values; optionally run AI evaluations.
+- Test workflows, inspect execution traces and review packages, and keep local browser drafts. Import/export supports validated draft and workflow formats.
+- Use Publication and PADS examples as **demonstrations**, not automatically institution-approved scoring.
+
+**Prediction Studio**
+- Generate deterministic synthetic appraisal data and inspect no-history, limited-history, sufficient-history and invalid-data scenarios.
+- Validate readiness and data leakage boundaries, evaluate baseline and scikit-learn candidates on time-held-out data, and simulate approval/publication.
+- Explore advisory sandbox and employee predictions and retraining readiness. Model artifacts and registry are **in-process**, and the Python training provider runs locally.
+
+## Documentation
+
+| Start here | Reference |
 |---|---|
-| All documentation | [Documentation index](docs/README.md) |
-| Project purpose and scope | [Project brief](docs/PROJECT-BRIEF.md) |
-| Use the application | [User guide](docs/USER-GUIDE.md) |
-| Test publication verification | [Publication walkthrough](docs/PUBLICATION-KPI.md) |
-| Build a second KPI | [Training walkthrough](docs/TRAINING-KPI.md) |
-| Verify one PADS KPI end to end | [PADS TL-1 walkthrough](docs/PADS-TL1-WALKTHROUGH.md) |
-| Check all 59 individual PADS KPIs | [PADS individual KPI verification](docs/PADS-INDIVIDUAL-KPIS.md) |
-| Understand the implementation | [Architecture](docs/ARCHITECTURE.md) |
-| Plan the Prediction Framework | [Prediction Framework implementation plan](docs/PREDICTION-FRAMEWORK-IMPLEMENTATION-PLAN.md) |
-| Build the prediction review prototype | [Prediction prototype implementation plan](docs/PREDICTION-PROTOTYPE-IMPLEMENTATION-PLAN.md) |
-| Understand prediction readiness | [Prediction readiness contract](docs/PREDICTION-READINESS.md) |
-| Understand model training and comparison | [Prediction training contract](docs/PREDICTION-TRAINING.md) |
-| Understand model governance and prediction | [Prediction governance and inference](docs/PREDICTION-GOVERNANCE-AND-INFERENCE.md) |
-| Understand employee prediction and retraining | [Prediction employee view and retraining](docs/PREDICTION-EMPLOYEE-AND-RETRAINING.md) |
-| Run the prediction review | [Prediction demo script](docs/PREDICTION-DEMO-SCRIPT.md) |
-| Review the synthetic dataset audit | [Prediction dataset audit](docs/PREDICTION-DATASET-AUDIT-2026-10-29.md) |
-| Work on the code | [Contributing](CONTRIBUTING.md) |
-| See remaining work | [Roadmap](docs/ROADMAP.md) |
+| Project goals and boundaries | [Project brief](docs/PROJECT-BRIEF.md) |
+| Local install and configuration | [Setup](docs/SETUP.md) |
+| UI walkthroughs and demonstrations | [User guide](docs/USER-GUIDE.md) |
+| Runtime, modules and data boundaries | [Architecture](docs/ARCHITECTURE.md) |
+| Tests and known gaps | [Testing](docs/TESTING.md) |
+| Next development priorities | [Roadmap](docs/ROADMAP.md) |
+| All specialized guides and reference contracts | [Documentation index](docs/README.md) |
+| Contributing and PR workflow | [Contributing](CONTRIBUTING.md) |
 
-## What works
+## Research and safety boundaries
 
-- Dynamic input fields, typed mappings, and a tree workflow canvas.
-- Reusable Action, Condition, Human review, and Result blocks.
-- Local PDF, PPTX, XLS and XLSX evidence extraction with page/slide/sheet references.
-- Typed form-value mapping and multi-pair evidence comparison with match/mismatch/unknown states.
-- Configurable multi-input AI evaluation, optional JSON-schema validation, and human-review evidence packages.
-- Organization-defined formula and conditional scoring policies with immutable local versions.
-- Execution traces, terminal review packages, legacy publication review decisions, and browser-local draft autosave with multi-tab conflict protection.
-- Schema-validated import of draft and workflow exports, optional numeric bounds, a test-only required-field bypass, labeled workflow/policy results, and a collapsible sidebar with confirmed Clear saved draft.
-- A Prediction Framework prototype at `/prediction` with overview, eight-decision synthetic dataset setup, deterministic generation, preview/download, Scenario A/B/C readiness, time-based split, leakage-safe model configuration, local scikit-learn training, held-out comparison, simulated approval/publication, read-only sandbox and employee prediction, plus retraining-readiness settings. Model records and artifacts are process-memory synthetic demonstrations and disappear on server restart.
+The PADS reference fixture covers 59 individual KPI rules and 201 expected scoring cases; full PADS aggregation, institutional approval, and some eligibility/scoring nuances are **not** implemented. Prediction outputs are synthetic demonstrations, not validated estimates of real faculty performance. AI and document parsers are not substitutes for authorized evidence review, security controls, or human decisions.
 
-## Boundaries
+Evidence extraction is browser-oriented; live AI requests can transmit selected extracted text to the configured provider. Never use actual sensitive faculty data or secrets in this PoC. See [security and data](docs/SECURITY-AND-DATA.md).
 
-Indexing is mocked, not verified against Scopus/WOS. Only first-listed authors are automatically scored by the publication policy. SAE and later-author rules remain unresolved. There is no database, authentication, genuine reviewer assignment, durable execution, or production deployment. The two scoring paths have different approval timing; see [scoring](docs/SCORING.md).
-
-AI can summarize findings but does not itself mutate recorded evidence or scores. Creator-authored policies can consume exposed text values; the PoC does not enforce a production evidence-trust model.
-
-The application uses Next.js App Router and builds for Vercel, but the local Python prediction provider and in-process model registry are not a production/serverless deployment design. The most recent automated baseline is recorded in [testing](docs/TESTING.md). Historical results are retained in [Phase 6 verification](PHASE-6-VERIFICATION.md).
-
-The included PRISMA PDF is an attributed, unmodified fixture. See [sample attribution](public/samples/README.txt) and [security and data](docs/SECURITY-AND-DATA.md).
-
-Publication is available through the built-in Plugin picker. New general workflows use Use form value, Extract evidence, Compare evidence, AI evaluation, date/duplicate checks, and saved-policy scoring. Formula policies can combine any number of manually mapped numeric outputs by weighted sum, average, or weighted average. Human Review is an optional terminal handoff to a separate module. See [tool capabilities and limitations](docs/TOOLS-AND-EXTENSIONS.md).
-
-[Content relevance KPI guide](docs/CONTENT-RELEVANCE-KPI.md): evaluate full PDF text against your reference rubric with named AI context inputs.
+The [repository documentation index](docs/README.md) retains detailed technical contracts, walkthroughs, and dated verification evidence without duplicating those records here.
