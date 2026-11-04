@@ -1,43 +1,36 @@
-# Project brief
+# Project brief — AFPI
 
-## Purpose
+## Objective
 
-AFPI Framework Studio lets KPI creators define what evidence to collect, how to verify it, and how to score the findings. The PoC tests the on-paper concept in an actual application before building the wider appraisal platform.
+**Adaptive Faculty Performance Intelligence (AFPI)** explores how configurable KPI/evidence workflows and advisory prediction can support faculty appraisal processes. The goal is to prototype and evaluate the approach with repeatable cases, **not** to replace institutional scoring policies, faculty reviewers, or human decisions.
 
-Different organizations and institutions should be able to compose KPIs from shared capabilities. Publication verification is the first worked example, not the definition of the whole application.
+## Implemented modules
 
-## Conceptual roles
-
-| Role | Responsibility | Current implementation |
+| Module | Current proof of concept | Not yet delivered |
 |---|---|---|
-| KPI creator | Define inputs, scoring policy, and workflow | Local creator UI |
-| Submitter/faculty | Supply achievement evidence | Preview and test form |
-| Appraiser/reviewer | Inspect terminal handoff packages | Separate module is represented by the handoff boundary; the legacy publication example retains session review |
-| Developer | Supply tools and integrations | Code-defined catalogue and handlers |
+| **Framework Studio** | Configure KPI inputs, scoring rules/policies and workflow steps; extract and compare evidence; execute a test submission and inspect review handoffs | Authenticated institutional workflows, durable submissions and reviewer assignment, institution-approved full scoring |
+| **Prediction Studio** | Generate synthetic KCT/PADS-style scenarios; validate readiness; compare local ML models; simulate approval/publication; show advisory employee predictions and retraining-readiness conditions | Production model service, verified real-world accuracy, durable registry, background retraining and validated fairness |
+| **Recommendation** | Conceptual next-stage module | Implemented recommendation engine |
+| **Organization administration** | Architecture/onboarding work is tracked separately | Production organization accounts, tenant isolation and permissions |
 
-There are no accounts, permission checks, authenticated reviewer identities, or separate role-specific applications.
+## Actors and responsibilities
 
-## Implemented requirements
+- **KPI creator:** Defines inputs, rules, verification and workflow configuration in a local creator UI.
+- **Faculty/submitter:** Supplies evidence in a test form; there is no authenticated faculty account.
+- **Reviewer/appraiser:** Reviews workflow evidence packages; handoff is represented in the PoC rather than a complete institutional review system.
+- **Prediction operator/reviewer:** Uses simulated model evaluation, approval and publishing controls; identity is not authenticated.
+- **Developer:** Adds adapters, validation, tests, and integrations.
 
-| ID | Requirement | Implementation |
-|---|---|---|
-| FS-01 | Creator-defined field names and supported types | Inputs |
-| FS-02 | Stable identities across rename and reorder | Field/node IDs |
-| FS-03 | Tree canvas with drag/drop, branches and zoom | Workflow builder |
-| FS-04 | Reusable blocks and selectable tools | Blocks library |
-| FS-05 | Typed sources from form values or earlier outputs | Node settings |
-| FS-06 | Executable branching, terminal review handoff, and old-draft review compatibility | Workflow engine |
-| FS-07 | Conditions, points, multipliers, caps and versions | Scoring policy |
-| FS-08 | Multi-input AI evaluation, rubric, instructions and optional structured output | AI evaluation |
-| FS-09 | Evidence, calculation, trace, and complete review package | Test & review |
-| FS-10 | Draft recovery and confirmed reset | Browser autosave |
+## Research and verification scope
 
-The form supports twelve data types. “Dynamic” does not mean an unlimited type system. No product-level field-count limit is imposed, but browser storage, memory, and usability impose practical limits.
+Framework Studio can demonstrate publication verification and PADS-derived individual KPI policies. The committed PADS reference fixture covers **59 individual KPI configurations and 201 test cases**; it does not implement the complete institutional appraisal calculation, the five excluded institutional rows, or independent policy approval.
 
-## Scope and success criteria
+Prediction Studio uses **synthetic data only** and separates current verified progress from final-score labels to reduce leakage. It tests no-history, limited-history, sufficient-history and blocked-invalid scenarios. Any displayed estimate or accuracy metric is a prototype demonstration, not an inference about real faculty members.
 
-Desktop, one local KPI draft per browser origin, no database, and browser execution. New general workflows may terminate with a package for a separate Human Review module; the publication example and old saved drafts retain their specialized/session review behavior. Publication, training, and content relevance walkthroughs demonstrate domain-specific and general-purpose composition.
+The PoC runs on a Next.js application. Framework drafts use browser storage. Prediction training uses a local Python/scikit-learn process and the model registry lives in server memory; restarts lose in-process artifacts.
 
-Success means a creator can build, inspect, test, and revise a KPI with understandable results. It does not establish readiness to award real institutional marks.
+## Non-goals and open questions
 
-Outside the current scope: institution-wide identity and duplicates, real indexing integrations, durable evidence and reviews, tenant isolation, reviewer assignment, notifications, deployment, mobile layouts, scheduling, parallel execution, installable plugins, import UI, and assessment-cycle aggregation.
+This version does not implement authentication, role-based enforcement, cross-tenant isolation, durable evidence persistence, full institution-approved PADS aggregation, real indexing verification, production ML operation or clinical/administrative decision authority. Multi-tenant architecture is an **open proposal** ([Issue #44](https://github.com/Kaushiik-13/KCT_AppraisalPortal/issues/44)), organization onboarding and final UI/UX are tracked separately ([Issue #43](https://github.com/Kaushiik-13/KCT_AppraisalPortal/issues/43)), and review-paper topic selection is tracked in [Issue #45](https://github.com/Kaushiik-13/KCT_AppraisalPortal/issues/45).
+
+See the [architecture](ARCHITECTURE.md), [security boundaries](SECURITY-AND-DATA.md), and [current roadmap](ROADMAP.md) for implementation detail and future work.
