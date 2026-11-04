@@ -8,11 +8,12 @@
 - **Recommendation:** new module; architecture and implementation not yet defined.
 - **Organization:** new module; architecture and implementation not yet defined.
 
-The new implementation's design and readiness status should be recorded in each module README. The older browser PoC is not evidence that the replacement is implemented.
+These four are the currently identified modules, not a permanent limit on platform extensibility. The new implementation's design and readiness status should be recorded in each module README. The older browser PoC is not evidence that the replacement is implemented.
 
 ## Documentation
 - [Shared architecture](ARCHITECTURE.md)
-- [Design principles](DESIGN-PRINCIPLES.md)
+- [Engineering design principles](DESIGN-PRINCIPLES.md)
+- [Shared UI/UX specification — Topics 01–04](UI-UX.md)
 - [Shared schema and ER diagram](DATABASE-SCHEMA.md)
 - [Module integrations](INTEGRATION.md)
 - [Cross-module testing](TESTING.md)
