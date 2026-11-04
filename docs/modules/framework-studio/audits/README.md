@@ -1,12 +1,15 @@
 # Framework Studio — Audit register
 
-This folder is the **active location** for audits owned by this module. Historical copies retain original content; their old internal links may no longer resolve at the new path. Use source links below when tracing the original evidence.
+This directory contains **new audits of the production-oriented AFPI module**. Start with [AUDIT-TEMPLATE.md](AUDIT-TEMPLATE.md) and name each completed report `YYYY-MM-DD-topic.md`.
 
-| Audit | Record type | Preserved original |
-|---|---|---|
-| [Creator walkthrough and recorded observations](historical-creator-walkthrough.md) | Historical evidence | [Original](../../../reference/legacy/CREATOR-WALKTHROUGH.md) |
-| [PADS individual KPI verification (59 rows)](2026-10-29-pads-59-kpi-verification.md) | Historical evidence | [Original](../../../reference/legacy/PADS-INDIVIDUAL-KPIS.md) |
-| [PADS TL-1 walkthrough and verification](2026-10-30-pads-tl1-verification.md) | Historical evidence | [Original](../../../reference/legacy/PADS-TL1-WALKTHROUGH.md) |
+## Current audits
 
-## New audits
-Copy [AUDIT-TEMPLATE.md](AUDIT-TEMPLATE.md) to `YYYY-MM-DD-topic.md` for each new audit. Reference the assigned Issue, evidence, findings and resolution status. Never overwrite historical evidence. Agent edits must remain within their assigned module and Issue scope.
+No production-oriented module audits have been recorded yet.
+
+When the first audit is performed, replace the line above with a table containing audit date, title, baseline commit, findings status, related GitHub Issue, and report link.
+
+## Audit handling
+
+- Follow the assigned module's Issue and branch ownership rules.
+- Record reproducible evidence, severity, limitations, remediation Issue and verified follow-up separately.
+- Historical PoC reports remain **only** under [legacy documentation](../../../reference/legacy/README.md). Do not copy them here or treat them as current production evidence.

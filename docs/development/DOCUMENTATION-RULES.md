@@ -12,23 +12,28 @@
 - Module-specific architecture, database choices/ER diagrams, API, UI/UX, tests and decisions: respective module folders.
 - Significant project-level technical decisions: `docs/project/DECISIONS.md`.
 
+## Production-oriented rebuild
+- The current AFPI architecture and module designs will be created anew as the production-oriented implementation is designed and built.
+- Do **not** migrate earlier PoC architecture, APIs, schemas, UI/UX plans or audit results into active documentation as specifications or proof of current behavior.
+- `docs/reference/legacy/` is a **read-only historical archive**. Existing evidence stays there for traceability; the new project does not inherit the PoC's technical decisions automatically.
+- Historical links inside archived files may point to their former locations. Do not rewrite original historical files; verify referenced evidence by searching the archive when needed.
+
 ## Accuracy
-- Module README declares one status: **Planned**, **In development**, **Prototype**, or **Implemented**.
+- Module README declares one status: **Planned**, **In development**, **Prototype**, or **Implemented**, relative to the stated implementation scope.
 - Explicitly separate **Current implementation**, **Proposed design**, and **Known limitations**.
 - Check code/tests before claiming a feature is implemented. Never infer a database, tenant isolation, deployment or trained model solely from a design document.
-- Blank placeholder documents are intentional until module owners have verified content.
+- Placeholder documents remain deliberately minimal until verified production-oriented design and implementation information is ready.
 
 ## Synchronization
 Architecture-changing features require linked, expressly authorized project-documentation PRs. The overarching Issue remains open until module implementation and linked documentation are merged.
 
-## Historical material
-Pre-reorganization technical references remain under `docs/reference/legacy/` to prevent loss of research evidence. They may describe historical branches and are not current specifications; verify before reuse.
+## New audits and verification
+- Each module has `docs/modules/<module>/audits/README.md` (register) and `AUDIT-TEMPLATE.md`; project-wide audits have `docs/project/audits/`.
+- Create `YYYY-MM-DD-topic.md` for each new audit. Record baseline, objective, scope, methodology, evidence, findings/severity, GitHub follow-up Issues, owners, limitations and verification status.
+- The module's assigned owner may update module audits within the authorized Issue scope. Project audits require a dedicated authorized docs PR.
+- Once finalized, preserve the audit report as evidence; record corrections or re-audits separately instead of silently changing original findings.
+- Do not copy earlier PoC audits into these active folders. Their originals remain under `docs/reference/legacy/`.
 
-## Audits and verification records
-- Every module maintains `docs/modules/<module>/audits/README.md` (audit register), `AUDIT-TEMPLATE.md`, and dated `YYYY-MM-DD-topic.md` audit reports.
-- New module audits are module-owned and may be updated only on an assigned module branch within the authorized Issue scope.
-- Cross-module, shared-schema and system-level audits belong to `docs/project/audits/` and require a separately authorized documentation PR.
-- Each audit states its baseline, objective, scope, evidence, findings, severity, GitHub Issues, action owners, limitations and verification status.
-- Keep audit records immutable as historical snapshots once finalized; add follow-up or re-audit documents instead of silently rewriting evidence.
-- Link relevant audit findings from the module/project audit register, and track remediation through Issues.
-- Migrated historical material is a **copy** for active discovery; the original source remains in `docs/reference/legacy/`. Historical claims are not automatically current verification.
+## Link verification
+- Verify relative Markdown links from **active** documentation against current repository paths before merging documentation PRs. Old historical links in the read-only archive are outside active-documentation checks.
+- When moving a current document, update active inbound links to its canonical location; avoid altering archived files.
