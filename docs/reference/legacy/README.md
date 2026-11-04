@@ -1,7 +1,13 @@
-# Preserved documentation references
+# AFPI — Legacy PoC documentation (read-only historical archive)
 
-These files were copied or moved **without rewriting their original technical content** during the documentation reorganization. They contain historical implementation notes, design decisions, test evidence, PADS walkthroughs, prediction datasets and planning material.
+This folder preserves the **previous Proof of Concept's** implementation notes, API and architecture designs, datasets, test evidence, verification reports, planning documents and technical decisions.
 
-Read the new canonical documentation under `docs/project/`, `docs/modules/` and `docs/development/` first. This legacy set is retained for historical evidence and eventual review; its original relative links and branch names may be outdated.
+- Original PoC [decisions](DECISIONS.md) and [roadmap](ROADMAP.md) are preserved unchanged.
+- Older creator walkthroughs, PADS tests and prediction dataset audit are preserved here only, **not** copied to current production audit registers.
+- Former root documents and governance instructions are retained as historical snapshots, not current rules.
 
-Original root governance references are also preserved here as `AGENTS.md` and `CONTRIBUTING.md`.
+## Historical-link limitations
+These are original snapshots, and some internal relative links refer to their original `docs/` paths. The files are intentionally not rewritten. Locate related historical documents by filename in this folder, or consult [current project docs](../../project/OVERVIEW.md) and [current module docs](../../modules/) for new work.
+
+## Production-oriented development
+Treat all PoC information as research context, **not** the production architecture or proof of current behavior. New technical decisions belong under `docs/project/` or the relevant `docs/modules/<module>/`, with new audits in their `audits/` directories.

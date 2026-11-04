@@ -1,12 +1,14 @@
 # AFPI — Project overview
 
-**Adaptive Faculty Performance Intelligence (AFPI)** is a research-oriented, modular faculty appraisal and decision-support platform.
+**Adaptive Faculty Performance Intelligence (AFPI)** is being redesigned as a **production-oriented, modular faculty appraisal and decision-support system**. Existing PoC code and documents remain historical reference only; the new architecture and module designs must be defined and verified independently.
 
 ## Modules
-- **Framework Studio:** configurable KPI inputs, evidence verification and scoring workflows; an active browser-based PoC.
-- **Prediction:** synthetic-data preparation, readiness assessment and prototype model workflow; verify the implementation before describing individual capabilities as complete.
-- **Recommendation:** planned module; technical design not finalized.
-- **Organization:** planned module; technical design not finalized.
+- **Framework Studio:** production-oriented redesign of configurable KPI inputs, evidence verification and scoring workflows.
+- **Prediction:** production-oriented redesign of performance prediction and evaluation workflows.
+- **Recommendation:** new module; architecture and implementation not yet defined.
+- **Organization:** new module; architecture and implementation not yet defined.
+
+The new implementation's design and readiness status should be recorded in each module README. The older browser PoC is not evidence that the replacement is implemented.
 
 ## Documentation
 - [Shared architecture](ARCHITECTURE.md)
@@ -16,7 +18,8 @@
 - [Cross-module testing](TESTING.md)
 - [Roadmap](ROADMAP.md)
 - [Project decisions](DECISIONS.md)
-- [Module docs](../modules/)
-- [Preserved legacy technical references](../reference/legacy/README.md)
+- [Project-wide audit register](audits/README.md)
+- [Module documentation](../modules/)
+- [Historical PoC archive](../reference/legacy/README.md)
 
-**Current implementation, proposed design and known limitations must remain distinct.** See source material retained under `docs/reference/legacy/`; it is reference evidence, not an automatically current specification.
+**Accuracy rule:** Distinguish current production-oriented implementation, proposed architecture, and known limitations. Blank technical documents are intentional until there are verified decisions or evidence.
