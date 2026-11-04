@@ -13,8 +13,6 @@ The new implementation's design and readiness status should be recorded in each 
 ## Documentation
 - [Shared architecture](ARCHITECTURE.md)
 - [Design principles](DESIGN-PRINCIPLES.md)
-- [UI design system (shadcn/ui target)](UI-DESIGN-SYSTEM.md)
-- [Application shell and information architecture](INFORMATION-ARCHITECTURE.md)
 - [Shared schema and ER diagram](DATABASE-SCHEMA.md)
 - [Module integrations](INTEGRATION.md)
 - [Cross-module testing](TESTING.md)
