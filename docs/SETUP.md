@@ -1,66 +1,58 @@
-# Local setup
+# Setup and local development
 
-## Environment
+## Requirements
 
-The working environment used Node **22.14.0** and npm **11.16.0** on Windows. `package.json` requires Node **20.9.0 or later**. Installed versions at documentation time were Next.js 16.3.8, React 19 and PDF.js 4.10.38. Use the lockfile to reproduce dependencies.
+- Node.js **20.9 or later** and npm; install exact dependencies from `package-lock.json`.
+- Python 3 with `ml/prediction_service/requirements.txt` **only** for local Prediction model training and Python tests.
+- Browser with localStorage enabled for Framework Studio drafts.
 
-From the project root:
+The historically tested environment used Node 22.14.0 and Next.js 16.3.8. Versions are reproducibility context, not a guarantee for other environments.
 
-```powershell
-npm.cmd ci
-npm.cmd run dev
+## Install and run
+
+From repository root:
+
+```bash
+npm ci
+npm run dev
 ```
 
-Open `http://127.0.0.1:5173/`. Use `npm.cmd` in PowerShell if execution policy blocks `npm.ps1`; other shells can use `npm`.
+Open `http://127.0.0.1:5173/` (Framework Studio) or `http://127.0.0.1:5173/prediction` (Prediction Studio).
 
-```powershell
-npm.cmd test
-npm.cmd run build
+```bash
+npm test
+npm run build
+npm run start
 ```
 
-### Local prediction training
+Stop the dev server before `npm run start`, because both use port **5173**. `npm run build` prepares the PDF.js worker and writes the Next.js build to `.next/`. Windows PowerShell users whose execution policy blocks `npm.ps1` can substitute `npm.cmd`.
 
-Screens 4–5 also require Python 3 with the packages listed in `ml/prediction_service/requirements.txt`. Create an isolated environment and install those pinned/compatible dependencies before using **Train and compare**. The local verification environment used Python 3.12.3, scikit-learn 1.8.0, NumPy 2.4.4 and pandas 3.0.2.
+## Python model provider (local only)
 
-If `python` is not the correct executable, set the server-side `PREDICTION_PYTHON` environment variable to the Python command or absolute executable path. Run the provider tests with:
+Create an isolated Python environment and install:
 
-```powershell
-npm.cmd run test:prediction-ml
+```bash
+python -m pip install -r ml/prediction_service/requirements.txt
+npm run test:prediction-ml
 ```
 
-The Python provider is for the local synthetic prototype. The current Vercel configuration does not package this runtime or persist model artifacts, so model training is not claimed as deployable there.
+Set the server-side `PREDICTION_PYTHON` variable if the executable is not named `python`. The provider is invoked by Node for local model training/comparison and inference. The in-process registry and model artifacts are lost when the server restarts. Do not assume Vercel deployments provide this Python service.
 
-The production build is written to `.next/`. Stop development before starting the production server on the same port:
+## Optional AI provider
 
-```powershell
-npm.cmd run start
-```
-
-Development and production start bind to `127.0.0.1:5173`. The `prepare:pdf-worker` script copies the PDF.js worker into `public/` before development and production builds. The application needs a Next.js server runtime because AI is handled by route handlers; a static-file export is insufficient.
-
-## Optional AI configuration
-
-Create or edit `.env.local` at the root:
+For live AI evaluations, place the API key in a local `.env.local` file:
 
 ```dotenv
 OPENROUTER_API_KEY=replace_with_your_key
 ```
 
-Keep the key server-side. Do not prefix it with `NEXT_PUBLIC_`, put it in a workflow input, or include it in documentation. `.env.local` is ignored. Next.js route handlers read the environment value on the server; the browser never receives the key.
+Do not commit the file or expose this value through a `NEXT_PUBLIC_` variable. The server route handlers use OpenRouter; simulated mode runs without a live key. The `/api/ai-status` endpoint checks whether a key is configured, not whether it works.
 
-OpenRouter mode requests `openrouter/free`, with no paid fallback configured. The router chooses the actual model. `GET /api/ai-status` reports whether a non-empty key is configured, not whether it is valid. Simulated mode needs no key but does not execute custom AI instructions.
+## Operational boundaries
 
-## Network and storage
+- Drafts are stored by **browser origin**. `localhost` and `127.0.0.1` do not share a draft.
+- Crossref lookup and live AI require network access. When enabled, selected extracted document text and rubric/context may be sent to OpenRouter.
+- Next.js API routes require a server runtime; a static export is insufficient.
+- A successful Next.js/Vercel deployment does not establish a secure production system: authentication, tenant isolation, durable data and controlled ML hosting are absent.
 
-- PDF extraction uses a bundled browser worker.
-- Crossref lookup and live OpenRouter need network access.
-- CSS loads Google Fonts; system fonts are fallbacks.
-- Drafts depend on browser profile and exact origin. `localhost` and `127.0.0.1` have separate storage.
-
-See [troubleshooting](TROUBLESHOOTING.md) and [security and data](SECURITY-AND-DATA.md).
-
-## Vercel readiness
-
-Vercel detects this as a Next.js project; no custom build command or output directory is required. Add `OPENROUTER_API_KEY` as a server-side environment variable for the environments that need live AI, then redeploy after changing it. Browser autosave remains scoped to each browser and deployment origin.
-
-The repository has been migrated and locally build-verified, but no Vercel project has been created and no deployment has been performed. Authentication and durable rate limiting remain prerequisites before exposing the PoC publicly.
+See [Troubleshooting](TROUBLESHOOTING.md) and [Security and data](SECURITY-AND-DATA.md).
