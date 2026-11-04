@@ -169,7 +169,7 @@ AFPI's entry-point information architecture is **persona/workspace-first**, not 
 
 1. **Organization Administrators:** Institutional builders and supervisors of the evaluation system. They onboard and supervise employees, **create KPIs and scoring frameworks, establish policies/regulations, develop and configure institution-specific prediction and recommendation models, and manage permitted system configurations and approvals**. Their privileges remain subject to institutional authorization.
 2. **Employees:** End users of their organization's evaluation system (including faculty as applicable). They **complete assigned KPI inputs, submit supporting information/evidence for verification, track verification status and view authorized resulting scores**, as well as applicable predictions and recommendations. They do not create institutional KPIs, scoring rules or train models by default. Employee subroles and score-release policies are not yet finalized.
-3. **Platform Developers:** The team building, operating and maintaining AFPI **itself**. This is **Option A only at present**. They are **not** organization developers and are not automatically institutional administrators or entitled to access institution data.
+3. **Platform Developers:** The team **building AFPI's reusable workflow nodes (tools and plugins)**, creating and testing them in a dedicated **developer playground**, and managing their versions, validation and availability for organizational workflows. They also build, operate and maintain AFPI itself. This is **Option A only at present**: platform developers, not organization developers. They are not automatically institutional administrators or entitled to confidential employee data.
 
 The three groups are **current primary audiences**, not a permanent limitation; new user types may be added as the product grows. A user may hold multiple explicitly authorized responsibilities, but access must come from the approved role/scope model, not the UI alone.
 
@@ -192,11 +192,12 @@ AFPI Platform — common identity, access checks and reusable capabilities
 │   ├── Authorized verified/approved scores and explanations
 │   ├── Authorized predictions, recommendations and follow-up
 │   └── Clarification / review requests where offered
-├── Platform Developer Workspace (operational, isolated)
-│   ├── Platform build/release health and deployment status
-│   ├── System monitoring and technical diagnostics
-│   ├── Platform integrations / tooling administration
-│   └── Access-controlled incidents, configuration and operations
+├── Platform Developer Workspace (platform capability development, isolated)
+│   ├── Node / tool / plugin library and authoring
+│   ├── Developer playground (isolated test runs, inputs and outputs)
+│   ├── Validation, tests, versions and publishing / availability controls
+│   ├── Platform integrations and tooling administration
+│   └── Platform monitoring, release health and technical diagnostics
 └── Underlying reusable capabilities (not separate views by default)
     ├── Framework Studio
     ├── Prediction
@@ -205,7 +206,7 @@ AFPI Platform — common identity, access checks and reusable capabilities
     └── Additional capabilities as the platform expands
 ```
 
-**Key distinction:** A *module* supplies capabilities; a *workspace* exposes only the tasks and outputs appropriate to the current user. For example, Organization Administrators create KPIs, define scoring policies, develop/configure models and supervise verification, while Employees submit assigned KPI evidence and consume authorized scores, predictions and recommendations. A submitted value is not automatically verified, and a calculated score is not automatically an approved/released score. Platform Developers operate platform infrastructure rather than automatically gaining privileged HR or faculty data access.
+**Key distinction:** A *module* supplies capabilities; a *workspace* exposes only the tasks and outputs appropriate to the current user. For example, Organization Administrators create KPIs, define scoring policies, develop/configure models and supervise verification, while Employees submit assigned KPI evidence and consume authorized scores, predictions and recommendations. A submitted value is not automatically verified, and a calculated score is not automatically an approved/released score. Platform Developers author reusable tools/plugins and playground-test nodes for the Framework Studio engine, and operate the underlying platform; neither activity grants privileged HR or faculty data access by default.
 
 Labels above are candidate content areas, not confirmed screens or available routes. The operational Developer Workspace may in practice be a separate tool or application; a common visual shell is **not** a requirement, and neither deployment architecture nor production UI has been chosen.
 
@@ -228,6 +229,7 @@ Labels above are candidate content areas, not confirmed screens or available rou
 | Framework policies and KPI workflows | Create KPIs, scoring/verification rules and supervise evaluation under policy | Submit evidence for assigned KPIs and view permitted scores | Maintain software; no automatic institutional policy authority |
 | Prediction | Develop/configure institution-specific models, train/evaluate and approve publication as authorized | View own permitted predictions and explanations | Maintain runtime/model infrastructure; institutional datasets only with explicit access |
 | Recommendation | Develop/configure recommendation logic/models and publish as authorized | View relevant recommendations and record permitted follow-up | Maintain services; no automatic access to personal recommendations |
+| Node/tool/plugin authoring and playground | Organization admins consume approved capabilities, not platform-authoring privileges by default | No | Build, test, version and publish reusable platform nodes according to approvals |
 | Platform deployment/diagnostics | No platform-operator privilege by default | No | Authorized operational tasks only |
 | Audit history | Relevant organization audit | Relevant own decision history if permitted | Platform operational audit; protected institutional audit only by explicit scoped support approval |
 
@@ -318,13 +320,16 @@ For each journey document **actor and authorization context → trigger → prec
 **Outcome:** Auditable submission and transparent verification state, followed by the authorized score when calculation and release prerequisites are met.  
 **Test:** Employee can submit and correct evidence without editing KPI/scoring definitions and without accessing other employees' results.
 
-### 4.8 Platform Developer — operate and maintain AFPI
+### 4.8 Platform Developer — create, test and publish nodes/tools/plugins
 
-**Actor:** Authorized AFPI platform engineer/operator. **This is a platform responsibility, not an organization admin role.**  
-**Flow:** Authenticate to approved operational environment → select permitted deployment/service → inspect service health, non-sensitive observability, release status or alerts → perform an authorized diagnostic or maintenance operation → validate outcome → record audit/incident evidence.  
-**Alternatives:** Insufficient operator privileges, outage, secret exposure risk, deployment failure, sensitive log data, support request requiring scoped approval. Default to synthetic/redacted information, minimum privilege and no institutional record access.  
-**Outcome:** Reliable platform operations without bypassing organizational data isolation.  
-**Test:** Operator can diagnose supported failure scenarios, while tests confirm they cannot browse institution/employee records without separately authorized support access.
+**Actor:** Authorized AFPI platform developer, not an organization administrator.  
+**Trigger:** Build or revise a reusable capability for institutional workflows.  
+**Flow:** Open developer workspace → create or modify a typed node/tool/plugin with declared inputs, outputs, configuration and permissions → test in an **isolated playground** using synthetic/redacted fixtures → inspect execution traces and validation errors → revise and rerun → version and validate the node → request approval where required → publish it into a controlled reusable catalog for permitted organization configuration. Platform maintenance and operational diagnostics remain separate permitted developer tasks.  
+**Alternatives:** Invalid node contract, failed execution, plugin permission failure, incompatible version, unsafe side effects, untrusted integration, missing approval or denied release. Fail safely, avoid exposing secrets and do not run against real employee data without separately granted authorization.  
+**Outcome:** Versioned, validated node/tool/plugin available to authorized institutional builders, without granting developers access to confidential organization records.  
+**Test:** A developer can author, sandbox-run, inspect errors, revise and version a node; unauthorized execution and data access are blocked, and publication states remain explicit.
+
+**Developer operational journey:** Authenticate into approved platform context → inspect service health, release status and permitted diagnostics → perform authorized maintenance → verify outcome and record audit trail. This operational responsibility does not confer tenant-data access.
 
 ### 4.9 Cross-persona capability flow
 
@@ -337,11 +342,13 @@ AFPI engines: verified score and permitted prediction/recommendation outputs
            ↓ approval/release where institutional policy requires
 Employee: view own authorized scores, explanations, predictions and recommendations
 
-Platform Developer: maintain those engines and deployment infrastructure
-           ↳ operational privileges only; no implicit access to institution data
+Platform Developer: build/version/test reusable nodes, tools and plugins in sandbox
+           ↓ approved capabilities made available to Organization Admins
+Platform Developer: separately maintain engines and deployment infrastructure
+           ↳ no implicit access to institution data
 ```
 
-Different users interact with the **same capabilities**, but through responsibilities and views appropriate to their scope. An employee should never need institutional KPI-design or model-training controls to submit evidence or view an authorized score or prediction. A developer should not need faculty-level visibility to maintain the prediction service.
+Different users interact with the **same capabilities**, but through responsibilities and views appropriate to their scope. An employee should never need institutional KPI-design or model-training controls to submit evidence or view an authorized score or prediction. A developer should not need faculty-level visibility to develop or playground-test a node, nor to maintain the prediction service.
 
 ### 4.10 Journey review and phased implementation
 
