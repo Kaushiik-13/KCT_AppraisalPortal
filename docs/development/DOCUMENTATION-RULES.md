@@ -23,3 +23,12 @@ Architecture-changing features require linked, expressly authorized project-docu
 
 ## Historical material
 Pre-reorganization technical references remain under `docs/reference/legacy/` to prevent loss of research evidence. They may describe historical branches and are not current specifications; verify before reuse.
+
+## Audits and verification records
+- Every module maintains `docs/modules/<module>/audits/README.md` (audit register), `AUDIT-TEMPLATE.md`, and dated `YYYY-MM-DD-topic.md` audit reports.
+- New module audits are module-owned and may be updated only on an assigned module branch within the authorized Issue scope.
+- Cross-module, shared-schema and system-level audits belong to `docs/project/audits/` and require a separately authorized documentation PR.
+- Each audit states its baseline, objective, scope, evidence, findings, severity, GitHub Issues, action owners, limitations and verification status.
+- Keep audit records immutable as historical snapshots once finalized; add follow-up or re-audit documents instead of silently rewriting evidence.
+- Link relevant audit findings from the module/project audit register, and track remediation through Issues.
+- Migrated historical material is a **copy** for active discovery; the original source remains in `docs/reference/legacy/`. Historical claims are not automatically current verification.

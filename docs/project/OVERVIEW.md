@@ -16,6 +16,7 @@
 - [Cross-module testing](TESTING.md)
 - [Roadmap](ROADMAP.md)
 - [Project decisions](DECISIONS.md)
+- [Project-level audits and audit template](audits/README.md)
 - [Module docs](../modules/)
 - [Preserved legacy technical references](../reference/legacy/README.md)
 

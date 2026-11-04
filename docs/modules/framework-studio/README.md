@@ -21,3 +21,6 @@ Prototype exists; see the preserved historical references and source code for ev
 - [UI/UX](UI-UX.md)
 - [Testing](TESTING.md)
 - [Decisions](DECISIONS.md)
+
+## Audits and verification history
+- [Audit register and new audit template](audits/README.md)

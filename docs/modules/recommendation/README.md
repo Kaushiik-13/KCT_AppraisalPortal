@@ -21,3 +21,6 @@ Not yet verified as implemented.
 - [UI/UX](UI-UX.md)
 - [Testing](TESTING.md)
 - [Decisions](DECISIONS.md)
+
+## Audits and verification history
+- [Audit register and new audit template](audits/README.md)
