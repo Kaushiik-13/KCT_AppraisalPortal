@@ -1,27 +1,29 @@
-# Project development instructions
+# AFPI development governance
 
-## Keep documentation in the development loop
+These rules apply to all contributors and coding agents.
 
-The project owner explicitly requires documentation to progress with development. Treat documentation maintenance as part of completing each change, not a separate task to postpone.
+## Scope and ownership
+- Start every task by identifying its assigned GitHub Issue, module, owner, branch and PR base.
+- Work only on the assigned Issue. Report unrelated findings separately; request authorization for blockers or expanded scope.
+- Agents may commit and push **only** to their explicitly assigned branches.
+- Before making changes, inspect working-tree state, current branch, uncommitted changes and active dependent PRs.
+- Never change another contributor's branch or PR without explicit authorization.
+- Never merge, restack, change PR bases, force-push, delete branches or change repository settings without explicit authorization.
 
-1. Before implementation, read the relevant guides in `docs/` and identify which documented behavior or contracts will change.
-2. Implement and verify the change, then update the affected documentation in the same work session before reporting completion.
-3. Update user guides for changed controls and flows; technical references for architecture, schemas, tools, API, scoring, AI, persistence, and security behavior.
-4. Record material design choices in `docs/DECISIONS.md`, update implemented versus planned status in `docs/ROADMAP.md`, and add substantive feature changes to `docs/CHANGE-HISTORY.md`.
-5. Update `docs/TESTING.md` when test coverage, verification results, or limitations change. Report only checks actually performed. Keep historical verification reports intact.
-6. Update `README.md` and `docs/README.md` when entry points, scope, or documentation navigation changes. Check changed local links and JSON examples.
-7. Briefly mention relevant documentation updates in the completion report. If a change has no documentation impact, make that determination explicitly rather than rewriting unrelated documents.
+## Documentation ownership
+- Module feature branches may edit Markdown only under `docs/modules/<assigned-module>/`, and only as required by their Issue.
+- `docs/project/`, `docs/development/`, root Markdown governance documents and `.github/` governance files are protected. Edit them only in explicitly authorized, dedicated documentation/governance branches and PRs.
+- Cross-module implementation work uses separate module-owned PRs with an agreed API/data contract and integration tests.
+- Architecture-changing work requires an authorized, linked project-documentation PR; the overall Issue stays open until implementation and documentation are merged.
+- State clearly what is **Current implementation**, **Proposed design** and **Known limitations**. Never label unverified functionality as implemented.
 
-Keep documentation accurate and proportional to the change. Do not present planned features as implemented, include secrets or personal submissions, or copy stale examples forward without checking them against the code.
+## Pull requests and checks
+- No direct pushes to `main`. Every PR links an Issue and completes `.github/PULL_REQUEST_TEMPLATE.md`.
+- One approving human reviewer other than the author and passing required CI are mandatory.
+- Run change-aware tests and a production build for affected code; perform full integration verification before merge.
+- Default to squash-and-merge. For stacked PRs, declare parent PR, merge bottom-up, and obtain explicit authorization before restacking. Merely retargeting a child after a squash merge is insufficient; validate the resulting diff.
+- Branch owners resolve ordinary conflicts, cross-module conflicts need agreement among owners, and stack history changes require authorization.
+- Never blindly accept one side of a merge conflict. Re-test after resolution.
+- Delete merged branches only after verification and confirming no stacked dependents still require them; agents never delete branches automatically.
 
-See `CONTRIBUTING.md` for the development workflow and `docs/README.md` for the documentation index.
-
-<!-- BEGIN:nextjs-agent-rules -->
-
-# This is NOT the Next.js you know
-
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
-
-This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
-
-<!-- END:nextjs-agent-rules -->
+See [branch and PR policy](docs/development/BRANCHING-AND-PRS.md), [testing standards](docs/development/TESTING-STANDARDS.md), and [documentation policy](docs/development/DOCUMENTATION-RULES.md).
