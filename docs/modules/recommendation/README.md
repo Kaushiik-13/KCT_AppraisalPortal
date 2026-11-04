@@ -1,18 +1,18 @@
 # Recommendation
 
-**Status:** Planned
+**Status (production-oriented rebuild):** Planned
 
 ## Purpose
-Recommendation functionality is planned; implementation details must be verified when introduced.
+Performance improvement and decision-support recommendations.
 
 ## Current implementation
-Not yet verified as implemented.
+No implementation of the **new production-oriented module** has been verified yet. Historical PoC functionality, where available, is retained solely in the [legacy archive](../../reference/legacy/README.md).
 
 ## Proposed design
-<!-- To be documented. -->
+<!-- Define the new module from agreed requirements; do not copy the old PoC architecture. -->
 
 ## Known limitations
-<!-- To be verified and documented. -->
+- Technical design, persistence model, integration contracts and production verification are not yet established.
 
 ## Module documentation
 - [Architecture](ARCHITECTURE.md)
@@ -21,6 +21,4 @@ Not yet verified as implemented.
 - [UI/UX](UI-UX.md)
 - [Testing](TESTING.md)
 - [Decisions](DECISIONS.md)
-
-## Audits and verification history
-- [Audit register and new audit template](audits/README.md)
+- [Audit register and template](audits/README.md)
