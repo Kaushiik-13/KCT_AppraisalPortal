@@ -161,150 +161,192 @@ These eight principles are product-wide rules, not claims that the current PoC h
 
 ## 03. Information Architecture
 
-**Status:** Proposed taxonomy to validate with user roles and task research. Not a committed route map, implementation architecture, or choice of sidebar placement. **Permissions and tenant identification are blocked on #44.**
+**Status:** Three primary user groups and distinct workspaces are an **agreed current product direction**. Detailed page hierarchies and the exact permissions/URL model are **proposals requiring validation**. This does not establish the production codebase, navigation shell or security implementation.
 
-### 3.1 Information architecture principles
+### 3.1 Primary users and workspace model — agreed
 
-- Hybrid organization: modules provide stable context; important tasks have short entry paths.
-- Global patterns are shared; each module can group specialized functions locally.
-- Active organization, workspace/module, resource, current action, status and access scope are clear where applicable.
-- Authorized choices are prioritized; insufficient access handled without revealing protected records.
-- Keep global hierarchy shallow, and expose secondary details contextually.
-- Support deep links and recoverable navigation to eligible authorized resources.
-- Plan global search as **future**, not a current-release requirement.
+AFPI's entry-point information architecture is **persona/workspace-first**, not one identical module menu for everyone:
 
-### 3.2 Conceptual content map
+1. **Organization Administrators:** Authorized institutional users who onboard and manage their organization, define applicable policies/regulations and configure institution-level performance, prediction and recommendation experiences.
+2. **Employees:** The people served by their organization (including faculty, as applicable) who access their own authorized evaluation context, prediction results and actionable recommendations. The exact employee subroles and visibility rules are not defined yet.
+3. **Platform Developers:** The team building, operating and maintaining AFPI **itself**. This is **Option A only at present**. They are **not** organization developers and are not automatically institutional administrators or entitled to access institution data.
+
+The three groups are **current primary audiences**, not a permanent limitation; new user types may be added as the product grows. A user may hold multiple explicitly authorized responsibilities, but access must come from the approved role/scope model, not the UI alone.
+
+### 3.2 Separation of workspaces and reusable modules
 
 ```text
-AFPI Workspace (organization- and permission-scoped)
-├── Overview / My Work
-│   ├── Assigned actions / pending reviews
-│   └── Recent permitted activity / summaries
-├── Framework Studio
-│   ├── Frameworks and versions
-│   ├── KPI / policy configuration
-│   ├── Workflow design and testing
-│   └── Evidence and reviews
-├── Prediction
-│   ├── Dataset registration and readiness
-│   ├── Training and evaluation
-│   ├── Model approvals / publication (subject to contracts)
-│   └── Prediction results and explanations
-├── Recommendation
-│   ├── Recommendations and rationale
-│   ├── Review / decisions
-│   └── Follow-up
-├── Organization
-│   ├── Profile and setup
-│   ├── Membership and roles
-│   ├── Settings and policies
-│   └── Authorized audit activity
-└── Future modules (added under shared platform conventions)
+AFPI Platform — common identity, access checks and reusable capabilities
+├── Organization Administrator Workspace
+│   ├── Organization setup / onboarding
+│   ├── Employees, membership and policies / regulations
+│   ├── Framework and scoring configuration
+│   ├── Prediction setup, evaluation and permitted approvals
+│   ├── Recommendation configuration / publication decisions
+│   └── Organization analytics, relevant reviews and audit activity
+├── Employee Workspace
+│   ├── Personal overview / relevant assignments
+│   ├── Authorized appraisal inputs / evidence where applicable
+│   ├── Personal prediction results and explanations
+│   ├── Personal recommendations and development follow-up
+│   └── Relevant requests for clarification or review
+├── Platform Developer Workspace (operational, isolated)
+│   ├── Platform build/release health and deployment status
+│   ├── System monitoring and technical diagnostics
+│   ├── Platform integrations / tooling administration
+│   └── Access-controlled incidents, configuration and operations
+└── Underlying reusable capabilities (not separate views by default)
+    ├── Framework Studio
+    ├── Prediction
+    ├── Recommendation
+    ├── Organization management
+    └── Additional capabilities as the platform expands
 ```
 
-This is a **candidate content hierarchy**. Labels and pages will be tested; none of these destinations are being claimed as working production pages. Global search, cross-module notifications and self-service account preferences remain optional future platform capabilities.
+**Key distinction:** A *module* supplies capabilities; a *workspace* exposes only the tasks and outputs appropriate to the current user. For example, Organization Administrators may configure and approve prediction/recommendation capabilities, while Employees consume authorized results and explanations. Platform Developers operate platform infrastructure rather than automatically gaining privileged HR or faculty data access.
 
-### 3.3 Navigation and access model
+Labels above are candidate content areas, not confirmed screens or available routes. The operational Developer Workspace may in practice be a separate tool or application; a common visual shell is **not** a requirement, and neither deployment architecture nor production UI has been chosen.
 
-**Proposed behavior:** Stable global entry to authorized modules and active tasks; within-module navigation for detailed work; contextual actions and breadcrumbs/history where needed. Do not expose confidential items in unauthorized search/navigation. Restricted deep links must show an appropriate access state rather than leaking item details. Switching organizations must invalidate tenant-scoped UI caches and prevent stale data display.
+### 3.3 Navigation principles — agreed behavior, proposed placement
 
-**Unresolved:** Exact role definitions, organization enrollment, authorization matrix, tenant-routing strategy (URL/session/subdomain), cross-module landing behavior and mobile navigation form. These must not be guessed from the old PoC.
+- **Workspace-first:** Determine the relevant authorized user experience after authentication; do not expose all institutional configurations to Employees by default.
+- **Hybrid discovery inside a workspace:** stable functional groups plus contextual task entry points, consistent with Topic 1.3.
+- **Persistent context:** show relevant active organization, current workspace/responsibility and page/task; platform developers see platform operational context rather than an automatically selected institution.
+- **Least privilege:** only authorized operations are actionable; direct URLs and APIs are independently checked server-side. A missing/denied resource must not leak its existence or details.
+- **Scalable:** future modules may add capabilities to one or more workspaces without creating a separate, incompatible navigation system.
+- **Global search:** future capability; not required for the first production release.
+- **No premature layout decision:** sidebar, header, mobile navigation, URL scheme and workspace switcher are deferred to IA validation and wireframes.
 
-### 3.4 Page archetypes (structure only, no wireframes)
+### 3.4 Workspace capability matrix — proposed, not an authorization contract
 
-| Pattern | Purpose | Mandatory states |
+| Capability | Organization Admin | Employee | Platform Developer |
+|---|---|---|---|
+| Organization onboarding and settings | Configure where authorized | Personal onboarding/profile only as approved | No institutional admin authority by default |
+| Employee/member management | Authorized management | Own permitted profile | No broad employee-record access |
+| Framework policies and KPI workflows | Configure/review under policy | Provide evidence or view own evaluation where authorized | Maintain software; no automatic institutional policy authority |
+| Prediction | Configure, assess and approve according to institutional policy | View own authorized results and explanations | Maintain runtime/model infrastructure; access to datasets only if explicitly permitted |
+| Recommendation | Configure/review/publish where authorized | Read relevant recommendations and record follow-up | Maintain services; no automatic access to personal recommendations |
+| Platform deployment/diagnostics | No platform-operator privilege by default | No | Authorized operational tasks only |
+| Audit history | Relevant organization audit | Relevant own decision history if permitted | Platform operational audit; protected institutional audit only by explicit scoped support approval |
+
+This matrix is **UX intent**, not a claim about implemented authorization. Specific duties (e.g. evaluation reviewers, model approvers and employee managers) may become separate institution-defined roles beneath these groups. Decide exact permissions, cross-tenant support access and the organization scope model under [Issue #44](https://github.com/Kaushiik-13/KCT_AppraisalPortal/issues/44).
+
+### 3.5 Context, multi-workspace users and exceptions
+
+- If a person has multiple authorized responsibilities, provide clear context and deliberate switching without silently combining confidential scopes.
+- An organization administrator may also be an employee; this must not merge admin-wide data into the personal view.
+- Developers' operational access and any emergency institutional support access must be separated, time-bounded, explicitly approved and auditable if support access is ever permitted.
+- Switching organizations or workspaces requires isolation of cached sensitive information and authorization re-evaluation.
+- Design for users without an assigned organization, invited-but-unapproved users, revoked users and read-only experiences.
+
+### 3.6 Shared page patterns, not final screens
+
+| Pattern | Potential workspace use | Required states |
 |---|---|---|
-| Overview / task queue | Resume tasks, see owned work | empty, loading, unauthorized, error |
-| List / directory | Find entities, filter, sort and open details | empty, no results, partial data, denied |
-| Detail / review | Inspect record, status, evidence and permitted actions | draft, pending, locked, historical |
-| Guided setup | Multi-step creation with validation | incomplete, saved draft, failed, completed |
-| Workflow workspace | Create/test/review structured policy workflow | unsaved, validation failed, running, conflict |
-| Analytics / explanation | Interpret data, confidence/limits and lineage | unavailable, stale, partial, no data |
-| Admin / settings | Perform controlled changes | insufficient permission, pending approval, conflict |
+| Task overview | Admin work queues; employee actions; platform incidents | empty, pending, failed, denied |
+| Directory/list | People, policies, datasets, assignments, logs (scoped) | filtered, empty, no results, partial data |
+| Details/review | Appraisals, model versions, recommendations, incidents | draft, locked, awaiting decision, historical |
+| Guided onboarding | Organization setup; employee joining | incomplete, saved, expired invitation, completed |
+| Workflow configuration | Admin framework/policy/model setup | invalid, unsaved, running, version conflict |
+| Personal insights | Employee results/recommendations | unavailable, limited confidence, stale, disputed |
+| Platform operations | Developer monitoring and maintenance | alert, degraded, resolved, restricted |
 
-### 3.5 Proposed information-architecture validation
+### 3.7 IA validation gates before wireframes
 
-- Tree-test the location of at least six common tasks with representative users.
-- Validate the names and relationships of content areas against actual domain language.
-- Test no-organization, multiple-organization, revoked-access and pending-invitation cases.
-- Prove new module registration does not require changing the conceptual global taxonomy.
-- Run permissions review before routes are implemented.
-- Avoid final URLs or shell layout commitments until the architecture and journey review is complete.
+1. Validate the three audiences' actual tasks and the difference between institutional and operational authority.
+2. Confirm whether Employee includes faculty only or additional staff categories; define institution-specific subroles without changing the three-audience baseline.
+3. Tree-test 6+ representative tasks **per relevant workspace** and measure discoverability/comprehension.
+4. Under Issue #44, approve a role/action/organization-scope matrix and test user-to-workspace resolution, switch behavior, tenant isolation and developer support boundaries.
+5. Review actual workflows before finalizing page names, final navigation placement and URLs.
+6. Verify extensibility when adding a future module and, if appropriate, a new audience.
 
 ## 04. User Journeys
 
-**Status:** End-to-end *candidate* journeys, not implemented features or approved institutional policy. Actors below describe responsibilities, not finalized RBAC roles. The exact actors and permissions require validation under #44 and with institutional stakeholders.
+**Status:** Core journeys are **proposed UX flows** grounded in the three agreed audiences; actual business policies, actor privileges, technical integration and availability require further validation. They are not claims about deployed AFPI capabilities. The separation of institutional administrator and platform developer responsibilities is mandatory.
 
-### 4.1 Common journey structure
+### 4.1 Journey template
 
-Each journey records **actor, trigger, prerequisites, main steps, alternatives/errors, outcome, evidence/traceability**, and a measurable task-completion test. Cross-module navigation must preserve context only when authorized.
+For each journey document **actor and authorization context → trigger → preconditions → actions → successful outcome → failure/recovery → explanation/audit → usability/security checks**. The UI must not assume authorization from group label alone.
 
-### 4.2 Organization setup and onboarding
+### 4.2 Organization Administrator — onboard institution
 
-**Actor:** Authorized organization setup administrator.  
-**Trigger:** Organization is created or an invitation accepted.  
-**Preconditions:** Verified identity, lawful permission to create/join organization, available organization contract.  
-**Steps:** Start setup → review organization context and required information → validate fields → configure permitted setup choices → review and confirm → see active context and next recommended task.  
-**Alternatives:** invitation expired, already belongs to organization, duplicate organization, missing permission, network failure, incomplete step, session expired. Save permitted draft values and never expose data from another organization.  
-**Outcome:** Confirmed authorized organization context; auditable consequential changes.  
-**Test:** Representative authorized actor can complete setup without hidden instructions; unauthorized actor cannot perform setup.
+**Actor:** Authorized institutional setup administrator. **Trigger:** Establish or join an institution on AFPI.  
+**Flow:** Verify identity/eligibility → enter permitted organization data → inspect setup and policy requirements → correct validation errors → confirm authorized setup → receive organization-specific workspace and clear next tasks.  
+**Alternatives:** Duplicate organization, expired invitation, lost connectivity, no privilege, session expiry, partially completed setup; recover permitted drafts without leaking any institutional data.  
+**Outcome:** Confirmed organizational workspace with auditable consequential setup actions.  
+**Test:** Admin completes setup without hidden instructions; users outside scope cannot create or inspect the institution.
 
-### 4.3 Member invitation and permission administration
+### 4.3 Organization Administrator — manage employees and governance
 
-**Actor:** Authorized membership administrator.  
-**Trigger:** Invite, alter, or remove member access.  
-**Steps:** Select correct org → inspect permitted member list → choose change → validate target and scope → review high-risk impact → confirm → show authoritative result and permitted audit record.  
-**Alternatives:** invitation duplicate/expired, conflicting permission, revoked own access, stale change, failure after submission. Prevent unintended escalations or repeated transactions.  
-**Outcome:** Updated access with accountable audit event; no data crossover.  
-**Test:** Authorized actor correctly predicts the outcome and can inspect it; forbidden changes rejected server-side.
+**Actor:** Authorized organization administrator, subject to narrower responsibilities under #44.  
+**Flow:** Select active organization → view only permitted members → invite/onboard employees → configure approved rules, policies/regulations and access assignments → review sensitive changes → submit → see authoritative status and relevant audit event.  
+**Alternatives:** Invalid assignment, duplicate invitation, unauthorized change, conflicting update or revoked access.  
+**Outcome:** Employees have the appropriate authorized entry path, and institutional changes are accountable.  
+**Test:** No privilege escalation, double submission or cross-organization information leak.
 
-### 4.4 Framework authoring and evidence verification
+### 4.4 Organization Administrator — build/configure evaluation, prediction and recommendation capabilities
 
-**Actor:** Authorized framework author or reviewer (responsibilities may be distinct).  
-**Trigger:** Create or revise a faculty evaluation framework.  
-**Steps:** Create/open version → define permitted KPI/policy inputs → configure workflow → validate structure → test with permitted evidence → inspect source vs extracted/verified values → save draft → submit for approval/review when authorized.  
-**Alternatives:** evidence unreadable, scoring conflict, validation failure, missing dataset, unsaved changes, duplicate version, reviewer disagrees. Provide drafts and traceable differences; do not conflate extracted `score` with policy scoring outputs.  
-**Outcome:** Reviewable version with explicit provenance and separation of entered/extracted/verified/calculated data.  
-**Test:** Users identify which values were verified and can recover from a simulated invalid workflow.
+**Actor:** Institutionally authorized policy author, model operator or approver; **not** assumed to be one universal admin privilege.  
+**Flow:** Select organization and permitted capability → configure framework/KPI policies and verified evidence process → validate scoring/test the workflow → prepare dataset and assess model readiness as applicable → configure prediction/recommendation use → inspect outputs, policy/model versions and limitations → submit for required approval → publish only where institutionally permitted.  
+**Alternatives:** Invalid KPI, contradictory rules, missing evidence, low-quality data, failed training, unsupported explanation, pending approval, conflict/version mismatch. Maintain drafts and transparent failures. Do not confuse evidence-extracted `score` fields with policy-derived scoring structures.  
+**Outcome:** Approved institutional configuration enables authorized downstream employee experiences, subject to genuine backend activation and approvals.  
+**Test:** User can distinguish configured vs active/published, and explain the source and limitations of results.
 
-### 4.5 Review and approval of evaluation
+### 4.5 Employee — join and access personal workspace
 
-**Actor:** Authorized faculty appraisal reviewer.  
-**Trigger:** Review assigned for evidence/score verification.  
-**Steps:** Open assigned item → understand scope/policy/version → inspect evidence, discrepancies, rationale and calculation → approve/request clarification/reject only as authorized → record reason → receive final state.  
-**Alternatives:** unclear evidence, insufficient access, superseded framework, conflicting decision, policy-required escalation or appeal.  
-**Outcome:** Attributable auditable decision with accessible explanation; never silently auto-finalized.  
-**Test:** Reviewer explains why the result was produced and can locate required supporting evidence.
+**Actor:** Employee of a participating organization (faculty where applicable).  
+**Flow:** Accept permitted invitation/identity verification → confirm active organization and personal context → complete only necessary onboarding/profile inputs → see authorized tasks, progress and available capabilities.  
+**Alternatives:** No organization, pending invitation, missing consent/required records, revoked access, stale session. Do not display administrator controls or unrelated employees' information.  
+**Outcome:** Employee has an understandable, permission-limited personal workspace.  
+**Test:** Employee correctly identifies their context and finds the next legitimate task.
 
-### 4.6 Dataset readiness and model evaluation
+### 4.6 Employee — view evaluation, prediction and recommendation
 
-**Actor:** Authorized Prediction operator/evaluator.  
-**Trigger:** Prepare a dataset and assess a candidate model.  
-**Steps:** Register permitted dataset → validate schema, privacy and readiness → inspect errors/quality → configure training → submit job → monitor real progress → compare allowed evaluation metrics and limitations → request model approval/publication if workflow supports it.  
-**Alternatives:** invalid schema, missing values, job failure, uncalibrated confidence, unauthorized dataset, version mismatch, cancellation.  
-**Outcome:** Traceable model artifact/evaluation and clear approval state; model claims must not outrun evidence.  
-**Test:** User identifies dataset/model version and accurately interprets model performance limitations.
+**Actor:** Authorized employee; individual results only where institutional policy permits.  
+**Flow:** Open personal context → distinguish verified evaluation from model prediction and recommendation → read plain-language explanation → expand authorized evidence, version and meaningful uncertainty/limits → identify a development action or request clarification/review where offered → record follow-up if permitted.  
+**Alternatives:** Unpublished prediction, incomplete evidence, stale model, disputed result, access changes, no recommendation. Avoid invented certainty or unauthorized visibility.  
+**Outcome:** Informed employee action, not automatic final judgment by AI.  
+**Test:** >=90% can distinguish actual score, prediction and recommendation, and can find their authorized next step.
 
-### 4.7 Viewing predictions and recommendations
+### 4.7 Employee — provide inputs or request review (where applicable)
 
-**Actor:** Authorized faculty, manager or reviewer (subject to access contract).  
-**Trigger:** Inspect permitted faculty performance results or next actions.  
-**Steps:** Open permitted context → identify result as verified fact, policy score, prediction or recommendation → see plain-language rationale → expand evidence, data/model version and limitations → request clarification/review or record follow-up where authorized.  
-**Alternatives:** missing evidence, stale model, low-quality data, conflicting recommendation, disputed result, access changed.  
-**Outcome:** Informed human action rather than treating AI advice as an automatic institutional judgment.  
-**Test:** >=90% of representative users correctly distinguish prediction from verified evaluation in a comprehension task.
+**Actor:** Employee invited to contribute evidence, self-appraisal or clarification.  
+**Flow:** Open assigned task → understand requirements and permitted documents → enter or attach evidence → view extracted vs user-entered values when relevant → validate → save draft or explicitly submit → track review status.  
+**Alternatives:** Upload error, unsupported file, required evidence missing, unsaved data, review rejected or returned for correction.  
+**Outcome:** Traceable submission and accessible status without access to another employee's records.  
+**Test:** Employee can correct mistakes, recover a draft and explain submission status.
 
-### 4.8 Cross-cutting journey safeguards
+### 4.8 Platform Developer — operate and maintain AFPI
 
-Every journey must design for first use, returning expert, empty data, pending processing, save/retry conflicts, revoked permissions, session expiration, assistive technology, narrow viewport and failure recovery. Where a journey has consequences for an individual's appraisal or access, record who acted, when, under which policy and version, and what was decided (subject to governing institutional retention rules).
+**Actor:** Authorized AFPI platform engineer/operator. **This is a platform responsibility, not an organization admin role.**  
+**Flow:** Authenticate to approved operational environment → select permitted deployment/service → inspect service health, non-sensitive observability, release status or alerts → perform an authorized diagnostic or maintenance operation → validate outcome → record audit/incident evidence.  
+**Alternatives:** Insufficient operator privileges, outage, secret exposure risk, deployment failure, sensitive log data, support request requiring scoped approval. Default to synthetic/redacted information, minimum privilege and no institutional record access.  
+**Outcome:** Reliable platform operations without bypassing organizational data isolation.  
+**Test:** Operator can diagnose supported failure scenarios, while tests confirm they cannot browse institution/employee records without separately authorized support access.
 
-### 4.9 Validation before wireframes
+### 4.9 Cross-persona capability flow
 
-- Confirm real personas, tasks, institutional authority and sensitive data handling with stakeholders.
-- Establish a role/action/tenant matrix under Issue #44 before implementing protected routes.
-- Prioritize 3–5 critical journeys for initial release; the others can be phased.
-- Measure task success, error rates, time on task, comprehension and assistive-technology operability.
-- Author module-specific detailed journeys and screens within each module's `UI-UX.md` via module-owned PRs.
+```text
+Organization Admin: define/approve relevant institutional policies
+           ↓ authorized activation only
+Reusable AFPI engines: framework verification / prediction / recommendation
+           ↓ scoped outputs and explanations
+Employee: consume permitted insights and take permitted actions
+
+Platform Developer: maintain those engines and deployment infrastructure
+           ↳ operational privileges only; no implicit access to institution data
+```
+
+Different users interact with the **same capabilities**, but through responsibilities and views appropriate to their scope. An employee should never need access to institutional model-training controls to read an authorized prediction. A developer should not need faculty-level visibility to maintain the prediction service.
+
+### 4.10 Journey review and phased implementation
+
+- Confirm policy ownership, required approvals, who is allowed to train/publish models, and visibility of faculty predictions with institutional stakeholders.
+- Approve role/scopes and any support-access exception under #44 before protected routes are coded.
+- Select the initial release journeys from 4.2–4.8 based on user research and operational priority; none are promised as shipped.
+- Include keyboard/screen-reader, responsive, draft recovery, session-expiry, in-progress job, revoked-access and data provenance variants in relevant test scenarios.
+- Measure task success, critical errors, completion time and comprehension separately for each persona.
+- Detailed module journeys and screens belong to their owning `docs/modules/<module>/UI-UX.md` and module-owned PRs.
 
 ## 05. Wireframes — deferred
 
