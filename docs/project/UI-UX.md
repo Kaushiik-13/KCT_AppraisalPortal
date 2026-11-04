@@ -167,8 +167,8 @@ These eight principles are product-wide rules, not claims that the current PoC h
 
 AFPI's entry-point information architecture is **persona/workspace-first**, not one identical module menu for everyone:
 
-1. **Organization Administrators:** Authorized institutional users who onboard and manage their organization, define applicable policies/regulations and configure institution-level performance, prediction and recommendation experiences.
-2. **Employees:** The people served by their organization (including faculty, as applicable) who access their own authorized evaluation context, prediction results and actionable recommendations. The exact employee subroles and visibility rules are not defined yet.
+1. **Organization Administrators:** Institutional builders and supervisors of the evaluation system. They onboard and supervise employees, **create KPIs and scoring frameworks, establish policies/regulations, develop and configure institution-specific prediction and recommendation models, and manage permitted system configurations and approvals**. Their privileges remain subject to institutional authorization.
+2. **Employees:** End users of their organization's evaluation system (including faculty as applicable). They **complete assigned KPI inputs, submit supporting information/evidence for verification, track verification status and view authorized resulting scores**, as well as applicable predictions and recommendations. They do not create institutional KPIs, scoring rules or train models by default. Employee subroles and score-release policies are not yet finalized.
 3. **Platform Developers:** The team building, operating and maintaining AFPI **itself**. This is **Option A only at present**. They are **not** organization developers and are not automatically institutional administrators or entitled to access institution data.
 
 The three groups are **current primary audiences**, not a permanent limitation; new user types may be added as the product grows. A user may hold multiple explicitly authorized responsibilities, but access must come from the approved role/scope model, not the UI alone.
@@ -179,17 +179,19 @@ The three groups are **current primary audiences**, not a permanent limitation; 
 AFPI Platform — common identity, access checks and reusable capabilities
 ├── Organization Administrator Workspace
 │   ├── Organization setup / onboarding
-│   ├── Employees, membership and policies / regulations
-│   ├── Framework and scoring configuration
-│   ├── Prediction setup, evaluation and permitted approvals
-│   ├── Recommendation configuration / publication decisions
-│   └── Organization analytics, relevant reviews and audit activity
+│   ├── Employee onboarding, supervision and membership
+│   ├── Policies, regulations and organization configuration
+│   ├── KPI creation, scoring frameworks and verification rules
+│   ├── Model development, evaluation and permitted approvals
+│   ├── Recommendation development / configuration / publication
+│   └── Verification oversight, analytics and relevant audit activity
 ├── Employee Workspace
-│   ├── Personal overview / relevant assignments
-│   ├── Authorized appraisal inputs / evidence where applicable
-│   ├── Personal prediction results and explanations
-│   ├── Personal recommendations and development follow-up
-│   └── Relevant requests for clarification or review
+│   ├── Assigned KPI / appraisal tasks
+│   ├── KPI inputs and evidence submission for verification
+│   ├── Submission and verification status
+│   ├── Authorized verified/approved scores and explanations
+│   ├── Authorized predictions, recommendations and follow-up
+│   └── Clarification / review requests where offered
 ├── Platform Developer Workspace (operational, isolated)
 │   ├── Platform build/release health and deployment status
 │   ├── System monitoring and technical diagnostics
@@ -203,7 +205,7 @@ AFPI Platform — common identity, access checks and reusable capabilities
     └── Additional capabilities as the platform expands
 ```
 
-**Key distinction:** A *module* supplies capabilities; a *workspace* exposes only the tasks and outputs appropriate to the current user. For example, Organization Administrators may configure and approve prediction/recommendation capabilities, while Employees consume authorized results and explanations. Platform Developers operate platform infrastructure rather than automatically gaining privileged HR or faculty data access.
+**Key distinction:** A *module* supplies capabilities; a *workspace* exposes only the tasks and outputs appropriate to the current user. For example, Organization Administrators create KPIs, define scoring policies, develop/configure models and supervise verification, while Employees submit assigned KPI evidence and consume authorized scores, predictions and recommendations. A submitted value is not automatically verified, and a calculated score is not automatically an approved/released score. Platform Developers operate platform infrastructure rather than automatically gaining privileged HR or faculty data access.
 
 Labels above are candidate content areas, not confirmed screens or available routes. The operational Developer Workspace may in practice be a separate tool or application; a common visual shell is **not** a requirement, and neither deployment architecture nor production UI has been chosen.
 
@@ -223,9 +225,9 @@ Labels above are candidate content areas, not confirmed screens or available rou
 |---|---|---|---|
 | Organization onboarding and settings | Configure where authorized | Personal onboarding/profile only as approved | No institutional admin authority by default |
 | Employee/member management | Authorized management | Own permitted profile | No broad employee-record access |
-| Framework policies and KPI workflows | Configure/review under policy | Provide evidence or view own evaluation where authorized | Maintain software; no automatic institutional policy authority |
-| Prediction | Configure, assess and approve according to institutional policy | View own authorized results and explanations | Maintain runtime/model infrastructure; access to datasets only if explicitly permitted |
-| Recommendation | Configure/review/publish where authorized | Read relevant recommendations and record follow-up | Maintain services; no automatic access to personal recommendations |
+| Framework policies and KPI workflows | Create KPIs, scoring/verification rules and supervise evaluation under policy | Submit evidence for assigned KPIs and view permitted scores | Maintain software; no automatic institutional policy authority |
+| Prediction | Develop/configure institution-specific models, train/evaluate and approve publication as authorized | View own permitted predictions and explanations | Maintain runtime/model infrastructure; institutional datasets only with explicit access |
+| Recommendation | Develop/configure recommendation logic/models and publish as authorized | View relevant recommendations and record permitted follow-up | Maintain services; no automatic access to personal recommendations |
 | Platform deployment/diagnostics | No platform-operator privilege by default | No | Authorized operational tasks only |
 | Audit history | Relevant organization audit | Relevant own decision history if permitted | Platform operational audit; protected institutional audit only by explicit scoped support approval |
 
@@ -284,13 +286,13 @@ For each journey document **actor and authorization context → trigger → prec
 **Outcome:** Employees have the appropriate authorized entry path, and institutional changes are accountable.  
 **Test:** No privilege escalation, double submission or cross-organization information leak.
 
-### 4.4 Organization Administrator — build/configure evaluation, prediction and recommendation capabilities
+### 4.4 Organization Administrator — create KPIs, develop models and supervise evaluation
 
-**Actor:** Institutionally authorized policy author, model operator or approver; **not** assumed to be one universal admin privilege.  
-**Flow:** Select organization and permitted capability → configure framework/KPI policies and verified evidence process → validate scoring/test the workflow → prepare dataset and assess model readiness as applicable → configure prediction/recommendation use → inspect outputs, policy/model versions and limitations → submit for required approval → publish only where institutionally permitted.  
-**Alternatives:** Invalid KPI, contradictory rules, missing evidence, low-quality data, failed training, unsupported explanation, pending approval, conflict/version mismatch. Maintain drafts and transparent failures. Do not confuse evidence-extracted `score` fields with policy-derived scoring structures.  
-**Outcome:** Approved institutional configuration enables authorized downstream employee experiences, subject to genuine backend activation and approvals.  
-**Test:** User can distinguish configured vs active/published, and explain the source and limitations of results.
+**Actor:** Institutionally authorized policy author, model operator, supervisor or approver; do not assume every admin receives all privileges.  
+**Flow:** Enter active organization → **create KPIs** and configure scoring policies/weights and verification rules → validate/test the workflow → **develop/configure prediction and recommendation models** using authorized datasets and evaluation tools → review performance, limitations and versions → obtain required approvals and activate permitted capabilities → **supervise employee KPI submissions, verification status and scoring outputs**.  
+**Alternatives:** Invalid KPI policy, inconsistent scoring, unreadable evidence, unsuitable dataset, failed training, unauthorized publication, reviewer conflict, stale configuration. Preserve drafts and report real system state.  
+**Outcome:** Institution-controlled evaluation and modeling capabilities available for authorized employee submissions and released results.  
+**Test:** Administrator can distinguish draft/active policies, verified vs unverified inputs, calculated vs released scores and model outputs; admin cannot bypass necessary approvals.
 
 ### 4.5 Employee — join and access personal workspace
 
@@ -300,21 +302,21 @@ For each journey document **actor and authorization context → trigger → prec
 **Outcome:** Employee has an understandable, permission-limited personal workspace.  
 **Test:** Employee correctly identifies their context and finds the next legitimate task.
 
-### 4.6 Employee — view evaluation, prediction and recommendation
+### 4.6 Employee — view verified scores, predictions and recommendations
 
-**Actor:** Authorized employee; individual results only where institutional policy permits.  
-**Flow:** Open personal context → distinguish verified evaluation from model prediction and recommendation → read plain-language explanation → expand authorized evidence, version and meaningful uncertainty/limits → identify a development action or request clarification/review where offered → record follow-up if permitted.  
-**Alternatives:** Unpublished prediction, incomplete evidence, stale model, disputed result, access changes, no recommendation. Avoid invented certainty or unauthorized visibility.  
-**Outcome:** Informed employee action, not automatic final judgment by AI.  
-**Test:** >=90% can distinguish actual score, prediction and recommendation, and can find their authorized next step.
+**Actor:** Authorized employee of a participating institution.  
+**Flow:** Open personal workspace → review KPI submission and verification status → view **authorized scores resulting from organization-defined KPIs and scoring rules**, when released under institutional policy → distinguish calculated/verified score, prediction and recommendation → inspect explanation, evidence, model/policy version and limitations → take a permitted follow-up action or request clarification.  
+**Alternatives:** Pending verification, returned evidence, score not yet approved/released, no prediction, stale model, disputed result or access change. An unreleased or unverified result must never appear final.  
+**Outcome:** Employee understands their own authorized evaluation result and any relevant development guidance.  
+**Test:** >=90% of representative employees distinguish submitted, verified, scored and approved/released stages and can locate the reason for their score.
 
-### 4.7 Employee — provide inputs or request review (where applicable)
+### 4.7 Employee — submit assigned KPI evidence for verification
 
-**Actor:** Employee invited to contribute evidence, self-appraisal or clarification.  
-**Flow:** Open assigned task → understand requirements and permitted documents → enter or attach evidence → view extracted vs user-entered values when relevant → validate → save draft or explicitly submit → track review status.  
-**Alternatives:** Upload error, unsupported file, required evidence missing, unsaved data, review rejected or returned for correction.  
-**Outcome:** Traceable submission and accessible status without access to another employee's records.  
-**Test:** Employee can correct mistakes, recover a draft and explain submission status.
+**Actor:** Employee assigned institutional KPIs and evidence requirements.  
+**Flow:** Open assigned KPI → read required information and verification criteria → enter KPI input(s) and attach supporting evidence → review entered vs extracted values where relevant → validate → save draft or explicitly **submit for verification** → track submitted, under review, returned for correction, verified and scored/released states as applicable.  
+**Alternatives:** Missing document, unreadable evidence, conflicting extracted values, network failure, unsaved changes, denied access or return for correction.  
+**Outcome:** Auditable submission and transparent verification state, followed by the authorized score when calculation and release prerequisites are met.  
+**Test:** Employee can submit and correct evidence without editing KPI/scoring definitions and without accessing other employees' results.
 
 ### 4.8 Platform Developer — operate and maintain AFPI
 
@@ -327,17 +329,19 @@ For each journey document **actor and authorization context → trigger → prec
 ### 4.9 Cross-persona capability flow
 
 ```text
-Organization Admin: define/approve relevant institutional policies
-           ↓ authorized activation only
-Reusable AFPI engines: framework verification / prediction / recommendation
-           ↓ scoped outputs and explanations
-Employee: consume permitted insights and take permitted actions
+Organization Admin: create KPIs, scoring/verification rules and develop/configure models
+           ↓ authorized publication and employee assignments
+Employee: submit assigned KPI inputs and evidence
+           ↓ authorized verification/review and scoring computation
+AFPI engines: verified score and permitted prediction/recommendation outputs
+           ↓ approval/release where institutional policy requires
+Employee: view own authorized scores, explanations, predictions and recommendations
 
 Platform Developer: maintain those engines and deployment infrastructure
            ↳ operational privileges only; no implicit access to institution data
 ```
 
-Different users interact with the **same capabilities**, but through responsibilities and views appropriate to their scope. An employee should never need access to institutional model-training controls to read an authorized prediction. A developer should not need faculty-level visibility to maintain the prediction service.
+Different users interact with the **same capabilities**, but through responsibilities and views appropriate to their scope. An employee should never need institutional KPI-design or model-training controls to submit evidence or view an authorized score or prediction. A developer should not need faculty-level visibility to maintain the prediction service.
 
 ### 4.10 Journey review and phased implementation
 
