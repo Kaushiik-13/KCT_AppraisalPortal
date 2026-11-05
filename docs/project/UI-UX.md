@@ -139,6 +139,23 @@ These eight principles are product-wide rules, not claims that the current PoC h
 
 **Acceptance:** Shared inventory and usage guide published before module UI rollout; each new component reviewed for keyboard/focus/status/error semantics.
 
+### 2.4.1 Mandatory shadcn/ui component policy — approved
+
+**Decision:** AFPI adopts **shadcn/ui as the mandatory default UI component system** for all future Organization, Employee, Supervisor and Developer interfaces. This is a design and code-review requirement, not a claim that the existing JSX/CSS PoC has been migrated. Navigation taxonomy and detailed page layouts are deliberately deferred until feature implementation; this decision governs their eventual implementation.
+
+- **Standard stack:** shadcn/ui components, Tailwind CSS, centralized semantic CSS-variable tokens, and Lucide React icons in the React/Next.js codebase.
+- **Component-first:** Use the official shadcn/ui component for common controls (Button, Input, Select, Checkbox, Radio, Switch, Textarea, Tabs, Dialog, AlertDialog, Sheet, DropdownMenu, Popover, Tooltip, Card, Badge, Table, Skeleton, Sidebar, Breadcrumb, etc.) where a suitable component exists. Do not hand-roll duplicate primitives.
+- **Shared ownership:** Install/adapt shared primitives in the app's central UI directory (conventionally `components/ui` or `src/components/ui`, according to the app structure). Composite controls and patterns live in shared feature-agnostic components where reused; modules compose them rather than copy and fork.
+- **No competing general-purpose UI kits:** Do not add Material UI, Ant Design, Chakra UI, Mantine or similar parallel component libraries without an explicitly documented and reviewed platform exception.
+- **Specialized libraries permitted:** Workflow graph/node canvas, code editor, charts, drag-and-drop, virtualized tables, document viewers and similar domain capabilities may use focused purpose-built libraries when shadcn/ui does not provide the underlying feature. Their surrounding controls, inputs, dialogs, labels, theme and status treatment must use the common design system.
+- **shadcn foundations:** shadcn/ui supports both **Base UI** and **Radix** primitives; choose a single foundation when initializing the production component library, and do not mix implementations casually. As of the July 2026 official changelog, Base UI is the new-project default and Radix remains supported. This is **not** a mandate to migrate an already-functioning Radix setup solely for parity.
+- **Theme consistency:** Use official shadcn token conventions and CSS variables; support light/dark themes and accessible semantic states. The exact base palette and font remain intentionally unselected.
+- **No accidental bypasses:** Plain Tailwind layout classes and custom application logic are fine; independently styled button/input/dialog implementations and ad hoc colors are not.
+- **PR enforcement:** Every new frontend PR must state which shared shadcn/ui primitives it uses, justify any non-shadcn UI dependency or custom primitive, and verify responsive layout, keyboard/focus access, labels, error/loading states and light/dark rendering. Exceptions must be explicit, reviewed and documented before merging.
+- **Migration posture:** Apply these rules to new UI work; migrate old PoC UI incrementally rather than asserting the existing repo already complies. No automatic dependency changes, full rewrite or navigation decisions are implied.
+
+**Source of truth:** [shadcn/ui documentation](https://ui.shadcn.com/), [theming](https://ui.shadcn.com/docs/theming), [components.json](https://ui.shadcn.com/docs/components-json), [July 2026 Base UI default](https://ui.shadcn.com/docs/changelog/2026-07-base-ui-default).
+
 ### 2.5 Iconography, language and content
 
 **Proposed baseline:** Lucide icon family for consistency; icons accompany labels when the action is not universally recognizable; no color-only or icon-only indication of high-risk consequences. Use concise plain-language copy and consistent terms for draft, submitted, approved, rejected, verified, predicted and recommended. All dates/percentages/metrics require explicit units and context.
@@ -161,7 +178,7 @@ These eight principles are product-wide rules, not claims that the current PoC h
 
 ## 03. Information Architecture
 
-**Status:** Three primary user groups and distinct workspaces are an **agreed current product direction**. Detailed page hierarchies and the exact permissions/URL model are **proposals requiring validation**. This does not establish the production codebase, navigation shell or security implementation.
+**Status:** Three primary entity groups (Organizations, Employees, Developers) and their responsibilities are agreed at a conceptual level. Employees include Actual Employees and Supervisors, and Supervisors also retain their own Employee experience. Detailed page hierarchy, menu labels, route definitions and navigation layout are **explicitly deferred until implementation**; role scopes and the exact permissions/URL model require validation under #44. This does not establish the production codebase, navigation shell or security implementation.
 
 ### 3.1 Primary users and workspace model — agreed
 
