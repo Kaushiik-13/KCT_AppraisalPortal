@@ -1,6 +1,6 @@
 # AFPI — Project overview
 
-**Adaptive Faculty Performance Intelligence (AFPI)** is being redesigned as a **production-oriented, modular faculty appraisal and decision-support system**. Existing PoC code and documents remain historical reference only; the new architecture and module designs must be defined and verified independently.
+**Adaptive Faculty Performance Intelligence (AFPI)** is being redesigned as a **production-oriented, modular faculty appraisal and analytics product**, with a longer-term SaaS direction. The first release is intended to deliver the complete core workflow for organization administrators, faculty members, and supervisors/reviewers at one institution. The product may later evolve to serve multiple organizations; that is not a first-release requirement. Existing PoC code and documents remain historical reference only; the new architecture and module designs must be defined and verified independently.
 
 ## Actors and responsibilities
 
@@ -8,12 +8,12 @@ In software engineering, an **actor** represents a role interacting with a syste
 
 | Actor | Responsibilities |
 |---|---|
-| **Organization Administrator** | Onboard/manage employees; define regulations, policies, KPIs, verification and scoring frameworks; configure organization-specific server/workspace settings; develop/configure institution-specific prediction and recommendation models; govern publication and approval |
-| **Employee (individual contributor)** | Complete assigned KPIs, submit supporting evidence for verification, track review progress, and view their own authorized scores, predictions and recommendations |
-| **Supervisor (Employee specialization)** | Perform their own Employee tasks **and** verify/review assigned employees' KPI evidence, handle feedback and inspect authorized team reports/analytics |
+| **Organization Administrator** | Set up and facilitate the institution's appraisal process; manage people and assignments; create KPIs/KRAs and appraisal cycles; build, train, and evaluate prediction and recommendation models in sandboxes; view institution-level KPI, KRA, and faculty performance/level analytics. Administrators do not release KPI marks in the described workflow. |
+| **Faculty member** | Complete assigned KPIs, submit information and evidence, track review progress, and view their own marks after a supervisor releases them, plus other authorized results. |
+| **Supervisor / reviewer** | Perform their own faculty-member tasks where applicable; review assigned faculty submissions, decide and release marks for each KPI, provide feedback, and inspect analytics for faculty within their authorized scope. |
 | **Platform Developer** | Create reusable nodes, tools and plugins; test and debug them in an isolated playground; version and publish approved capabilities; maintain AFPI software and supporting infrastructure |
 
-**Actor relationships:** A Supervisor is an Employee with additional, scope-limited review and analytics capabilities—not a separate tenant type. An Organization Administrator has organizational governance powers, whereas a Platform Developer builds AFPI itself; neither role automatically receives unrestricted access to employee records. These are conceptual responsibilities, **not a deployed RBAC contract**. Access scope, approvals and tenant isolation must be designed under [Issue #44](https://github.com/Kaushiik-13/KCT_AppraisalPortal/issues/44).
+**Actor relationships:** A Supervisor may also be a faculty member and retain their own faculty workflow, while receiving additional, scope-limited review and analytics capabilities. The organization administrator configures and facilitates the process; supervisors perform reviews and release per-KPI marks. These are product responsibilities, **not a deployed RBAC contract**. Exact permissions and access scopes remain to be designed. The first-release direction is one institution; multi-organization isolation is a later design concern.
 
 ### Use-case interaction overview
 
@@ -32,7 +32,8 @@ flowchart LR
     policy(["Create KPIs, policies & scoring workflows"])
     models(["Develop/configure prediction & recommendation models"])
     submit(["Submit KPI inputs & evidence"])
-    verify(["Review / verify assigned employee evidence"])
+    verify(["Review evidence and decide KPI marks"])
+    release(["Supervisor releases marks per KPI"])
     results(["View authorized scores & recommendations"])
     analytics(["View authorized team reports & analytics"])
     nodes(["Build nodes, tools & plugins"])
@@ -50,6 +51,7 @@ flowchart LR
   sup --> submit
   sup --> results
   sup --> verify
+  sup --> release
   sup --> analytics
 
   dev --> nodes
@@ -59,24 +61,25 @@ flowchart LR
   publish -. "Approved reusable capabilities" .-> policy
   policy -. "Assigned KPI requirements" .-> submit
   submit -. "Submission for review" .-> verify
-  verify -. "Authorized scoring/release" .-> results
+  verify --> release
+  release -. "Released KPI marks" .-> results
 
   classDef actor fill:#edf3fa,stroke:#56718f,color:#24364b,stroke-width:1.5px;
   classDef usecase fill:#f8fafc,stroke:#7b8794,color:#24364b;
   class org,emp,sup,dev actor;
-  class govern,policy,models,submit,verify,results,analytics,nodes,playground,publish usecase;
+  class govern,policy,models,submit,verify,release,results,analytics,nodes,playground,publish usecase;
   style afpi fill:#ffffff,stroke:#64748b,stroke-width:1.5px
 ```
 
-**Interpretation:** Organizations create and govern the evaluation system; Employees supply evidence and view permitted outcomes; Supervisors review their assigned employees while also using the Employee experience; Developers supply tested platform capabilities without default access to institutional data. The detailed navigation structure and individual screens will be decided during feature implementation.
+**Interpretation:** Organization administrators configure and facilitate the evaluation system; faculty supply evidence and view their own released outcomes; supervisors review assigned faculty, release marks for each KPI, and use scoped analytics. The first release is expected to cover this complete core workflow plus administrator KPI/KRA setup, model workspaces/sandbox, and institution analytics. This is product direction, not a claim that any capability has shipped. Detailed navigation, policy rules, and screens remain to be designed.
 
 ## Modules
-- **Framework Studio:** production-oriented redesign of configurable KPI inputs, evidence verification and scoring workflows.
-- **Prediction:** production-oriented redesign of performance prediction and evaluation workflows.
-- **Recommendation:** new module; architecture and implementation not yet defined.
-- **Organization:** new module; architecture and implementation not yet defined.
+- **Framework Studio:** configurable KPI/KRA and appraisal-cycle setup, faculty evidence submissions, supervisor review, and per-KPI mark release.
+- **Prediction:** administrator model-building/evaluation workspace and sandbox, with role-appropriate prediction outputs and analytics to be defined.
+- **Recommendation:** administrator recommendation-building/evaluation workspace and sandbox, with role-appropriate outputs and analytics to be defined.
+- **Organization:** institution setup, membership and assignments, and the administrative workspace that facilitates the appraisal process.
 
-These four are the currently identified modules, not a permanent limit on platform extensibility. The new implementation's design and readiness status should be recorded in each module README. The older browser PoC is not evidence that the replacement is implemented.
+These four are the currently identified modules, not a permanent limit on platform extensibility. Their boundaries are logical capabilities; this does not determine whether they deploy together or separately. The first-release target is one institution, with future multi-organization support considered in the design. The new implementation's design and readiness status should be recorded in each module README. The older browser PoC is not evidence that the replacement is implemented.
 
 ## Documentation
 - [Shared architecture](ARCHITECTURE.md)

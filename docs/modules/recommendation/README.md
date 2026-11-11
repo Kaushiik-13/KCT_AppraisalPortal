@@ -3,13 +3,16 @@
 **Status (production-oriented rebuild):** Planned
 
 ## Purpose
-Performance improvement and decision-support recommendations.
+Provide organization administrators with capabilities to build and evaluate institution-specific recommendations, with authorized outputs available to relevant users.
 
 ## Current implementation
 No implementation of the **new production-oriented module** has been verified yet. Historical PoC functionality, where available, is retained solely in the [legacy archive](../../reference/legacy/README.md).
 
 ## Proposed design
-<!-- Define the new module from agreed requirements; do not copy the old PoC architecture. -->
+- Organization administrators need a recommendation model-building, training, and evaluation workspace with a sandbox.
+- The module should explain the inputs, model/rule version, intended audience, limitations, and status of a recommendation.
+- Any faculty-facing recommendations or follow-up actions require explicit institutional policy and access rules.
+- Recommendation logic, model training, approval/publication, data use, and technical deployment remain undecided. Do not adopt PoC behavior as production design.
 
 ## Known limitations
 - Technical design, persistence model, integration contracts and production verification are not yet established.
