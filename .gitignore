@@ -4,7 +4,7 @@ dist/
 artifacts/
 outputs/
 .codex-tmp/
-apps/web/public/pdf.worker.min.mjs
+legacy/poc/web/public/pdf.worker.min.mjs
 __pycache__/
 *.py[cod]
 

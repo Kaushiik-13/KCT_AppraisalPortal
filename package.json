@@ -14,9 +14,8 @@
     "dev": "npm run dev --workspace @afpi/web",
     "dev:api": "npm run start:dev --workspace @afpi/api",
     "build": "npm run build --workspace @afpi/web && npm run build --workspace @afpi/api",
-    "test": "npm run test --workspace @afpi/web",
-    "test:prediction-ml": "python -m unittest discover -s services/model-training/tests -p \"test_*.py\" -v",
-    "generate:prediction-data": "npm run generate:prediction-data --workspace @afpi/web",
+    "test:poc:ml": "python -m unittest discover -s legacy/poc/services/model-training/tests -p \"test_*.py\" -v",
+    "generate:poc:prediction-data": "npm --prefix legacy/poc/web run generate:prediction-data",
     "start": "npm run start --workspace @afpi/web"
   }
 }

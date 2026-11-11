@@ -1,21 +1,3 @@
-# Local prediction training provider
+# Model training service
 
-This isolated Python provider trains and evaluates established scikit-learn regressors for the synthetic review prototype. The Next.js server sends a checkpoint-safe train/test matrix over standard input and receives one JSON result over standard output.
-
-It is a local prototype boundary, not a hosted production service. It does not read repository datasets, persist model binaries, accept real employee records, or expose an independent network port.
-
-## Interface
-
-```powershell
-python services/model-training/app.py < request.json
-```
-
-The request operation is `train_compare`. It contains the frozen matrix, selected registered candidates, seed and score range. The response contains transparent baseline metrics, candidate metrics, expected-range evidence and a recommendation only when a candidate beats both baselines on held-out MAE.
-
-## Verify
-
-```powershell
-python -m unittest discover -s services/model-training/tests -p "test_*.py"
-```
-
-Install the versions allowed by `requirements.txt` in an isolated environment when they are not already available.
+Reserved for the new Python training and evaluation worker. No production training service is implemented yet. Define its data inputs, job lifecycle, outputs, and governance against approved API contracts before adding training behavior. The former synthetic prototype is preserved under `legacy/poc/services/model-training/`.
