@@ -83,6 +83,7 @@ These four are the currently identified modules, not a permanent limit on platfo
 
 ## Documentation
 - [Shared architecture](ARCHITECTURE.md)
+- [Repository structure and implementation status](REPOSITORY-STRUCTURE.md)
 - [Engineering design principles](DESIGN-PRINCIPLES.md)
 - [Shared UI/UX specification — Topics 01–04](UI-UX.md)
 - [Shared schema and ER diagram](DATABASE-SCHEMA.md)
