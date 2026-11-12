@@ -77,7 +77,7 @@ This flow is product direction, not a verified implementation or final state mac
 
 ## Current implementation
 
-The codebase foundation is being reviewed on `refactor/platform/51-workspace-layout`. It establishes a clean Next.js workspace, a NestJS modular API scaffold, reserved Python model-training and shared-contract locations, and a preserved PoC archive. These are structural foundations only: no product workflow described above has been verified as implemented. See [repository structure](REPOSITORY-STRUCTURE.md) for the path-by-path status and the [legacy archive](../reference/legacy/README.md) for historical material.
+The repository now contains the structural foundation merged through PR #53: a clean Next.js workspace, a NestJS modular API scaffold, reserved Python model-training and shared-contract locations, and a preserved PoC archive. These are structural foundations only: no product workflow described above has been verified as implemented. See [repository structure](REPOSITORY-STRUCTURE.md) for the path-by-path status and the [legacy archive](../reference/legacy/README.md) for historical material.
 
 ## Known limitations and decisions still open
 
