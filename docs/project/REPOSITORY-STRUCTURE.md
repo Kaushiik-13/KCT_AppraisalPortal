@@ -52,6 +52,7 @@ The repository layout supports those responsibilities without forcing each area 
 
 ## Related documentation
 
+- [Local setup and development commands](../../README.md)
 - [Project overview and first-release roles](OVERVIEW.md)
 - [Proposed product architecture](ARCHITECTURE.md)
 - [Engineering design principles](DESIGN-PRINCIPLES.md)

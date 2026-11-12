@@ -2,6 +2,8 @@
 
 AFPI uses module ownership, reviewable Issues and pull requests, and protected shared documentation.
 
+For prerequisites and current web/API start commands, begin with the [repository README](README.md).
+
 1. Choose a GitHub Issue and identify the responsible module and owner.
 2. For an independent feature, branch from the latest `main`; for a stack, branch from the explicitly identified parent branch. Follow `feat/<module>/<issue>-<topic>`, `fix/<module>/<issue>-<topic>` or `docs/<area>/<issue>-<topic>`.
 3. Develop only within approved Issue scope. Keep module Markdown under `docs/modules/<module>/`. Do not edit project/development documentation on a feature branch.
