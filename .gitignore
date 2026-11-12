@@ -1,10 +1,10 @@
 node_modules/
 dist/
-.next/
+**/.next/
 artifacts/
 outputs/
 .codex-tmp/
-public/pdf.worker.min.mjs
+legacy/poc/web/public/pdf.worker.min.mjs
 __pycache__/
 *.py[cod]
 

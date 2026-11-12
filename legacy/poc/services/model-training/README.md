@@ -7,7 +7,7 @@ It is a local prototype boundary, not a hosted production service. It does not r
 ## Interface
 
 ```powershell
-python ml/prediction_service/app.py < request.json
+python legacy/poc/services/model-training/app.py < request.json
 ```
 
 The request operation is `train_compare`. It contains the frozen matrix, selected registered candidates, seed and score range. The response contains transparent baseline metrics, candidate metrics, expected-range evidence and a recommendation only when a candidate beats both baselines on held-out MAE.
@@ -15,7 +15,7 @@ The request operation is `train_compare`. It contains the frozen matrix, selecte
 ## Verify
 
 ```powershell
-python -m unittest discover -s ml/prediction_service/tests -p "test_*.py"
+python -m unittest discover -s legacy/poc/services/model-training/tests -p "test_*.py"
 ```
 
 Install the versions allowed by `requirements.txt` in an isolated environment when they are not already available.
