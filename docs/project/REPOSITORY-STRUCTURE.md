@@ -4,7 +4,7 @@
 
 This document explains where the new AFPI code belongs and how the current repository foundation relates to the proposed product architecture. It follows Issue #51 and the product workflows in the [project overview](OVERVIEW.md) and [architecture](ARCHITECTURE.md).
 
-**Status:** The codebase foundation is being reviewed on `refactor/platform/51-workspace-layout`. The layout and scaffolds exist on that branch; they do not mean that the product workflows are implemented.
+**Status:** The codebase foundation was merged into `main` through PR #53. The layout and scaffolds do not mean that the product workflows are implemented.
 
 ## Current implementation
 
