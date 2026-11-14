@@ -14,6 +14,7 @@ No implementation of the **new production-oriented module** has been verified ye
 - Support the first release for one institution. Keep institutional ownership explicit in product concepts so future multi-organization support can be designed, but do not claim multi-tenant isolation.
 - Organization administrators facilitate configuration and operations. Supervisors conduct operational reviews and release marks for each KPI; administrators do not release marks in the agreed workflow.
 - The user journey and authorization model are proposed; technical persistence, API, and permission contracts remain undecided.
+- The role visibility boundaries are summarized in the shared [project UI/UX proposal](../../project/UI-UX.md); this module owns institution onboarding, membership, and supervisor assignment details.
 
 ## Known limitations
 - Technical design, persistence model, integration contracts and production verification are not yet established.
