@@ -71,8 +71,12 @@ This flow is product direction, not a verified implementation or final state mac
 - Treat the institution as an explicit boundary for configuration, appraisal data, model assets, and analytics.
 - Resolve a user's role and permitted scope before returning sensitive data. A role label alone is not sufficient to grant access to every faculty record.
 - Scope supervisor review and analytics to assigned faculty; scope faculty results to the individual; grant administrators only the institution-level access their approved duties require.
+- Separate configuration authority from operational review and score release. An administrator's broad setup responsibility does not itself make a KPI mark final.
+- Support a person holding faculty and supervisor responsibilities without merging their data scopes; prevent self-review and self-release. Exact delegation and conflict-of-interest policies require institutional approval.
 - Keep consequential evidence, review decisions, released marks, and model outputs traceable to their relevant source and version.
+- Present prediction/recommendation outputs as model-generated estimates with relevant model/version and availability context. Do not let them silently replace or modify a human-reviewed mark; faculty visibility and explanation requirements require policy approval.
 - Do not infer or publish scores, model outputs, or review decisions as final before the authorized human action and applicable institutional rules are satisfied.
+- Record consequential access/configuration changes and review/release actions in an auditable history; retention and permitted access to that history remain open decisions.
 - Future multi-tenant support will require explicit isolation design and verification. This proposal does not define or claim that enforcement.
 
 ## Current implementation
