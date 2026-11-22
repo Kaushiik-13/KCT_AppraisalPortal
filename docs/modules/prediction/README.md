@@ -14,7 +14,8 @@ No implementation of the **new production-oriented module** has been verified ye
 - Prediction outputs may inform dashboards or faculty-facing experiences only under approved institutional policy and access rules.
 - Keep experimental outputs, approved predictions, and supervisor-released KPI marks distinct. Where policy enables faculty-facing predictions, show only the faculty member's permitted result as an estimate with its cycle and model context; predictions do not change official marks.
 - The shared [project role/access proposal](../../project/UI-UX.md) describes the cross-platform visibility boundary; this module owns prediction experiment and output details.
-- Training runtime, job processing, model storage, approval/publication, and monitoring are technical decisions still to be made. Existing PoC behavior is not a production contract.
+- Proposed: the institution's organization administrators train, evaluate and publish prediction models; faculty and supervisors only see outputs the institution has published and enabled for them. See [PD-001 in Decisions](DECISIONS.md).
+- Training runtime, job processing, model storage, any additional approval step, and monitoring are technical decisions still to be made. Existing PoC behavior is not a production contract.
 
 ## Known limitations
 - Technical design, persistence model, integration contracts and production verification are not yet established.
