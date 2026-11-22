@@ -31,8 +31,8 @@ export default function SetupLayout({ children }: { children: React.ReactNode })
         </p>
       </div>
 
-      <div className="mx-auto grid w-full max-w-6xl flex-1 gap-10 px-5 py-8 md:grid-cols-[220px_minmax(0,1fr)]">
-        <nav aria-label="Setup steps" className="md:sticky md:top-10 md:self-start">
+      <div className="mx-auto grid w-full max-w-6xl flex-1 gap-10 px-5 py-8 grid-cols-[minmax(0,1fr)] md:grid-cols-[220px_minmax(0,1fr)]">
+        <nav aria-label="Setup steps" className="min-w-0 md:sticky md:top-10 md:self-start">
           <ol className="flex gap-4 overflow-x-auto md:grid md:gap-0">
             {SETUP_STEPS.map((s, i) => {
               const done = i < current;
@@ -71,7 +71,7 @@ export default function SetupLayout({ children }: { children: React.ReactNode })
           </ol>
         </nav>
 
-        <main className="grid content-start gap-8">
+        <main className="grid min-w-0 content-start gap-8">
           <SetupProvider>{children}</SetupProvider>
           {isLast ? null : (
             <div className="flex items-center justify-between border-t pt-5">

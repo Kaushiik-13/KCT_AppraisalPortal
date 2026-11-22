@@ -28,7 +28,7 @@ Open `http://127.0.0.1:5173/signup`. On Windows PowerShell, if `npm` is blocked 
 | 5 | `/setup/employees` | Employees | List grouped by department; add-employee popup; **per-department import popup** with drag and drop; move person between departments; remove; search. |
 | 6 | `/setup/roles` | Roles and reviewers | Two clearly separated steps: (1) choose who can review others, (2) assign a reviewer to each person with bulk select and a "without a reviewer" filter. Step 2 is locked until a reviewer exists. |
 | 7 | `/setup/configuration` | Configuration | Dates and locale, invitations and email, access and security, evidence and data (see [Configuration fields](#configuration-fields-prototype)). |
-| 8 | `/setup/review` | Review and send invitations | **Not built yet.** |
+| 8 | `/setup/review` | Review and finish | Non-blocking checks with Fix links, a summary of every step with Edit links, and a confirmation popup before "Send invitations". After sending, a result list shows each person as Invited. "Start the demo over" resets the prototype. Nothing is actually sent. |
 
 The setup screens (3 to 8) share one layout: a title ("Organization onboarding"), a left vertical stepper, and Back and Continue buttons. `/` redirects to `/signup`.
 
@@ -56,7 +56,7 @@ Defined in `apps/web/app/globals.css` as shadcn semantic tokens. Components must
 | `--warning` | `#B45309` | `#FBBF24` | Needs attention |
 | `--info` | `#2F54EB` | `#6B8AFF` | Invited, in progress |
 
-`--success`, `--warning` and `--info` (and their foregrounds) are provisional additions; the shared status-color decision is tracked in `docs/project/UI-UX.md`. The dark tokens exist but **dark mode is not verified** and the prototype has no theme toggle.
+`--success`, `--warning` and `--info` (and their foregrounds) are provisional additions; the shared status-color decision is tracked in `docs/project/UI-UX.md`. The dark tokens exist and apply when the `dark` class is set on the page, but dark mode has only had a spot check (see [Testing](TESTING.md)) and the prototype has no theme toggle.
 
 ### Department accent colors
 
@@ -94,9 +94,9 @@ The color is a visual aid only. Information must never depend on color alone; th
 
 ### shadcn/ui primitives used (`apps/web/components/ui`)
 
-`button`, `input`, `label`, `select`, `switch`, `dialog`, `card`, `dropdown-menu`, `checkbox`, `badge`.
+`button`, `input`, `label`, `select`, `switch`, `dialog`, `alert-dialog`, `card`, `dropdown-menu`, `checkbox`, `badge`.
 
-Installed from shadcn but **not currently used**: `alert`, `alert-dialog`, `progress`, `radio-group`, `separator`, `sheet`, `skeleton`, `table`, `tabs`, `textarea`, `tooltip`. They can be pruned before a PR if reviewers prefer.
+Installed from shadcn but **not currently used**: `alert`, `progress`, `radio-group`, `separator`, `sheet`, `skeleton`, `table`, `tabs`, `textarea`, `tooltip`. They can be pruned before a PR if reviewers prefer.
 
 ### Prototype components (`apps/web/components`)
 
@@ -123,7 +123,7 @@ No competing UI kit is used.
 
 These describe what the screens collect. They are **proposals to inform later database and API decisions**, not contracts. Fields are free text with no validation in the prototype.
 
-- **Organization:** name, type, number-of-employees range, country, city, website, contact email, phone, logo (not stored).
+- **Organization:** name, type, number-of-employees range, country, city, website, contact email, phone, logo (not stored). Organization details are held in the prototype store and shown on the review screen.
 - **Department:** name, optional code, accent color, order. Flat; nesting is not modeled.
 - **Employee:** name, work email, job title, department, "can review others", reviewer (another employee). A person can be a reviewer and also be reviewed, but cannot be chosen as their own reviewer.
 - **Configuration:** see below.
@@ -154,10 +154,9 @@ KPI, KRA, scoring and weight settings belong to Framework Studio, and model sett
 Deviations from the acceptance criteria written in Issue #69:
 
 - The persistent on-screen banner that the screens are not connected to a backend was **removed** in this version. The prototype still must not claim real onboarding; a banner should be restored or the criterion changed.
-- Several states listed in Issue #69 are **not covered**: verification pending and expired code, import bad and duplicate rows, expired invitation, session expired, access denied, saved for later, self-review conflict, and a setup home.
-- The Review and send invitations screen is **not built**.
+- Several states listed in Issue #69 are **not covered**: verification pending and expired code, import bad and duplicate rows, expired invitation or delivery failure after sending, session expired, access denied, saved for later, and a setup home. The review checks are informational and never block sending; a self-review conflict cannot occur because a person is never offered as their own reviewer.
 - Browser `sessionStorage` is used to carry demo data between pages. It is not presented as real persistence, but the issue asked for in-memory only.
-- No automated tests exist for the prototype. Verification so far: TypeScript check, a production build, and screenshots of each screen in light mode.
-- Not verified: dark mode, keyboard-only flow, screen-reader behavior, responsive layouts below desktop width, and a formal accessibility review.
+- No automated tests are committed for the prototype. Verification so far: TypeScript check, a production build, screenshots of each screen, and a one-off end-to-end run (144 of 144 checks passed on 2026-11-23). The scope and gaps of that run are recorded in [Testing](TESTING.md).
+- Not verified: a full dark-mode visual review, a keyboard-only pass of every flow, screen-reader behavior, other browsers, and a formal accessibility review. At a 390 px phone width nothing overflows the screen, but the layouts were not designed or reviewed for mobile use.
 
 Documentation outside this module that is out of date and needs a separate documentation change: `apps/web/README.md` and `docs/project/REPOSITORY-STRUCTURE.md` still describe `apps/web` as an empty starter shell. The shared palette and component guidance in `docs/project/UI-UX.md` is not updated by this module; adopting the tokens above project-wide needs its own documentation PR.

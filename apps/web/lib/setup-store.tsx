@@ -37,7 +37,23 @@ export type Config = {
   retentionYears: number; // 0 = keep until deleted
 };
 
+export type Organization = {
+  name: string;
+  type: string;
+  size: string;
+  country: string;
+  city: string;
+  website: string;
+  contactEmail: string;
+  phone: string;
+};
+
 type Store = {
+  organization: Organization;
+  setOrganization: (patch: Partial<Organization>) => void;
+  invitesSent: boolean;
+  sendInvitations: () => void;
+  resetAll: () => void;
   config: Config;
   setConfig: (patch: Partial<Config>) => void;
   departments: Department[];
@@ -87,6 +103,8 @@ const CONFIG_DEFAULT: Config = {
   retentionYears: 7,
 };
 
+const ORG_DEFAULT: Organization = { name: '', type: '', size: '', country: '', city: '', website: '', contactEmail: '', phone: '' };
+
 const Ctx = createContext<Store | null>(null);
 const uid = () => crypto.randomUUID();
 const norm = (e: Partial<Omit<Employee, 'id'>>): Employee => ({
@@ -103,6 +121,8 @@ export function SetupProvider({ children }: { children: ReactNode }) {
   const [departments, setDepartments] = useState<Department[]>(DEPT_SEED);
   const [employees, setEmployees] = useState<Employee[]>(EMP_SEED);
   const [config, setConfigState] = useState<Config>(CONFIG_DEFAULT);
+  const [organization, setOrganizationState] = useState<Organization>(ORG_DEFAULT);
+  const [invitesSent, setInvitesSent] = useState(false);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -116,6 +136,8 @@ export function SetupProvider({ children }: { children: ReactNode }) {
         for (const d of deps) fixed.push({ ...d, color: d.color || nextColorKey(fixed.map((x) => x.color)) });
         setDepartments(fixed);
         if (saved.config) setConfigState({ ...CONFIG_DEFAULT, ...saved.config });
+        if (saved.organization) setOrganizationState({ ...ORG_DEFAULT, ...saved.organization });
+        if (saved.invitesSent) setInvitesSent(true);
         if (saved.employees) {
           setEmployees(saved.employees.map((e: Employee) => ({ ...e, isReviewer: e.isReviewer ?? false, reviewerId: e.reviewerId ?? '' })));
         }
@@ -127,12 +149,23 @@ export function SetupProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!ready) return;
     try {
-      sessionStorage.setItem(KEY, JSON.stringify({ departments, employees, config }));
+      sessionStorage.setItem(KEY, JSON.stringify({ departments, employees, config, organization, invitesSent }));
     } catch {}
-  }, [departments, employees, config, ready]);
+  }, [departments, employees, config, organization, invitesSent, ready]);
 
   const value = useMemo<Store>(
     () => ({
+      organization,
+      setOrganization: (patch) => setOrganizationState((o) => ({ ...o, ...patch })),
+      invitesSent,
+      sendInvitations: () => setInvitesSent(true),
+      resetAll: () => {
+        setDepartments(DEPT_SEED);
+        setEmployees(EMP_SEED);
+        setConfigState(CONFIG_DEFAULT);
+        setOrganizationState(ORG_DEFAULT);
+        setInvitesSent(false);
+      },
       config,
       setConfig: (patch) => setConfigState((c) => ({ ...c, ...patch })),
       departments,
@@ -171,7 +204,7 @@ export function SetupProvider({ children }: { children: ReactNode }) {
       setReviewerForDepartment: (departmentId, reviewerId) =>
         setEmployees((l) => l.map((x) => (x.departmentId === departmentId && x.id !== reviewerId ? { ...x, reviewerId } : x))),
     }),
-    [departments, employees, config],
+    [departments, employees, config, organization, invitesSent],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

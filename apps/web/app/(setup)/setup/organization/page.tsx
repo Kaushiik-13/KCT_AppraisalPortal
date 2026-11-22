@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
 import { Building2, CircleCheck, ImageUp } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { SETUP_STEPS } from '@/lib/setup-steps';
+import { useSetup } from '@/lib/setup-store';
 
 const TYPES = ['Educational institution', 'Software or IT company', 'Consulting or services', 'Healthcare', 'Banking or finance', 'Manufacturing', 'Government or public sector', 'Other'];
 const COUNTRIES = ['India', 'United States', 'United Kingdom', 'United Arab Emirates', 'Singapore', 'Other'];
@@ -22,9 +22,9 @@ function Field({ id, label, hint, children, className }: { id: string; label: st
   );
 }
 
-function Pick({ id, placeholder, items, onChange }: { id: string; placeholder: string; items: string[]; onChange?: (v: string) => void }) {
+function Pick({ id, placeholder, items, value, onChange }: { id: string; placeholder: string; items: string[]; value: string; onChange: (v: string) => void }) {
   return (
-    <Select onValueChange={onChange}>
+    <Select value={value || undefined} onValueChange={onChange}>
       <SelectTrigger id={id} className="w-full">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
@@ -38,10 +38,8 @@ function Pick({ id, placeholder, items, onChange }: { id: string; placeholder: s
 }
 
 export default function OrganizationPage() {
-  const [name, setName] = useState('');
-  const [type, setType] = useState('');
-  const [country, setCountry] = useState('');
-  const [city, setCity] = useState('');
+  const { organization: o, setOrganization } = useSetup();
+  const { name, type, country, city } = o;
 
   const meta = [type, [city, country].filter(Boolean).join(', ')].filter(Boolean).join(' · ');
 
@@ -63,22 +61,22 @@ export default function OrganizationPage() {
             </CardHeader>
             <CardContent className="grid gap-5 sm:grid-cols-2">
               <Field id="name" label="Organization name" className="sm:col-span-2">
-                <Input id="name" placeholder="Acme Technologies" value={name} onChange={(e) => setName(e.target.value)} />
+                <Input id="name" placeholder="Acme Technologies" value={name} onChange={(e) => setOrganization({ name: e.target.value })} />
               </Field>
               <Field id="type" label="Type">
-                <Pick id="type" placeholder="Select type" items={TYPES} onChange={setType} />
+                <Pick id="type" placeholder="Select type" items={TYPES} value={o.type} onChange={(v) => setOrganization({ type: v })} />
               </Field>
               <Field id="size" label="Number of employees" hint="An estimate is fine.">
-                <Pick id="size" placeholder="Select range" items={SIZES} />
+                <Pick id="size" placeholder="Select range" items={SIZES} value={o.size} onChange={(v) => setOrganization({ size: v })} />
               </Field>
               <Field id="country" label="Country">
-                <Pick id="country" placeholder="Select country" items={COUNTRIES} onChange={setCountry} />
+                <Pick id="country" placeholder="Select country" items={COUNTRIES} value={o.country} onChange={(v) => setOrganization({ country: v })} />
               </Field>
               <Field id="city" label="City">
-                <Input id="city" placeholder="Bengaluru" value={city} onChange={(e) => setCity(e.target.value)} />
+                <Input id="city" placeholder="Bengaluru" value={city} onChange={(e) => setOrganization({ city: e.target.value })} />
               </Field>
               <Field id="website" label="Website" className="sm:col-span-2">
-                <Input id="website" placeholder="https://www.acme.com" />
+                <Input id="website" placeholder="https://www.acme.com" value={o.website} onChange={(e) => setOrganization({ website: e.target.value })} />
               </Field>
             </CardContent>
           </Card>
@@ -90,10 +88,10 @@ export default function OrganizationPage() {
             </CardHeader>
             <CardContent className="grid gap-5 sm:grid-cols-2">
               <Field id="contact" label="Official contact email">
-                <Input id="contact" type="email" placeholder="hr@acme.com" />
+                <Input id="contact" type="email" placeholder="hr@acme.com" value={o.contactEmail} onChange={(e) => setOrganization({ contactEmail: e.target.value })} />
               </Field>
               <Field id="phone" label="Phone">
-                <Input id="phone" type="tel" placeholder="+91 98765 43210" />
+                <Input id="phone" type="tel" placeholder="+91 98765 43210" value={o.phone} onChange={(e) => setOrganization({ phone: e.target.value })} />
               </Field>
             </CardContent>
           </Card>
