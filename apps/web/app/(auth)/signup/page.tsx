@@ -25,9 +25,11 @@ export default function SignUpPage() {
         className="grid gap-4"
         onSubmit={(e) => {
           e.preventDefault();
-          const email = String(new FormData(e.currentTarget).get('email') ?? '');
+          const data = new FormData(e.currentTarget);
+          const email = String(data.get('email') ?? '');
           try {
             sessionStorage.setItem('afpi-signup-email', email);
+            sessionStorage.setItem('afpi-signup-name', String(data.get('name') ?? ''));
           } catch {}
           router.push('/signup/verify');
         }}

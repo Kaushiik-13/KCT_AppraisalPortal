@@ -2,7 +2,7 @@
 
 ## Status
 
-**Current implementation:** a clickable, **nonfunctional design prototype** of the Organization onboarding screens in `apps/web` (Issue #69). It has no backend, no authentication, no email, no database and no validation. Data lives in React state and is kept only in the browser tab's `sessionStorage` so the flow can be demonstrated across pages. It is **not** a production onboarding flow and must not be described as one.
+**Current implementation:** a clickable, **nonfunctional design prototype** of the Organization onboarding screens and the first signed-in administrator screens in `apps/web` (Issue #69). It has no backend, no authentication, no email, no database and no validation. Data lives in React state and is kept only in the browser tab's `sessionStorage` so the flow can be demonstrated across pages. It is **not** a production onboarding flow and must not be described as one.
 
 **Proposed design:** the screens, field sets, colors and components below are proposals for review. They are not approved contracts for data, API or permissions.
 
@@ -31,6 +31,26 @@ Open `http://127.0.0.1:5173/signup`. On Windows PowerShell, if `npm` is blocked 
 | 8 | `/setup/review` | Review and finish | Non-blocking checks with Fix links, a summary of every step with Edit links, and a confirmation popup before "Send invitations". After sending, a result list shows each person as Invited. "Start the demo over" resets the prototype. Nothing is actually sent. |
 
 The setup screens (3 to 8) share one layout: a title ("Organization onboarding"), a left vertical stepper, and Back and Continue buttons. `/` redirects to `/signup`.
+
+### Signed-in screens
+
+| Route | Screen | What the prototype shows |
+|---|---|---|
+| `/login` | Log in | Work email, password with show/hide, "keep me signed in", link to reset and to sign up. Log in goes to `/home`. |
+| `/forgot-password` | Reset password | Email field, then a "Check your email" state with "use a different email". |
+| `/accept-invitation` | Accept invitation | Sample invitation (organization, who invited, email, department, job title), name and password. Submit goes to `/login`. |
+| `/accept-invitation/expired` | Expired invitation | Message to ask the administrator for a new link. |
+| `/home` | Home | KPI tiles (completion, average score, reviews pending, participation), average score by cycle (line), review status (stacked bar), average score by department (bars). |
+| `/invitations` | Invitations | Status filters with counts, search, table with status dot and detail, Resend or Retry per row, light bulk-resend bar. A banner links to the Review step if nothing has been sent. |
+| `/people` | People | Active and Deactivated tabs, department and role filters, search, edit dialog, Deactivate or Reactivate, Add person (reuses the setup popup). |
+
+`/departments`, `/roles` and `/settings` appear in the sidebar as "Soon" and are not built.
+
+**App shell** (`apps/web/app/(app)/layout.tsx`, wraps the signed-in routes): left sidebar with the organization name and type at the top, navigation, a setup-progress block (becomes "Setup complete" at the end) and the user menu (profile placeholder, log out) at the bottom; a top bar with a breadcrumb, a search box (Ctrl K focuses it; it searches nothing), an appraisal-cycle selector (changes nothing) and a bell listing "needs attention" items with actions; "Powered by AFPI" fixed at the bottom right.
+
+**Sample data.** Appraisal scores, review counts, trends, department scores, invitation outcomes (Joined, Invited, Expired, Failed are cycled across people after "Send invitations") and the cycle list are fixed sample values. They stand in for data that Framework Studio and a real invitation service would provide. When setup is fully complete the prototype shows everyone as joined. The people counts, departments, reviewers and setup progress come from the setup data in `sessionStorage`. Deactivation on the People screen lives in page memory only and is lost on reload.
+
+The charts are hand-drawn SVG and CSS bars. No charting library was added; one (for example the shadcn chart component on `recharts`) can replace them if reviewers prefer.
 
 The earlier prototype (institution wording, six onboarding steps, setup home, simulations panel) was discarded in favor of this version. Its history remains in the branch's first commit.
 
@@ -105,6 +125,7 @@ Installed from shadcn but **not currently used**: `alert`, `progress`, `radio-gr
 | `brand.tsx` | AFPI mark and name |
 | `color-picker.tsx` | Row of small light swatches (radio group) for a department color |
 | `add-employee-dialog.tsx` | Add-employee popup with "add and add another" |
+| `lib/admin-user.ts`, `lib/setup-progress.ts` | Prototype hooks: the signed-in person (from sign-up, with a sample fallback) and the setup-progress and needs-attention list |
 | `import-employees.tsx` | Per-department drag and drop import popup |
 
 ### Libraries and justification
@@ -154,6 +175,7 @@ KPI, KRA, scoring and weight settings belong to Framework Studio, and model sett
 Deviations from the acceptance criteria written in Issue #69:
 
 - The persistent on-screen banner that the screens are not connected to a backend was **removed** in this version. The prototype still must not claim real onboarding; a banner should be restored or the criterion changed.
+- The signed-in screens (home, invitations, people) and their sample data go beyond the onboarding scope written in Issue #69. They are design proposals; metric definitions, the invitation lifecycle and the administrator's monitoring responsibilities still need stakeholder agreement (see [UI/UX](UI-UX.md)).
 - Several states listed in Issue #69 are **not covered**: verification pending and expired code, import bad and duplicate rows, expired invitation or delivery failure after sending, session expired, access denied, saved for later, and a setup home. The review checks are informational and never block sending; a self-review conflict cannot occur because a person is never offered as their own reviewer.
 - Browser `sessionStorage` is used to carry demo data between pages. It is not presented as real persistence, but the issue asked for in-memory only.
 - No automated tests are committed for the prototype. Verification so far: TypeScript check, a production build, screenshots of each screen, and a one-off end-to-end run (144 of 144 checks passed on 2026-11-23). The scope and gaps of that run are recorded in [Testing](TESTING.md).

@@ -6,7 +6,7 @@
 Provide the institution setup and administrative workspace that configures and facilitates AFPI's appraisal operations.
 
 ## Current implementation
-No implementation of the **new production-oriented module** has been verified yet. A **nonfunctional UI design prototype** of the onboarding screens exists in `apps/web` (no backend, authentication, email, persistence or validation); see [UI prototype and design reference](UI-PROTOTYPE.md). Historical PoC functionality, where available, is retained solely in the [legacy archive](../../reference/legacy/README.md).
+No implementation of the **new production-oriented module** has been verified yet. A **nonfunctional UI design prototype** of the onboarding screens and the first signed-in administrator screens (login, home, invitations, people) exists in `apps/web` (no backend, authentication, email, persistence or validation); see [UI prototype and design reference](UI-PROTOTYPE.md). Historical PoC functionality, where available, is retained solely in the [legacy archive](../../reference/legacy/README.md).
 
 ## Proposed design
 - Set up the first-release institution workspace and manage permitted members and supervisor assignments.

@@ -32,6 +32,10 @@
 - On a phone-width screen the setup layout was wider than the screen, so the right side of the content was cut off. Fixed in the setup layout (grid columns and minimum widths).
 - `apps/web/lib/utils.ts` re-exported `cn` from an unrelated npm package. Replaced with the standard `clsx` and `tailwind-merge` helper.
 
+## Signed-in screens (checked by hand, not part of the 144-check run)
+
+After the run above, these screens were added: log in, forgot password, accept invitation (and expired), the signed-in shell (sidebar, top bar, bell, setup progress), home, invitations and people. They were checked by hand in the browser only: type check, screen renders, and spot checks (resend an invitation, select rows, edit a person, deactivate a person, open the bell). They have **no scripted end-to-end coverage**, and dark mode, keyboard-only use and phone layouts were not reviewed for them.
+
 **Not covered**
 
 - Screen-reader behavior, a full keyboard-only pass of every flow, and a formal accessibility review (WCAG 2.2 AA).
