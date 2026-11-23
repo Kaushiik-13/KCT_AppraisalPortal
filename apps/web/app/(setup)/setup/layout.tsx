@@ -33,7 +33,7 @@ export default function SetupLayout({ children }: { children: React.ReactNode })
 
       <div className="mx-auto grid w-full max-w-6xl flex-1 gap-10 px-5 py-8 grid-cols-[minmax(0,1fr)] md:grid-cols-[220px_minmax(0,1fr)]">
         <nav aria-label="Setup steps" className="min-w-0 md:sticky md:top-10 md:self-start">
-          <ol className="flex gap-4 overflow-x-auto md:grid md:gap-0">
+          <ol className="flex gap-4 overflow-x-auto p-1 -m-1 md:grid md:gap-0 md:overflow-visible">
             {SETUP_STEPS.map((s, i) => {
               const done = i < current;
               const active = i === current;
