@@ -1,6 +1,8 @@
 'use client';
 
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { PageHeader } from '@/components/page-header';
+import { Panel, StatGrid, StatTile } from '@/components/stat-tile';
 import { useAdminUser } from '@/lib/admin-user';
 import { useSetupProgress } from '@/lib/setup-progress';
 import { useSetup } from '@/lib/setup-store';
@@ -19,27 +21,6 @@ const REVIEW_STATUS = [
 function greeting() {
   const h = new Date().getHours();
   return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
-}
-
-function Tile({ label, value, note, tone }: { label: string; value: string; note: string; tone?: 'up' | 'down' }) {
-  return (
-    <div className="bg-card grid gap-1 p-4">
-      <span className="text-muted-foreground text-xs">{label}</span>
-      <span className="text-2xl font-semibold tabular-nums">{value}</span>
-      <span className={tone === 'up' ? 'text-success text-xs' : tone === 'down' ? 'text-destructive text-xs' : 'text-muted-foreground text-xs'}>
-        {note}
-      </span>
-    </div>
-  );
-}
-
-function Panel({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <section className="bg-card grid content-start gap-3 rounded-lg border p-4 h-full">
-      <h2 className="text-sm font-semibold">{title}</h2>
-      {children}
-    </section>
-  );
 }
 
 function useWidth<T extends HTMLElement>() {
@@ -112,25 +93,21 @@ export default function HomePage() {
 
   return (
     <>
-      <header className="grid gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight">
-          {greeting()}, {user.name.split(' ')[0]}
-        </h1>
-        <p className="text-muted-foreground text-sm">
-          Appraisal cycle 2026 H1 · scores and reviews are sample data until Framework Studio is built
-        </p>
-      </header>
+      <PageHeader
+        title={`${greeting()}, ${user.name.split(' ')[0]}`}
+        description="Appraisal cycle 2026 H1 · scores and reviews are sample data until Framework Studio is built"
+      />
 
-      <section aria-label="Key numbers" className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border bg-border md:grid-cols-4">
-        <Tile label="Appraisal completion" value="72%" note="▲ 8 pts vs last cycle" tone="up" />
-        <Tile label="Average score" value="3.9" note="▲ 0.3 vs last cycle" tone="up" />
-        <Tile label="Reviews pending" value="14" note="3 overdue" tone="down" />
-        <Tile
+      <StatGrid label="Key numbers">
+        <StatTile label="Appraisal completion" value="72%" note="▲ 8 pts vs last cycle" tone="up" />
+        <StatTile label="Average score" value="3.9" note="▲ 0.3 vs last cycle" tone="up" />
+        <StatTile label="Reviews pending" value="14" note="3 overdue" tone="down" />
+        <StatTile
           label="Participation"
           value={`${participation}%`}
           note={invitesSent ? `${Math.round((participation / 100) * employees.length)} of ${employees.length} joined` : 'Invitations not sent'}
         />
-      </section>
+      </StatGrid>
 
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2">

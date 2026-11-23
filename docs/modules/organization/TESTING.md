@@ -34,7 +34,7 @@
 
 ## Signed-in screens (checked by hand, not part of the 144-check run)
 
-After the run above, these screens were added: log in, forgot password, accept invitation (and expired), the signed-in shell (sidebar, top bar, bell, setup progress), home, invitations and people. They were checked by hand in the browser only: type check, screen renders, and spot checks (resend an invitation, select rows, edit a person, deactivate a person, open the bell). They have **no scripted end-to-end coverage**, and dark mode, keyboard-only use and phone layouts were not reviewed for them.
+After the run above, these screens were added: log in, forgot password, accept invitation (and expired), the signed-in shell (sidebar, top bar, bell, setup progress), home, invitations, people (with departments, reviewer picker and CSV import) and settings. They were checked by hand in the browser only: type check, screen renders, and spot checks (resend an invitation, select rows, edit a person, deactivate a person, open the bell, filter by department and "No reviewer", import into a department, open Settings sections and the Save bar). The shared components were checked by confirming each page still renders its tabs, rows, chips and tiles. They have **no scripted end-to-end coverage**, and dark mode, keyboard-only use and phone layouts were not reviewed for them.
 
 **Not covered**
 

@@ -42,11 +42,12 @@ The setup screens (3 to 8) share one layout: a title ("Organization onboarding")
 | `/accept-invitation/expired` | Expired invitation | Message to ask the administrator for a new link. |
 | `/home` | Home | KPI tiles (completion, average score, reviews pending, participation), average score by cycle (line), review status (stacked bar), average score by department (bars). |
 | `/invitations` | Invitations | Status filters with counts, search, table with status dot and detail, Resend or Retry per row, light bulk-resend bar. A banner links to the Review step if nothing has been sent. |
-| `/people` | People | Active and Deactivated tabs, department and role filters, search, edit dialog, Deactivate or Reactivate, Add person (reuses the setup popup). |
+| `/people` | People (with departments) | One page for people and departments. A department list on the left (live counts, add a department, a "No reviewer" shortcut) filters one table on the right. Active and Deactivated tabs, role filter, search, a reviewer picker in each row, edit dialog, Deactivate or Reactivate, Add person (opens with the selected department), Import CSV (reuses the setup import popup; into the selected department, or a menu of departments when "All people" is selected). |
+| `/settings` | Settings | Left list of sections (Organization profile, Dates and locale, Invitations and email, Access and security, Evidence and data). Edits are held as a draft; a Save bar with Save changes and Discard appears only when something changed, and shows "Saved" afterwards. Reuses the setup Configuration controls (date format is a dropdown here). |
 
-`/departments`, `/roles` and `/settings` appear in the sidebar as "Soon" and are not built.
+There are no separate Departments or Roles and reviewers pages after setup: departments and reviewer assignment live on People. The sidebar is Home, People, Invitations, Settings.
 
-**App shell** (`apps/web/app/(app)/layout.tsx`, wraps the signed-in routes): left sidebar with the organization name and type at the top, navigation, a setup-progress block (becomes "Setup complete" at the end) and the user menu (profile placeholder, log out) at the bottom; a top bar with a breadcrumb, a search box (Ctrl K focuses it; it searches nothing), an appraisal-cycle selector (changes nothing) and a bell listing "needs attention" items with actions; "Powered by AFPI" fixed at the bottom right.
+**App shell** (`apps/web/app/(app)/layout.tsx`, wraps the signed-in routes): left sidebar with the organization name and type at the top, navigation, a setup-progress block (becomes "Setup complete" at the end) and the user menu (profile placeholder, log out) at the bottom; a rigid layout (the sidebar and top bar stay fixed; only the page body scrolls), a top bar with a breadcrumb, a search box (Ctrl K focuses it; it searches nothing), an appraisal-cycle selector (changes nothing) and a bell listing "needs attention" items with actions; "Powered by AFPI" fixed at the bottom right.
 
 **Sample data.** Appraisal scores, review counts, trends, department scores, invitation outcomes (Joined, Invited, Expired, Failed are cycled across people after "Send invitations") and the cycle list are fixed sample values. They stand in for data that Framework Studio and a real invitation service would provide. When setup is fully complete the prototype shows everyone as joined. The people counts, departments, reviewers and setup progress come from the setup data in `sessionStorage`. Deactivation on the People screen lives in page memory only and is lost on reload.
 
@@ -126,7 +127,11 @@ Installed from shadcn but **not currently used**: `alert`, `progress`, `radio-gr
 | `color-picker.tsx` | Row of small light swatches (radio group) for a department color |
 | `add-employee-dialog.tsx` | Add-employee popup with "add and add another" |
 | `lib/admin-user.ts`, `lib/setup-progress.ts` | Prototype hooks: the signed-in person (from sign-up, with a sample fallback) and the setup-progress and needs-attention list |
-| `import-employees.tsx` | Per-department drag and drop import popup |
+| `import-employees.tsx` | Per-department drag and drop import popup (setup and People) |
+| `settings-rows.tsx` | `Section`, `Row`, `Pick`, `Toggle`, `Segmented`: shared by the setup Configuration step and Settings |
+| `page-header.tsx`, `search-field.tsx`, `status-tabs.tsx` | Page title block with actions, search box, filter tabs (soft or underline style) |
+| `person-avatar.tsx`, `department-chip.tsx`, `status-dot.tsx`, `table-empty.tsx` | Initials badge, department tag, dot and label, empty table row |
+| `stat-tile.tsx` | `StatTile`, `StatGrid`, `Panel` used by Home |
 
 ### Libraries and justification
 

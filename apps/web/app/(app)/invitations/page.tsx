@@ -2,10 +2,14 @@
 
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
-import { Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
+import { DepartmentChip } from '@/components/department-chip';
+import { PageHeader } from '@/components/page-header';
+import { SearchField } from '@/components/search-field';
+import { StatusDot } from '@/components/status-dot';
+import { StatusTabs } from '@/components/status-tabs';
+import { TableEmpty } from '@/components/table-empty';
 import { colorOf } from '@/lib/department-colors';
 import { useSetup } from '@/lib/setup-store';
 import { cn } from '@/lib/utils';
@@ -86,12 +90,7 @@ export default function InvitationsPage() {
 
   return (
     <>
-      <header className="grid gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight">Invitations</h1>
-        <p className="text-muted-foreground text-sm">
-          See who has joined, and resend links that were not used or did not arrive.
-        </p>
-      </header>
+      <PageHeader title="Invitations" description="See who has joined, and resend links that were not used or did not arrive." />
 
       {!invitesSent && (
         <div className="bg-secondary/60 flex flex-wrap items-center justify-between gap-3 rounded-lg border px-4 py-3 text-sm">
@@ -104,33 +103,13 @@ export default function InvitationsPage() {
 
       <section className="grid gap-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div role="tablist" aria-label="Filter by status" className="flex flex-wrap gap-1">
-            {FILTERS.map((f) => (
-              <button
-                key={f.key}
-                type="button"
-                role="tab"
-                aria-selected={filter === f.key}
-                onClick={() => setFilter(f.key)}
-                className={cn(
-                  'rounded-lg px-2.5 py-1 text-sm',
-                  filter === f.key ? 'bg-secondary text-foreground font-medium' : 'text-muted-foreground hover:text-foreground',
-                )}
-              >
-                {f.label} <span className="text-muted-foreground tabular-nums">{count(f.key)}</span>
-              </button>
-            ))}
-          </div>
-          <div className="relative w-full sm:w-64">
-            <Search className="text-muted-foreground pointer-events-none absolute top-2.5 left-2.5 size-4" aria-hidden />
-            <Input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search name or email"
-              aria-label="Search invitations"
-              className="pl-8"
-            />
-          </div>
+          <StatusTabs
+            label="Filter by status"
+            items={FILTERS.map((f) => ({ key: f.key, label: f.label, count: count(f.key) }))}
+            value={filter}
+            onChange={setFilter}
+          />
+          <SearchField value={query} onChange={setQuery} placeholder="Search name or email" label="Search invitations" className="w-full sm:w-64" />
         </div>
 
         {picked.size > 0 && (
@@ -193,22 +172,10 @@ export default function InvitationsPage() {
                     </div>
                   </td>
                   <td className="px-3 py-2.5">
-                    {dept ? (
-                      <span
-                        className="rounded-[4px] px-1.5 py-0.5 text-xs font-medium whitespace-nowrap"
-                        style={{ backgroundColor: color.bg, color: color.fg }}
-                      >
-                        {dept.name}
-                      </span>
-                    ) : (
-                      <span className="text-muted-foreground text-xs">No department</span>
-                    )}
+                    <DepartmentChip name={dept?.name} color={dept ? color : undefined} />
                   </td>
                   <td className="px-3 py-2.5">
-                    <span className="flex items-center gap-2 whitespace-nowrap">
-                      <span className={cn('size-2 rounded-full', STATUS[status].dot)} aria-hidden />
-                      {STATUS[status].label}
-                    </span>
+                    <StatusDot label={STATUS[status].label} dot={STATUS[status].dot} />
                   </td>
                   <td className="text-muted-foreground px-3 py-2.5 text-xs">{detail}</td>
                   <td className="px-4 py-2.5 text-right">
@@ -221,11 +188,7 @@ export default function InvitationsPage() {
                 </tr>
               ))}
               {visible.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="text-muted-foreground px-4 py-8 text-center text-sm">
-                    No invitations match.
-                  </td>
-                </tr>
+                <TableEmpty colSpan={6}>No invitations match.</TableEmpty>
               )}
             </tbody>
           </table>

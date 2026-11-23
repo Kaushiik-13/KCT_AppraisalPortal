@@ -1,8 +1,15 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { MoreHorizontal, Plus, Search } from 'lucide-react';
+import { MoreHorizontal, Plus, Upload } from 'lucide-react';
 import { AddEmployeeDialog } from '@/components/add-employee-dialog';
+import { ImportDialog, type ImportTarget } from '@/components/import-employees';
+import { DepartmentChip } from '@/components/department-chip';
+import { PageHeader } from '@/components/page-header';
+import { PersonAvatar } from '@/components/person-avatar';
+import { SearchField } from '@/components/search-field';
+import { StatusTabs } from '@/components/status-tabs';
+import { TableEmpty } from '@/components/table-empty';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -16,22 +23,23 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { initials } from '@/lib/admin-user';
 import { colorOf } from '@/lib/department-colors';
 import { useSetup, type Employee } from '@/lib/setup-store';
 import { cn } from '@/lib/utils';
 
 const NONE = '__none__';
 const ALL = '__all__';
+const NOREV = '__norev__';
 
 export default function PeoplePage() {
-  const { employees, departments, updateEmployee } = useSetup();
+  const { employees, departments, updateEmployee, addDepartment } = useSetup();
   // Prototype only: deactivation is kept in this page's memory and is lost on reload.
   const [off, setOff] = useState<Set<string>>(new Set());
   const [status, setStatus] = useState<'active' | 'deactivated'>('active');
@@ -40,6 +48,8 @@ export default function PeoplePage() {
   const [query, setQuery] = useState('');
   const [editing, setEditing] = useState<Employee | null>(null);
   const [adding, setAdding] = useState<string | null>(null);
+  const [newDept, setNewDept] = useState<string | null>(null);
+  const [importing, setImporting] = useState<ImportTarget>(null);
 
   const rows = useMemo(
     () =>
@@ -49,7 +59,6 @@ export default function PeoplePage() {
           e,
           dept: departments[di],
           color: colorOf(departments[di]?.color, Math.max(di, 0)),
-          reviewer: employees.find((x) => x.id === e.reviewerId),
           active: !off.has(e.id),
         };
       }),
@@ -60,12 +69,17 @@ export default function PeoplePage() {
   const visible = rows.filter(
     (r) =>
       r.active === (status === 'active') &&
-      (dept === ALL || r.e.departmentId === (dept === NONE ? '' : dept)) &&
+      (dept === ALL ||
+        (dept === NOREV ? !r.e.reviewerId && !r.e.isReviewer : r.e.departmentId === (dept === NONE ? '' : dept))) &&
       (role === ALL || (role === 'reviewer' ? r.e.isReviewer : !r.e.isReviewer)) &&
       (!q || r.e.name.toLowerCase().includes(q) || r.e.email.toLowerCase().includes(q) || r.e.title.toLowerCase().includes(q)),
   );
   const activeCount = rows.filter((r) => r.active).length;
   const offCount = rows.length - activeCount;
+  const noReviewer = rows.filter((r) => r.active && !r.e.reviewerId && !r.e.isReviewer).length;
+  const countIn = (id: string) => rows.filter((r) => r.active && r.e.departmentId === id).length;
+  const selected = departments.find((d) => d.id === dept);
+  const reviewers = employees.filter((x) => x.isReviewer);
 
   const toggle = (id: string) =>
     setOff((prev) => {
@@ -75,57 +89,101 @@ export default function PeoplePage() {
       return n;
     });
 
+  const railItem = (key: string, label: string, n: number, dot?: string, warn?: boolean) => (
+    <button
+      key={key}
+      type="button"
+      onClick={() => setDept(key)}
+      aria-pressed={dept === key}
+      className={cn(
+        'flex w-full items-center justify-between gap-2 rounded-md px-2 py-1.5 text-left text-sm',
+        dept === key
+          ? 'bg-secondary text-foreground font-medium'
+          : warn
+            ? 'text-warning hover:bg-secondary/60'
+            : 'text-muted-foreground hover:bg-secondary/60 hover:text-foreground',
+      )}
+    >
+      <span className="flex min-w-0 items-center gap-2">
+        {dot && <span className="size-2 shrink-0 rounded-[2px]" style={{ background: dot }} aria-hidden />}
+        <span className="truncate">{label}</span>
+      </span>
+      <span className="text-xs tabular-nums">{n}</span>
+    </button>
+  );
+
   return (
     <>
-      <header className="flex flex-wrap items-end justify-between gap-4">
-        <div className="grid gap-1">
-          <h1 className="text-2xl font-semibold tracking-tight">People</h1>
-          <p className="text-muted-foreground text-sm">Everyone in your organization, their department and reviewer.</p>
-        </div>
-        <Button size="sm" onClick={() => setAdding('')}>
-          <Plus aria-hidden /> Add person
-        </Button>
-      </header>
-
-      <section className="grid gap-3">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div role="tablist" aria-label="Filter by status" className="flex gap-1">
-            {(
-              [
-                ['active', 'Active', activeCount],
-                ['deactivated', 'Deactivated', offCount],
-              ] as const
-            ).map(([key, label, n]) => (
-              <button
-                key={key}
-                type="button"
-                role="tab"
-                aria-selected={status === key}
-                onClick={() => setStatus(key)}
-                className={cn(
-                  'rounded-lg px-2.5 py-1 text-sm',
-                  status === key ? 'bg-secondary text-foreground font-medium' : 'text-muted-foreground hover:text-foreground',
-                )}
-              >
-                {label} <span className="text-muted-foreground tabular-nums">{n}</span>
-              </button>
-            ))}
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Select value={dept} onValueChange={setDept}>
-              <SelectTrigger className="w-44" aria-label="Department">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={ALL}>All departments</SelectItem>
+      <PageHeader
+        title="People"
+        description={`${activeCount} people in ${departments.length} departments`}
+        actions={
+          <>
+          {selected ? (
+            <Button size="sm" variant="outline" onClick={() => setImporting({ id: selected.id, name: selected.name, color: selected.color, code: selected.code })}>
+              <Upload aria-hidden /> Import CSV
+            </Button>
+          ) : (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="sm" variant="outline" disabled={departments.length === 0}>
+                  <Upload aria-hidden /> Import CSV
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Import into</DropdownMenuLabel>
                 {departments.map((d) => (
-                  <SelectItem key={d.id} value={d.id}>
+                  <DropdownMenuItem key={d.id} onSelect={() => setImporting({ id: d.id, name: d.name, color: d.color, code: d.code })}>
                     {d.name}
-                  </SelectItem>
+                  </DropdownMenuItem>
                 ))}
-                <SelectItem value={NONE}>No department</SelectItem>
-              </SelectContent>
-            </Select>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+          <Button size="sm" onClick={() => setAdding(selected ? selected.id : '')}>
+            <Plus aria-hidden /> Add person
+          </Button>
+          </>
+        }
+      />
+
+      <div className="bg-card grid overflow-hidden rounded-lg border md:grid-cols-[200px_minmax(0,1fr)]">
+        <aside className="grid content-start gap-0.5 border-b p-2 md:border-r md:border-b-0" aria-label="Departments">
+          <div className="text-muted-foreground flex items-center justify-between px-2 pt-1 pb-1.5 text-[11px] font-medium tracking-wide uppercase">
+            Departments
+            <Button variant="ghost" size="icon-xs" aria-label="Add department" onClick={() => setNewDept('')}>
+              <Plus aria-hidden />
+            </Button>
+          </div>
+          {railItem(ALL, 'All people', activeCount)}
+          {departments.map((d, i) => railItem(d.id, d.name, countIn(d.id), colorOf(d.color, i).fg))}
+          {newDept !== null && (
+            <form
+              className="px-1 pt-1"
+              onSubmit={(ev) => {
+                ev.preventDefault();
+                if (newDept.trim()) addDepartment(newDept);
+                setNewDept(null);
+              }}
+            >
+              <Input
+                autoFocus
+                value={newDept}
+                onChange={(ev) => setNewDept(ev.target.value)}
+                onBlur={() => setNewDept(null)}
+                placeholder="Department name"
+                aria-label="New department name"
+                className="h-8"
+              />
+            </form>
+          )}
+          <div className="bg-border mx-2 my-1.5 h-px" />
+          {railItem(NOREV, 'No reviewer', noReviewer, undefined, noReviewer > 0)}
+        </aside>
+
+        <section className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2 border-b p-3">
+            <SearchField value={query} onChange={setQuery} placeholder="Search people" label="Search people" className="min-w-40 flex-1" />
             <Select value={role} onValueChange={setRole}>
               <SelectTrigger className="w-36" aria-label="Role">
                 <SelectValue />
@@ -136,113 +194,115 @@ export default function PeoplePage() {
                 <SelectItem value="member">Not reviewers</SelectItem>
               </SelectContent>
             </Select>
-            <div className="relative w-full sm:w-56">
-              <Search className="text-muted-foreground pointer-events-none absolute top-2.5 left-2.5 size-4" aria-hidden />
-              <Input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search people"
-                aria-label="Search people"
-                className="pl-8"
-              />
-            </div>
           </div>
-        </div>
+          <StatusTabs
+            variant="underline"
+            label="Filter by status"
+            items={[
+              { key: 'active', label: 'Active', count: activeCount },
+              { key: 'deactivated', label: 'Deactivated', count: offCount },
+            ]}
+            value={status}
+            onChange={setStatus}
+          />
 
-        <div className="bg-card overflow-x-auto rounded-lg border">
-          <table className="w-full text-sm">
-            <thead className="text-muted-foreground border-b text-left text-xs">
-              <tr>
-                <th className="px-4 py-2 font-medium">Person</th>
-                <th className="px-3 py-2 font-medium">Department</th>
-                <th className="px-3 py-2 font-medium">Job title</th>
-                <th className="px-3 py-2 font-medium">Reviewer</th>
-                <th className="w-12 px-4 py-2">
-                  <span className="sr-only">Actions</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {visible.map(({ e, dept: d, color, reviewer, active }) => (
-                <tr key={e.id} className={cn(!active && 'text-muted-foreground')}>
-                  <td className="px-4 py-2.5">
-                    <div className="flex items-center gap-3">
-                      <span className="bg-secondary text-foreground grid size-8 shrink-0 place-items-center rounded-full text-xs font-medium">
-                        {initials(e.name)}
-                      </span>
-                      <div className="grid">
-                        <span className="flex items-center gap-2 font-medium">
-                          {e.name}
-                          {e.isReviewer && (
-                            <span className="text-muted-foreground border-border rounded-[4px] border px-1 text-[11px] font-normal">
-                              Reviewer
-                            </span>
-                          )}
-                        </span>
-                        <span className="text-muted-foreground text-xs">{e.email}</span>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-3 py-2.5">
-                    {d ? (
-                      <span
-                        className="rounded-[4px] px-1.5 py-0.5 text-xs font-medium whitespace-nowrap"
-                        style={{ backgroundColor: color.bg, color: color.fg }}
-                      >
-                        {d.name}
-                      </span>
-                    ) : (
-                      <span className="text-xs">No department</span>
-                    )}
-                  </td>
-                  <td className="px-3 py-2.5">{e.title || '—'}</td>
-                  <td className="px-3 py-2.5">
-                    {reviewer ? (
-                      reviewer.name
-                    ) : e.isReviewer ? (
-                      <span className="text-xs">Not reviewed</span>
-                    ) : (
-                      <span className="flex items-center gap-2 text-xs">
-                        <span className="bg-warning size-2 rounded-full" aria-hidden />
-                        No reviewer
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-4 py-2.5 text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon-xs" aria-label={`Actions for ${e.name}`}>
-                          <MoreHorizontal aria-hidden />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onSelect={() => setEditing(e)}>Edit details</DropdownMenuItem>
-                        <DropdownMenuItem onSelect={() => toggle(e.id)}>
-                          {active ? 'Deactivate' : 'Reactivate'}
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </td>
-                </tr>
-              ))}
-              {visible.length === 0 && (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="text-muted-foreground border-b text-left text-xs">
                 <tr>
-                  <td colSpan={5} className="text-muted-foreground px-4 py-8 text-center text-sm">
-                    No people match.
-                  </td>
+                  <th className="px-4 py-2 font-medium">Person</th>
+                  <th className="px-3 py-2 font-medium">Department</th>
+                  <th className="px-3 py-2 font-medium">Job title</th>
+                  <th className="px-3 py-2 font-medium">Reviewer</th>
+                  <th className="w-12 px-4 py-2">
+                    <span className="sr-only">Actions</span>
+                  </th>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-        {status === 'deactivated' && (
-          <p className="text-muted-foreground text-xs">
-            Deactivated people cannot sign in. Their appraisal history is kept.
-          </p>
-        )}
-      </section>
+              </thead>
+              <tbody className="divide-y">
+                {visible.map(({ e, dept: d, color, active }) => (
+                  <tr key={e.id} className={cn(!active && 'text-muted-foreground')}>
+                    <td className="px-4 py-2.5">
+                      <div className="flex items-center gap-3">
+<PersonAvatar name={e.name} />
+                        <div className="grid">
+                          <span className="flex items-center gap-2 font-medium">
+                            {e.name}
+                            {e.isReviewer && (
+                              <span className="text-muted-foreground border-border rounded-[4px] border px-1 text-[11px] font-normal">
+                                Reviewer
+                              </span>
+                            )}
+                          </span>
+                          <span className="text-muted-foreground text-xs">{e.email}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-3 py-2.5">
+                      <DepartmentChip name={d?.name} color={d ? color : undefined} />
+                    </td>
+                    <td className="px-3 py-2.5">{e.title || '—'}</td>
+                    <td className="px-3 py-2.5">
+                      {e.isReviewer && !e.reviewerId ? (
+                        <span className="text-muted-foreground text-xs">Not reviewed</span>
+                      ) : (
+                        <Select
+                          value={e.reviewerId || NONE}
+                          onValueChange={(v) => updateEmployee(e.id, { reviewerId: v === NONE ? '' : v })}
+                        >
+                          <SelectTrigger
+                            size="sm"
+                            aria-label={`Reviewer for ${e.name}`}
+                            className={cn('w-36 border-transparent shadow-none', !e.reviewerId && 'text-warning')}
+                          >
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value={NONE}>No reviewer</SelectItem>
+                            {reviewers
+                              .filter((x) => x.id !== e.id)
+                              .map((x) => (
+                                <SelectItem key={x.id} value={x.id}>
+                                  {x.name}
+                                </SelectItem>
+                              ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    </td>
+                    <td className="px-4 py-2.5 text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon-xs" aria-label={`Actions for ${e.name}`}>
+                            <MoreHorizontal aria-hidden />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onSelect={() => setEditing(e)}>Edit details</DropdownMenuItem>
+                          <DropdownMenuItem onSelect={() => toggle(e.id)}>
+                            {active ? 'Deactivate' : 'Reactivate'}
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </td>
+                  </tr>
+                ))}
+                {visible.length === 0 && (
+                  <TableEmpty colSpan={5}>No people match.</TableEmpty>
+                )}
+              </tbody>
+            </table>
+          </div>
+          {status === 'deactivated' && (
+            <p className="text-muted-foreground border-t px-4 py-2 text-xs">
+              Deactivated people cannot sign in. Their appraisal history is kept.
+            </p>
+          )}
+        </section>
+      </div>
 
       <AddEmployeeDialog open={adding} onClose={() => setAdding(null)} />
+      <ImportDialog target={importing} onClose={() => setImporting(null)} />
       <EditDialog
         person={editing}
         onClose={() => setEditing(null)}

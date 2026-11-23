@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { Bell, Building2, Check, ChevronsUpDown, Home, LogOut, Mail, Search, Settings, ShieldCheck, Users } from 'lucide-react';
+import { Bell, Check, ChevronsUpDown, Home, LogOut, Mail, Search, Settings, Users } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,9 +24,7 @@ const NAV = [
   { href: '/home', label: 'Home', icon: Home, built: true },
   { href: '/people', label: 'People', icon: Users, built: true },
   { href: '/invitations', label: 'Invitations', icon: Mail, built: true },
-  { href: '/departments', label: 'Departments', icon: Building2, built: false },
-  { href: '/roles', label: 'Roles and reviewers', icon: ShieldCheck, built: false },
-  { href: '/settings', label: 'Settings', icon: Settings, built: false },
+  { href: '/settings', label: 'Settings', icon: Settings, built: true },
 ];
 
 function Shell({ children }: { children: ReactNode }) {
@@ -51,8 +49,8 @@ function Shell({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <div className="flex min-h-screen flex-col md:flex-row">
-      <aside className="bg-card flex shrink-0 flex-col border-b md:w-60 md:border-r md:border-b-0">
+    <div className="flex h-screen flex-col overflow-hidden md:flex-row">
+      <aside className="bg-card flex shrink-0 flex-col border-b md:h-full md:w-60 md:overflow-y-auto md:border-r md:border-b-0">
         <div className="flex h-16 items-center gap-3 border-b px-4">
           <span
             className="bg-foreground text-background grid size-9 shrink-0 place-items-center rounded-lg text-sm font-semibold"
@@ -152,7 +150,7 @@ function Shell({ children }: { children: ReactNode }) {
           </DropdownMenu>
         </div>
       </aside>
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <div className="flex h-14 shrink-0 items-center gap-4 border-b px-5 md:px-10">
           <nav aria-label="Breadcrumb" className="hidden min-w-0 items-center gap-1.5 text-sm lg:flex">
             <span className="text-muted-foreground truncate">{organization.name || 'Your organization'}</span>
@@ -217,7 +215,7 @@ function Shell({ children }: { children: ReactNode }) {
           </DropdownMenu>
           </div>
         </div>
-        <main className="min-w-0 flex-1 px-5 py-8 md:px-10">
+        <main className="min-w-0 flex-1 overflow-y-auto px-5 py-8 md:px-10">
           <div className="mx-auto grid max-w-5xl gap-8">{children}</div>
         </main>
       </div>
