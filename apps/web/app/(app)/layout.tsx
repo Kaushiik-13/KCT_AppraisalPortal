@@ -65,11 +65,12 @@ function Shell({ children }: { children: ReactNode }) {
             </span>
           </div>
         </div>
-        <nav aria-label="Main" className="flex gap-1 overflow-x-auto p-2 md:grid md:overflow-visible">
+        <nav aria-label="Main" className="grid grid-cols-4 gap-1 p-2 md:grid-cols-1">
           {NAV.map((item) => {
             const active = pathname === item.href;
             const Icon = item.icon;
-            const base = 'flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-sm whitespace-nowrap';
+            const base =
+              'flex flex-col items-center gap-1 rounded-lg px-1 py-1.5 text-xs whitespace-nowrap md:flex-row md:gap-2.5 md:px-2.5 md:text-sm';
             return item.built ? (
               <Link
                 key={item.href}
@@ -215,7 +216,7 @@ function Shell({ children }: { children: ReactNode }) {
           </DropdownMenu>
           </div>
         </div>
-        <main className="min-w-0 flex-1 overflow-y-auto px-5 py-8 md:px-10">
+        <main className="min-w-0 flex-1 overflow-y-auto px-5 pt-8 pb-16 md:px-10">
           <div className="mx-auto grid max-w-5xl gap-8">{children}</div>
         </main>
       </div>

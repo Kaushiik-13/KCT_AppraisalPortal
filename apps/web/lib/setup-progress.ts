@@ -16,7 +16,7 @@ export function useSetupProgress() {
     Boolean(organization.name),
     departments.length > 0,
     employees.length > 0,
-    reviewers > 0,
+    reviewers > 0 && noReviewer === 0,
     true,
     invitesSent,
   ];

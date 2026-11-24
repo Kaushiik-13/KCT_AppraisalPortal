@@ -25,6 +25,7 @@ No implementation of the **new production-oriented module** has been verified ye
 - [API](API.md)
 - [UI/UX](UI-UX.md)
 - [UI prototype and design reference](UI-PROTOTYPE.md)
+- [UI flow (screenshots)](UI-FLOW.md)
 - [Testing](TESTING.md)
 - [Decisions](DECISIONS.md)
 - [Audit register and template](audits/README.md)

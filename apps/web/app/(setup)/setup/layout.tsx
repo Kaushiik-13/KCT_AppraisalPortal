@@ -33,7 +33,20 @@ export default function SetupLayout({ children }: { children: React.ReactNode })
 
       <div className="mx-auto grid w-full max-w-6xl flex-1 gap-10 px-5 py-8 grid-cols-[minmax(0,1fr)] md:grid-cols-[220px_minmax(0,1fr)]">
         <nav aria-label="Setup steps" className="min-w-0 md:sticky md:top-10 md:self-start">
-          <ol className="flex gap-4 overflow-x-auto p-1 -m-1 md:grid md:gap-0 md:overflow-visible">
+          <div className="grid gap-2 md:hidden">
+            <div className="flex gap-1" aria-hidden>
+              {SETUP_STEPS.map((s, i) => (
+                <span key={s.path} className={cn('h-1 flex-1 rounded-full', i <= current ? 'bg-primary' : 'bg-border')} />
+              ))}
+            </div>
+            <p className="text-sm">
+              <span className="text-muted-foreground">
+                Step {current + 1} of {SETUP_STEPS.length}:
+              </span>{' '}
+              <span className="font-medium">{SETUP_STEPS[current].label}</span>
+            </p>
+          </div>
+          <ol className="hidden md:grid">
             {SETUP_STEPS.map((s, i) => {
               const done = i < current;
               const active = i === current;

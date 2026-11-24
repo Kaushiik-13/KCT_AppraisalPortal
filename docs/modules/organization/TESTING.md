@@ -24,7 +24,7 @@
 | Roles | Two-step flow; step 2 locks with no reviewer and unlocks again; reviewer switches; filter; select all; bulk assign; a person is never their own reviewer; selection bar is light |
 | Configuration | Every setting changed and checked in the saved data (time zone, year start, date format, week start, working days, language, invitation expiry, sender, reply-to, reminders, sign-in, allowed domains, session timeout, two-step, file types, file size, retention) |
 | Review | Summary shows the entered data; checks reflect the data; Edit link navigates; confirmation can be cancelled; sending shows all people as Invited with the chosen expiry; the sent state survives a reload; "Start the demo over" resets the data |
-| Layout | At a 390 px phone width no element extends beyond the screen on any of the eight screens (the setup stepper scrolls sideways by design) |
+| Layout | At a 390 px phone width no element extends beyond the screen on any of the eight screens (on a phone the setup stepper is a progress bar with the step name) |
 | Dark tokens | Adding the `dark` class applies the dark page color and the Employees screen renders legibly |
 
 **Defects found and fixed during the run**
