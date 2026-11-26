@@ -107,6 +107,16 @@ export type OutcomeStats = {
   vsLastCycle: number;
 };
 
+/** One week of the running cycle, so each headline number can be charted over time. */
+export type WeekPoint = {
+  label: string;
+  /** Cumulative share of expected submissions made, 0 to 100. */
+  submissionRate: number;
+  waiting: number;
+  overdue: number;
+  released: number;
+};
+
 /** One published KPI's numbers for the running cycle, for the KPI table. */
 export type KpiRow = {
   id: string;
@@ -136,4 +146,6 @@ export type FrameworkAnalytics = {
   outcomes: OutcomeStats | null;
   /** Per-KPI numbers for the running cycle. Empty until a cycle is active. */
   kpiRows: KpiRow[];
+  /** Week-by-week values for the headline numbers, with the index of the deadline week. */
+  weekly: { points: WeekPoint[]; deadlineIndex: number };
 };

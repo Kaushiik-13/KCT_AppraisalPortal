@@ -1,8 +1,8 @@
 'use client';
 
 import { ClipboardList, FileStack, FlaskConical, Layers, ListChecks, Rocket } from 'lucide-react';
-import { BarListCard } from '@/components/dashboard/bar-list-card';
-import { TrendAreaCard } from '@/components/dashboard/trend-area-card';
+import { MetricStrip } from '@/components/dashboard/metric-strip';
+import { RankedPanel } from '@/components/dashboard/ranked-panel';
 import { Button } from '@/components/ui/button';
 
 const STEPS = [
@@ -83,8 +83,16 @@ export function FrameworksEmpty({ canBuild, onStartFromTemplate, onCreateFromScr
           <FlaskConical className="size-3.5" aria-hidden /> Preview: analytics appear here once people start submitting
         </p>
         <div className="pointer-events-none grid gap-4 opacity-40 select-none md:grid-cols-2" aria-hidden>
-          <BarListCard title="Progress by KRA" seriesLabel="Submitted (%)" items={PREVIEW_BARS} max={100} format={(v) => `${v}%`} />
-          <TrendAreaCard title="Submissions over time" seriesLabel="Submissions" data={PREVIEW_LINE} height={150} />
+          <MetricStrip
+            height={120}
+            metrics={[
+              { key: 'rate', label: 'Submission rate', value: '45%', series: PREVIEW_LINE },
+              { key: 'waiting', label: 'Waiting for review', value: '18' },
+            ]}
+          />
+          <RankedPanel
+            tabs={[{ key: 'kras', label: 'KRAs', valueLabel: 'Submitted', max: 100, rows: PREVIEW_BARS.map((b) => ({ ...b, display: `${b.value}%` })) }]}
+          />
         </div>
       </div>
     </section>

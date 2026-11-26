@@ -47,7 +47,7 @@ const pct = (v: number) => Math.round(v * 100);
  * Kept separate from React so it can be unit tested and later swapped for an API call.
  */
 export function buildFrameworkAnalytics({ kras, kpis, stage, departments, employees, scope, filters }: Input): FrameworkAnalytics {
-  const base = { scope, filters, health: null, participation: null, review: null, outcomes: null, kpiRows: [] };
+  const base = { scope, filters, health: null, participation: null, review: null, outcomes: null, kpiRows: [], weekly: { points: [], deadlineIndex: 0 } };
   if (stage === 'empty' || kras.length === 0) return { ...base, state: 'empty' };
 
   const isOrg = scope.kind === 'organization';
@@ -74,7 +74,23 @@ export function buildFrameworkAnalytics({ kras, kpis, stage, departments, employ
       }
     : null;
 
-  if (stage === 'built') return { ...base, state: 'noSubmissions', health };
+  const kraName = (id: string) => kras.find((k) => k.id === id)?.name ?? '';
+  // Every live KPI as a table row; numbers are filled in below once a cycle is running.
+  const emptyRow = (k: Kpi): KpiRow => ({
+    id: k.id,
+    code: k.code,
+    name: k.name,
+    kraId: k.kraId,
+    kraName: kraName(k.kraId),
+    status: k.status,
+    submittedPercent: 0,
+    submissions: 0,
+    returnPercent: 0,
+    avgMark: null,
+    evidenceRequired: k.evidenceRequired,
+  });
+
+  if (stage === 'built') return { ...base, state: 'noSubmissions', health, kpiRows: live.map(emptyRow) };
 
   // People in scope. Reviewers see only their reviewees; the department filter applies to admins only.
   const reviewees = scope.kind === 'reviewer' ? employees.filter((e) => e.reviewerId === scope.reviewerId) : [];
@@ -156,22 +172,35 @@ export function buildFrameworkAnalytics({ kras, kpis, stage, departments, employ
     vsLastCycle: 0.3,
   };
 
-  const kraName = (id: string) => kras.find((k) => k.id === id)?.name ?? '';
-  const kpiRows: KpiRow[] = rows.map((x) => ({
-    id: x.kpi.id,
-    code: x.kpi.code,
-    name: x.kpi.name,
-    kraId: x.kpi.kraId,
-    kraName: kraName(x.kpi.kraId),
-    status: x.kpi.status,
-    submittedPercent: pct(x.share),
-    submissions: x.submissions,
-    returnPercent: pct(x.r.returnRate),
-    avgMark: x.r.avgMark > 0 ? x.r.avgMark : null,
-    evidenceRequired: x.kpi.evidenceRequired,
-  }));
+  const kpiRows: KpiRow[] = live.map((k) => {
+    const x = rows.find((row) => row.kpi.id === k.id);
+    if (!x) return emptyRow(k);
+    return {
+      ...emptyRow(k),
+      submittedPercent: pct(x.share),
+      submissions: x.submissions,
+      returnPercent: pct(x.r.returnRate),
+      avgMark: x.r.avgMark > 0 ? x.r.avgMark : null,
+    };
+  });
 
-  return { ...base, state: 'active', health, participation, review, outcomes, kpiRows };
+  // Sample week-by-week series, shaped so the last week matches the headline numbers.
+  const lastShare = SAMPLE_WEEKLY_PROGRESS[SAMPLE_WEEKLY_PROGRESS.length - 1];
+  const weekly = {
+    deadlineIndex: SAMPLE_DEADLINE_WEEK,
+    points: SAMPLE_WEEKLY_PROGRESS.map((v, i) => {
+      const f = v / lastShare;
+      return {
+        label: `W${i + 1}`,
+        submissionRate: Math.round(participation.submissionRate * f),
+        waiting: Math.round(review.queue * Math.min(1, f * 1.25) * (0.7 + 0.3 * f)),
+        overdue: i < SAMPLE_DEADLINE_WEEK ? 0 : participation.overdue,
+        released: Math.round(byStatus.released * f * f),
+      };
+    }),
+  };
+
+  return { ...base, state: 'active', health, participation, review, outcomes, kpiRows, weekly };
 }
 
 /** Framework analytics for one scope. Frontend only: returns sample data until the API exists. */
