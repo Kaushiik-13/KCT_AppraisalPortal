@@ -24,6 +24,16 @@ This is a product-scope direction, not an implementation status claim. Policy de
 
 The sequence is a proposal. It does not authorize code changes or claim any milestone is complete.
 
+## UI prototype order
+
+UI prototypes are built per major module, not per role:
+
+1. **Organization** — merged in #70 (nonfunctional prototype).
+2. **Framework Studio** — next.
+3. Prediction, Recommendation and Analytics — later.
+
+Separate role-based prototypes for the Employee (#74) and Reviewer (#78) experiences are **not planned** for now and those Issues are closed. Role-specific screens will come from the module prototypes where they are needed.
+
 ## Progress and evidence
 
 Track milestone status only when supported by approved requirements, reviewed documentation, merged implementation, tests, and current audit evidence. Do not mark a capability complete because it exists in the historical PoC or a prototype.
