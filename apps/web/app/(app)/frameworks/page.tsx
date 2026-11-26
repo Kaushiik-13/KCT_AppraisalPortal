@@ -5,7 +5,6 @@ import { AnalyticsFilters } from '@/components/frameworks/analytics-filters';
 import { FrameworkAnalytics } from '@/components/frameworks/framework-analytics';
 import { FrameworksEmpty } from '@/components/frameworks/frameworks-empty';
 import { PrototypeStageSwitch } from '@/components/frameworks/prototype-stage-switch';
-import { PageHeader } from '@/components/page-header';
 import type { AnalyticsFilters as Filters, AnalyticsScope, AnalyticsSection } from '@/lib/frameworks/types';
 import { useFrameworkAnalytics } from '@/lib/frameworks/use-framework-analytics';
 import { useDemoViewer, useFrameworkLibrary } from '@/lib/frameworks/use-framework-library';
@@ -14,7 +13,7 @@ import { useSetup } from '@/lib/setup-store';
 const ADMIN_SECTIONS: AnalyticsSection[] = ['participation', 'review', 'outcomes', 'health'];
 const REVIEWER_SECTIONS: AnalyticsSection[] = ['participation', 'review', 'outcomes'];
 
-// Framework Studio (#79). The page decides who is looking and what they may see or do;
+// Framework Studio overview (#79). The header and tabs come from frameworks/layout.tsx. The page decides who is looking and what they may see or do;
 // the components below never check roles, so a reviewer page can reuse them as they are.
 export default function FrameworksPage() {
   const { kras, setStage } = useFrameworkLibrary();
@@ -29,24 +28,16 @@ export default function FrameworksPage() {
 
   return (
     <>
-      <PageHeader
-        title="Frameworks"
-        description={
-          canBuild
-            ? "Build the KRAs and KPIs your organization appraises against. Drafts don't affect anyone until published."
-            : 'Progress on the KRAs and KPIs your team is appraised against.'
-        }
-        actions={
-          analytics.state !== 'empty' && (
-            <AnalyticsFilters
-              value={filters}
-              onChange={setFilters}
-              kras={kras.map((k) => ({ id: k.id, name: k.name }))}
-              departments={canBuild ? departments.map((d) => ({ id: d.id, name: d.name })) : undefined}
-            />
-          )
-        }
-      />
+      {analytics.state !== 'empty' && (
+        <div className="-mt-3 flex justify-end">
+          <AnalyticsFilters
+            value={filters}
+            onChange={setFilters}
+            kras={kras.map((k) => ({ id: k.id, name: k.name }))}
+            departments={canBuild ? departments.map((d) => ({ id: d.id, name: d.name })) : undefined}
+          />
+        </div>
+      )}
 
       {analytics.state === 'empty' ? (
         <FrameworksEmpty canBuild={canBuild} onStartFromTemplate={() => setStage('built')} />
