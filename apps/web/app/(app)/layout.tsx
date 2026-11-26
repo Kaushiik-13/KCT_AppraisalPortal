@@ -220,7 +220,7 @@ function Shell({ children }: { children: ReactNode }) {
           <div className="mx-auto grid max-w-5xl gap-8">{children}</div>
         </main>
       </div>
-      <div className="text-muted-foreground bg-background/80 fixed right-4 bottom-3 flex items-center gap-1.5 rounded-md px-2 py-1 text-xs backdrop-blur-sm">
+      <div className="text-muted-foreground bg-background/80 fixed right-4 bottom-3 hidden items-center md:flex gap-1.5 rounded-md px-2 py-1 text-xs backdrop-blur-sm">
         Powered by
         <span className="text-foreground flex items-center gap-1 font-semibold">
           <span className="bg-foreground text-background grid size-4 place-items-center rounded-[3px] text-[10px]">A</span>

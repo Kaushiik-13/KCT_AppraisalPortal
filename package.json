@@ -8,7 +8,7 @@
     "packages/contracts"
   ],
   "engines": {
-    "node": ">=20.9.0"
+    "node": ">=20.9.0 <25"
   },
   "scripts": {
     "dev": "npm run dev --workspace @afpi/web",
