@@ -245,12 +245,12 @@ function Shell({ children }: { children: ReactNode }) {
                 <span className="text-muted-foreground text-xs">Organization Administrator</span>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onSelect={() => router.push(SETTINGS_NAV.href)}>
-                <Settings aria-hidden /> Organization settings
-              </DropdownMenuItem>
               <DropdownMenuItem disabled>
                 <UserRound aria-hidden /> Your profile
                 <span className="bg-secondary text-muted-foreground ml-auto rounded px-1.5 text-[11px] leading-5">Soon</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => router.push(SETTINGS_NAV.href)}>
+                <Settings aria-hidden /> Organization settings
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem disabled>
