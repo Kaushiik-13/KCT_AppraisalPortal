@@ -70,12 +70,12 @@ export function FrameworksEmpty({ canBuild, onStartFromTemplate, onCreateFromScr
 
       <div className="flex flex-wrap items-center gap-2">
         <Button onClick={onStartFromTemplate}>
-          <FileStack aria-hidden data-icon="inline-start" /> Start from PADS template
+          <FileStack aria-hidden data-icon="inline-start" /> Start from template
         </Button>
         <Button variant="outline" onClick={onCreateFromScratch} disabled={!onCreateFromScratch}>
           Create from scratch
         </Button>
-        <span className="text-muted-foreground text-xs">The template is a sample adapted from the old PoC, not approved policy.</span>
+        <span className="text-muted-foreground text-xs">The template is a set of sample KRAs and KPIs to edit. It is not approved policy.</span>
       </div>
 
       <div className="grid gap-3 border-t pt-6">
