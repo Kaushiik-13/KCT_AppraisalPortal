@@ -47,7 +47,7 @@ The setup screens (3 to 8) share one layout: a title ("Organization onboarding")
 
 There are no separate Departments or Roles and reviewers pages after setup: departments and reviewer assignment live on People. The sidebar is Home, People, Invitations, Settings.
 
-**App shell** (`apps/web/app/(app)/layout.tsx`, wraps the signed-in routes): left sidebar with the organization name and type at the top, navigation, a setup-progress block (becomes "Setup complete" at the end; the Roles step counts as done only when everyone who needs a reviewer has one) and the user menu (profile placeholder, log out) at the bottom; a rigid layout (the sidebar and top bar stay fixed; only the page body scrolls), a top bar with a breadcrumb, a search box (Ctrl K focuses it; it searches nothing), an appraisal-cycle selector (changes nothing) and a bell listing "needs attention" items with actions; "Powered by AFPI" fixed at the bottom right. On a phone the sidebar becomes a top bar with four tabs, and the setup stepper becomes a progress bar with the current step name.
+**App shell** (`apps/web/app/(app)/layout.tsx`, wraps the signed-in routes): left sidebar with the organization name and type at the top, navigation, a setup-progress block (becomes "Setup complete" at the end; the Roles step counts as done only when everyone who needs a reviewer has one) and the user menu (profile placeholder, log out) at the bottom; a rigid layout (the sidebar and top bar stay fixed; only the page body scrolls), a top bar with a breadcrumb, a search box (Ctrl K focuses it; it searches nothing), an appraisal-cycle selector (changes nothing) and a bell listing "needs attention" items with actions; "Powered by AFPI" fixed at the bottom right (hidden on phones). On a phone the sidebar becomes a top bar with four tabs, and the setup stepper becomes a progress bar with the current step name.
 
 **Sample data.** Appraisal scores, review counts, trends, department scores, invitation outcomes (Joined, Invited, Expired, Failed are cycled across people after "Send invitations") and the cycle list are fixed sample values. They stand in for data that Framework Studio and a real invitation service would provide. When setup is fully complete the prototype shows everyone as joined. The people counts, departments, reviewers and setup progress come from the setup data in `sessionStorage`. Deactivation on the People screen lives in page memory only and is lost on reload.
 
@@ -117,7 +117,7 @@ The color is a visual aid only. Information must never depend on color alone; th
 
 `button`, `input`, `label`, `select`, `switch`, `dialog`, `alert-dialog`, `card`, `dropdown-menu`, `checkbox`, `badge`.
 
-Installed from shadcn but **not currently used**: `alert`, `progress`, `radio-group`, `separator`, `sheet`, `skeleton`, `table`, `tabs`, `textarea`, `tooltip`. They can be pruned before a PR if reviewers prefer.
+Unused shadcn components were removed in #71. Add new ones with `npx shadcn@latest add <name>` when a screen needs them.
 
 ### Prototype components (`apps/web/components`)
 

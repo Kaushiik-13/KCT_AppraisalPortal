@@ -79,5 +79,4 @@ The signed-in screens share a fixed sidebar and top bar. Only the page body scro
 - Everything is a prototype: no validation, no real email, and no saved data beyond the browser tab.
 - Search, Ctrl K and the appraisal-cycle selector do nothing.
 - Deactivating a person is lost on reload. The imported people are sample rows, not your file.
-- On a phone the "Powered by AFPI" badge floats over the bottom of the screen while you scroll.
 - These screenshots were taken at 1280 by 800 (desktop) and 390 by 844 (phone). Dark mode, keyboard use and tablet sizes were not reviewed.
