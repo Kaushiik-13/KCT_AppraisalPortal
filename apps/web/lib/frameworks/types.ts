@@ -107,6 +107,24 @@ export type OutcomeStats = {
   vsLastCycle: number;
 };
 
+/** One published KPI's numbers for the running cycle, for the KPI table. */
+export type KpiRow = {
+  id: string;
+  code: string;
+  name: string;
+  kraId: string;
+  kraName: string;
+  status: KpiStatus;
+  /** Share of people in scope who submitted, 0 to 100. */
+  submittedPercent: number;
+  submissions: number;
+  /** Share of submissions sent back, 0 to 100. */
+  returnPercent: number;
+  /** Average mark out of 5, or null when no marks are released. Sample only. */
+  avgMark: number | null;
+  evidenceRequired: boolean;
+};
+
 export type FrameworkAnalytics = {
   state: AnalyticsState;
   scope: AnalyticsScope;
@@ -116,4 +134,6 @@ export type FrameworkAnalytics = {
   participation: ParticipationStats | null;
   review: ReviewStats | null;
   outcomes: OutcomeStats | null;
+  /** Per-KPI numbers for the running cycle. Empty until a cycle is active. */
+  kpiRows: KpiRow[];
 };

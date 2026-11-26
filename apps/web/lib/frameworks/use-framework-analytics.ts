@@ -18,6 +18,7 @@ import type {
   FrameworkAnalytics,
   HealthStats,
   Kpi,
+  KpiRow,
   Kra,
   OutcomeStats,
   ParticipationStats,
@@ -46,7 +47,7 @@ const pct = (v: number) => Math.round(v * 100);
  * Kept separate from React so it can be unit tested and later swapped for an API call.
  */
 export function buildFrameworkAnalytics({ kras, kpis, stage, departments, employees, scope, filters }: Input): FrameworkAnalytics {
-  const base = { scope, filters, health: null, participation: null, review: null, outcomes: null };
+  const base = { scope, filters, health: null, participation: null, review: null, outcomes: null, kpiRows: [] };
   if (stage === 'empty' || kras.length === 0) return { ...base, state: 'empty' };
 
   const isOrg = scope.kind === 'organization';
@@ -155,7 +156,22 @@ export function buildFrameworkAnalytics({ kras, kpis, stage, departments, employ
     vsLastCycle: 0.3,
   };
 
-  return { ...base, state: 'active', health, participation, review, outcomes };
+  const kraName = (id: string) => kras.find((k) => k.id === id)?.name ?? '';
+  const kpiRows: KpiRow[] = rows.map((x) => ({
+    id: x.kpi.id,
+    code: x.kpi.code,
+    name: x.kpi.name,
+    kraId: x.kpi.kraId,
+    kraName: kraName(x.kpi.kraId),
+    status: x.kpi.status,
+    submittedPercent: pct(x.share),
+    submissions: x.submissions,
+    returnPercent: pct(x.r.returnRate),
+    avgMark: x.r.avgMark > 0 ? x.r.avgMark : null,
+    evidenceRequired: x.kpi.evidenceRequired,
+  }));
+
+  return { ...base, state: 'active', health, participation, review, outcomes, kpiRows };
 }
 
 /** Framework analytics for one scope. Frontend only: returns sample data until the API exists. */

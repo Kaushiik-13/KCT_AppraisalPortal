@@ -1,8 +1,8 @@
 'use client';
 
 import { ClipboardList, FileStack, FlaskConical, Layers, ListChecks, Rocket } from 'lucide-react';
-import { BarList } from '@/components/charts/bar-list';
-import { LineChart } from '@/components/charts/line-chart';
+import { BarListCard } from '@/components/dashboard/bar-list-card';
+import { TrendAreaCard } from '@/components/dashboard/trend-area-card';
 import { Button } from '@/components/ui/button';
 
 const STEPS = [
@@ -83,14 +83,8 @@ export function FrameworksEmpty({ canBuild, onStartFromTemplate, onCreateFromScr
           <FlaskConical className="size-3.5" aria-hidden /> Preview: analytics appear here once people start submitting
         </p>
         <div className="pointer-events-none grid gap-4 opacity-40 select-none md:grid-cols-2" aria-hidden>
-          <div className="bg-background grid content-start gap-3 rounded-lg border p-4">
-            <span className="text-sm font-semibold">Progress by KRA</span>
-            <BarList items={PREVIEW_BARS} max={100} format={(v) => `${v}%`} labelWidth="minmax(100px,160px)" />
-          </div>
-          <div className="bg-background grid content-start gap-3 rounded-lg border p-4">
-            <span className="text-sm font-semibold">Submissions over time</span>
-            <LineChart points={PREVIEW_LINE} min={0} max={50} ticks={[0, 25, 50]} height={120} ariaLabel="Preview chart" />
-          </div>
+          <BarListCard title="Progress by KRA" seriesLabel="Submitted (%)" items={PREVIEW_BARS} max={100} format={(v) => `${v}%`} />
+          <TrendAreaCard title="Submissions over time" seriesLabel="Submissions" data={PREVIEW_LINE} height={150} />
         </div>
       </div>
     </section>

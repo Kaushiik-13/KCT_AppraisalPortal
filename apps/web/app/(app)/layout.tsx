@@ -354,7 +354,7 @@ function Shell({ children }: { children: ReactNode }) {
           </div>
         </div>
         <main className="min-w-0 flex-1 overflow-y-auto px-5 pt-8 pb-16 md:px-10">
-          <div className="mx-auto grid max-w-5xl gap-8">{children}</div>
+          <div className="mx-auto grid max-w-5xl gap-8 *:min-w-0">{children}</div>
         </main>
       </div>
       <div className="text-muted-foreground bg-background/80 fixed right-4 bottom-3 hidden items-center md:flex gap-1.5 rounded-md px-2 py-1 text-xs backdrop-blur-sm">

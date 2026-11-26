@@ -1,15 +1,16 @@
 'use client';
 
-import { BarList } from '@/components/charts/bar-list';
-import { LineChart } from '@/components/charts/line-chart';
-import { STATUS_COLORS, StackedBar } from '@/components/charts/stacked-bar';
+import { BarListCard } from '@/components/dashboard/bar-list-card';
+import { DonutCard } from '@/components/dashboard/donut-card';
+import { MetricCard, MetricGrid } from '@/components/dashboard/metric-card';
+import { TrendAreaCard } from '@/components/dashboard/trend-area-card';
 import { PageHeader } from '@/components/page-header';
-import { Panel, StatGrid, StatTile } from '@/components/stat-tile';
+import { Badge } from '@/components/ui/badge';
 import { useAdminUser } from '@/lib/admin-user';
 import { useSetupProgress } from '@/lib/setup-progress';
 import { useSetup } from '@/lib/setup-store';
 
-// Prototype only: appraisal scores and review counts come from Framework Studio, which is not built.
+// Prototype only: appraisal scores and review counts come from Framework Studio, which has no backend yet.
 // Everything below except the people counts is sample data.
 const SCORE_TREND = [
   { label: '23 H1', value: 3.4 },
@@ -20,9 +21,9 @@ const SCORE_TREND = [
 ];
 const DEPT_SCORES = [4.1, 3.8, 3.6, 3.9, 3.7, 4.0, 3.5, 3.8];
 const REVIEW_STATUS = [
-  { label: 'Submitted', value: 18, color: STATUS_COLORS.submitted },
-  { label: 'In review', value: 14, color: STATUS_COLORS.inReview },
-  { label: 'Released', value: 18, color: STATUS_COLORS.released },
+  { key: 'submitted', label: 'Submitted', value: 18, color: 'var(--chart-3)' },
+  { key: 'inReview', label: 'In review', value: 14, color: 'var(--chart-2)' },
+  { key: 'released', label: 'Released', value: 18, color: 'var(--chart-1)' },
 ];
 
 function greeting() {
@@ -36,51 +37,83 @@ export default function HomePage() {
   const user = useAdminUser();
 
   const participation = employees.length === 0 || !invitesSent ? 0 : allDone ? 100 : 60;
+  const joined = Math.round((participation / 100) * employees.length);
 
   return (
     <>
       <PageHeader
         title={`${greeting()}, ${user.name.split(' ')[0]}`}
-        description="Appraisal cycle 2026 H1 · scores and reviews are sample data until Framework Studio is built"
+        description="Appraisal cycle 2026 H1 at a glance."
+        actions={<Badge variant="secondary">Scores and reviews are sample data</Badge>}
       />
 
-      <StatGrid label="Key numbers">
-        <StatTile label="Appraisal completion" value="72%" note="▲ 8 pts vs last cycle" tone="up" />
-        <StatTile label="Average score" value="3.9" note="▲ 0.3 vs last cycle" tone="up" />
-        <StatTile label="Reviews pending" value="14" note="3 overdue" tone="down" />
-        <StatTile
-          label="Participation"
-          value={`${participation}%`}
-          note={invitesSent ? `${Math.round((participation / 100) * employees.length)} of ${employees.length} joined` : 'Invitations not sent'}
+      <MetricGrid label="Key numbers">
+        <MetricCard
+          index={0}
+          label="Appraisal completion"
+          value={72}
+          format={(v) => `${Math.round(v)}%`}
+          trend={{ label: '+8 pts', direction: 'up' }}
+          summary="Up on last cycle"
+          detail="People with every KPI released"
         />
-      </StatGrid>
+        <MetricCard
+          index={1}
+          label="Average score"
+          value={3.9}
+          format={(v) => v.toFixed(1)}
+          trend={{ label: '+0.3', direction: 'up' }}
+          summary="Highest in five cycles"
+          detail="Out of 5, released marks only"
+        />
+        <MetricCard
+          index={2}
+          label="Reviews pending"
+          value={14}
+          trend={{ label: '3 overdue', direction: 'down', good: false }}
+          summary="3 past the review deadline"
+          detail="Waiting for a reviewer"
+        />
+        <MetricCard
+          index={3}
+          label="Participation"
+          value={participation}
+          format={(v) => `${Math.round(v)}%`}
+          summary={invitesSent ? `${joined} of ${employees.length} joined` : 'Invitations not sent'}
+          detail="People who accepted their invitation"
+        />
+      </MetricGrid>
 
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <Panel title="Average score by cycle">
-            <LineChart
-              points={SCORE_TREND}
-              min={3}
-              max={4}
-              ticks={[3, 3.5, 4]}
-              formatTick={(v) => v.toFixed(1)}
-              ariaLabel="Average score by cycle, rising from 3.4 to 3.9"
-            />
-          </Panel>
+      <div className="grid gap-4 lg:grid-cols-5">
+        <div className="lg:col-span-3">
+          <TrendAreaCard
+            title="Average score by cycle"
+            description="Released marks, out of 5"
+            seriesLabel="Average score"
+            data={SCORE_TREND}
+            ranges={[
+              { value: '3', label: 'Last 3', last: 3 },
+              { value: 'all', label: 'All cycles' },
+            ]}
+            yDomain={[3, 4]}
+            yTickFormat={(v) => v.toFixed(1)}
+          />
         </div>
-        <Panel title="Review status">
-          <StackedBar segments={REVIEW_STATUS} />
-        </Panel>
+        <div className="lg:col-span-2">
+          <DonutCard title="Review status" description="KPI submissions this cycle" totalLabel="submissions" segments={REVIEW_STATUS} />
+        </div>
       </div>
 
-      <Panel title="Average score by department">
-        <BarList
-          items={departments.map((d, i) => ({ id: d.id, label: d.name, value: DEPT_SCORES[i % DEPT_SCORES.length] }))}
-          max={5}
-          format={(v) => v.toFixed(1)}
-          empty="Add departments to compare scores."
-        />
-      </Panel>
+      <BarListCard
+        title="Average score by department"
+        description="Out of 5"
+        seriesLabel="Average score"
+        items={departments.map((d, i) => ({ id: d.id, label: d.name, value: DEPT_SCORES[i % DEPT_SCORES.length] }))}
+        max={5}
+        format={(v) => v.toFixed(1)}
+        labelWidth={150}
+        empty="Add departments in People to compare scores."
+      />
     </>
   );
 }
