@@ -51,7 +51,7 @@ function Shell({ children }: { children: ReactNode }) {
   return (
     <div className="flex h-screen flex-col overflow-hidden md:flex-row">
       <aside className="bg-card flex shrink-0 flex-col border-b md:h-full md:w-60 md:overflow-y-auto md:border-r md:border-b-0">
-        <div className="flex h-16 items-center gap-3 border-b px-4">
+        <div className="flex h-16 items-center gap-3 px-4 md:h-[72px]">
           <span
             className="bg-foreground text-background grid size-9 shrink-0 place-items-center rounded-lg text-sm font-semibold"
             aria-hidden
@@ -65,7 +65,7 @@ function Shell({ children }: { children: ReactNode }) {
             </span>
           </div>
         </div>
-        <nav aria-label="Main" className="grid grid-cols-4 gap-1 p-2 md:grid-cols-1">
+        <nav aria-label="Main" className="grid grid-cols-4 gap-1 p-2 md:grid-cols-1 md:px-3 md:py-1">
           {NAV.map((item) => {
             const active = pathname === item.href;
             const Icon = item.icon;
@@ -93,7 +93,7 @@ function Shell({ children }: { children: ReactNode }) {
             );
           })}
         </nav>
-        <div className="mt-auto hidden border-t p-2 md:block">
+        <div className="mt-auto hidden p-3 md:block">
           {progress.complete ? (
             <div className="text-muted-foreground mb-1 flex items-center gap-2 px-2 py-1.5 text-xs">
               <Check className="text-success size-3.5" aria-hidden /> Setup complete
