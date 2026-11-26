@@ -3,7 +3,22 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { Bell, Check, ChevronsUpDown, Home, LogOut, Mail, Search, Settings, Users } from 'lucide-react';
+import {
+  Bell,
+  Check,
+  ChevronsUpDown,
+  Ellipsis,
+  Home,
+  LayoutList,
+  Lightbulb,
+  LogOut,
+  Mail,
+  Search,
+  Settings,
+  TrendingUp,
+  Users,
+  type LucideIcon,
+} from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,13 +34,55 @@ import { useSetupProgress } from '@/lib/setup-progress';
 import { SetupProvider, useSetup } from '@/lib/setup-store';
 import { cn } from '@/lib/utils';
 
-// Only Home is built so far. The rest are shown as "Soon" so the final structure is visible.
-const NAV = [
+type NavItem = { href: string; label: string; icon: LucideIcon; built: boolean };
+
+// Day-to-day pages: changes here affect real people now.
+const MAIN_NAV: NavItem[] = [
   { href: '/home', label: 'Home', icon: Home, built: true },
   { href: '/people', label: 'People', icon: Users, built: true },
   { href: '/invitations', label: 'Invitations', icon: Mail, built: true },
-  { href: '/settings', label: 'Settings', icon: Settings, built: true },
 ];
+
+// Studio: where admins draft, test and publish. Unbuilt modules show as "Later" so the product shape is visible.
+const STUDIO_NAV: NavItem[] = [
+  { href: '/frameworks', label: 'Frameworks', icon: LayoutList, built: true },
+  { href: '/prediction', label: 'Prediction', icon: TrendingUp, built: false },
+  { href: '/recommendation', label: 'Recommendation', icon: Lightbulb, built: false },
+];
+
+const SETTINGS_NAV: NavItem = { href: '/settings', label: 'Settings', icon: Settings, built: true };
+
+const NAV = [...MAIN_NAV, ...STUDIO_NAV, SETTINGS_NAV];
+
+// Phone: the three most-used pages as tabs, everything else under More.
+const PHONE_TABS = ['/home', '/people', '/frameworks'];
+
+function NavLink({ item, active }: { item: NavItem; active: boolean }) {
+  const Icon = item.icon;
+  const base = 'flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-sm whitespace-nowrap';
+  if (!item.built) {
+    return (
+      <span aria-disabled="true" className={cn(base, 'text-muted-foreground/60 cursor-not-allowed')}>
+        <Icon className="size-4" aria-hidden />
+        {item.label}
+        <span className="ml-auto text-xs">Later</span>
+      </span>
+    );
+  }
+  return (
+    <Link
+      href={item.href}
+      aria-current={active ? 'page' : undefined}
+      className={cn(
+        base,
+        active ? 'bg-secondary text-foreground font-medium' : 'text-muted-foreground hover:bg-secondary/60 hover:text-foreground',
+      )}
+    >
+      <Icon className="size-4" aria-hidden />
+      {item.label}
+    </Link>
+  );
+}
 
 function Shell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -35,7 +92,7 @@ function Shell({ children }: { children: ReactNode }) {
   const progress = useSetupProgress();
   const searchRef = useRef<HTMLInputElement>(null);
   const [cycle, setCycle] = useState('2026-h1');
-  const page = NAV.find((n) => pathname === n.href)?.label;
+  const page = NAV.find((n) => pathname.startsWith(n.href))?.label;
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -65,35 +122,67 @@ function Shell({ children }: { children: ReactNode }) {
             </span>
           </div>
         </div>
-        <nav aria-label="Main" className="grid grid-cols-4 gap-1 p-2 md:grid-cols-1 md:px-3 md:py-1">
-          {NAV.map((item) => {
-            const active = pathname === item.href;
+        <nav aria-label="Main" className="hidden gap-0.5 px-3 py-1 md:grid">
+          {MAIN_NAV.map((item) => (
+            <NavLink key={item.href} item={item} active={pathname === item.href} />
+          ))}
+          <div className="text-muted-foreground px-2.5 pt-5 pb-1 text-[11px] font-medium tracking-wide uppercase">Studio</div>
+          {STUDIO_NAV.map((item) => (
+            <NavLink key={item.href} item={item} active={pathname.startsWith(item.href)} />
+          ))}
+        </nav>
+        <nav aria-label="Main" className="grid grid-cols-4 gap-1 p-2 md:hidden">
+          {PHONE_TABS.map((href) => {
+            const item = NAV.find((n) => n.href === href)!;
             const Icon = item.icon;
-            const base =
-              'flex flex-col items-center gap-1 rounded-lg px-1 py-1.5 text-xs whitespace-nowrap md:flex-row md:gap-2.5 md:px-2.5 md:text-sm';
-            return item.built ? (
+            const active = pathname.startsWith(href);
+            return (
               <Link
-                key={item.href}
-                href={item.href}
+                key={href}
+                href={href}
                 aria-current={active ? 'page' : undefined}
                 className={cn(
-                  base,
-                  active ? 'bg-secondary text-foreground font-medium' : 'text-muted-foreground hover:bg-secondary/60 hover:text-foreground',
+                  'flex flex-col items-center gap-1 rounded-lg px-1 py-1.5 text-xs whitespace-nowrap',
+                  active ? 'bg-secondary text-foreground font-medium' : 'text-muted-foreground',
                 )}
               >
                 <Icon className="size-4" aria-hidden />
                 {item.label}
               </Link>
-            ) : (
-              <span key={item.href} aria-disabled="true" className={cn(base, 'text-muted-foreground/60 cursor-not-allowed')}>
-                <Icon className="size-4" aria-hidden />
-                {item.label}
-                <span className="ml-auto text-xs">Soon</span>
-              </span>
             );
           })}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className={cn(
+                  'flex flex-col items-center gap-1 rounded-lg px-1 py-1.5 text-xs',
+                  NAV.some((n) => !PHONE_TABS.includes(n.href) && pathname.startsWith(n.href))
+                    ? 'bg-secondary text-foreground font-medium'
+                    : 'text-muted-foreground',
+                )}
+              >
+                <Ellipsis className="size-4" aria-hidden />
+                More
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-52">
+              {NAV.filter((n) => !PHONE_TABS.includes(n.href)).map((item) => {
+                const Icon = item.icon;
+                return (
+                  <DropdownMenuItem key={item.href} disabled={!item.built} onSelect={() => router.push(item.href)}>
+                    <Icon aria-hidden /> {item.label}
+                    {!item.built && <span className="text-muted-foreground ml-auto text-xs">Later</span>}
+                  </DropdownMenuItem>
+                );
+              })}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </nav>
         <div className="mt-auto hidden p-3 md:block">
+          <div className="mb-2">
+            <NavLink item={SETTINGS_NAV} active={pathname === SETTINGS_NAV.href} />
+          </div>
           {progress.complete ? (
             <div className="text-muted-foreground mb-1 flex items-center gap-2 px-2 py-1.5 text-xs">
               <Check className="text-success size-3.5" aria-hidden /> Setup complete
