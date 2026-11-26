@@ -1,6 +1,6 @@
 'use client';
 
-import { LayoutList, Plus, TriangleAlert } from 'lucide-react';
+import { ClipboardList, Plus, TriangleAlert } from 'lucide-react';
 import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 
@@ -16,7 +16,7 @@ export default function FrameworksPage() {
 
       <section className="bg-card grid place-items-center gap-4 rounded-xl border px-6 py-16 text-center">
         <span className="bg-secondary text-muted-foreground grid size-12 place-items-center rounded-xl" aria-hidden>
-          <LayoutList className="size-6" />
+          <ClipboardList className="size-6" />
         </span>
         <div className="grid max-w-md gap-1.5">
           <h2 className="text-lg font-semibold">Build your first framework</h2>

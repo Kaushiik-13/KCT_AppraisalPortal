@@ -9,13 +9,13 @@ import {
   ChevronsUpDown,
   Ellipsis,
   Home,
-  LayoutList,
+  ClipboardList,
   Lightbulb,
   LogOut,
   Mail,
   Search,
   Settings,
-  TrendingUp,
+  ChartLine,
   Users,
   type LucideIcon,
 } from 'lucide-react';
@@ -45,8 +45,8 @@ const MAIN_NAV: NavItem[] = [
 
 // Studio: where admins draft, test and publish. Unbuilt modules show as "Later" so the product shape is visible.
 const STUDIO_NAV: NavItem[] = [
-  { href: '/frameworks', label: 'Frameworks', icon: LayoutList, built: true },
-  { href: '/prediction', label: 'Prediction', icon: TrendingUp, built: false },
+  { href: '/frameworks', label: 'Frameworks', icon: ClipboardList, built: true },
+  { href: '/prediction', label: 'Prediction', icon: ChartLine, built: false },
   { href: '/recommendation', label: 'Recommendation', icon: Lightbulb, built: false },
 ];
 
@@ -62,10 +62,10 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
   const base = 'flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-sm whitespace-nowrap';
   if (!item.built) {
     return (
-      <span aria-disabled="true" className={cn(base, 'text-muted-foreground/60 cursor-not-allowed')}>
+      <span aria-disabled="true" className={cn(base, 'text-muted-foreground cursor-not-allowed')}>
         <Icon className="size-4" aria-hidden />
         {item.label}
-        <span className="ml-auto text-xs">Later</span>
+        <span className="bg-secondary text-muted-foreground ml-auto rounded px-1.5 text-[11px] leading-5">Later</span>
       </span>
     );
   }
@@ -172,7 +172,7 @@ function Shell({ children }: { children: ReactNode }) {
                 return (
                   <DropdownMenuItem key={item.href} disabled={!item.built} onSelect={() => router.push(item.href)}>
                     <Icon aria-hidden /> {item.label}
-                    {!item.built && <span className="text-muted-foreground ml-auto text-xs">Later</span>}
+                    {!item.built && <span className="bg-secondary text-muted-foreground ml-auto rounded px-1.5 text-[11px] leading-5">Later</span>}
                   </DropdownMenuItem>
                 );
               })}
