@@ -9,6 +9,7 @@ import {
   ChevronsUpDown,
   Ellipsis,
   Home,
+  Keyboard,
   ClipboardList,
   Lightbulb,
   LogOut,
@@ -16,6 +17,8 @@ import {
   Search,
   Settings,
   ChartLine,
+  CircleQuestionMark,
+  UserRound,
   Users,
   type LucideIcon,
 } from 'lucide-react';
@@ -25,8 +28,10 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { initials, useAdminUser } from '@/lib/admin-user';
@@ -53,6 +58,11 @@ const STUDIO_NAV: NavItem[] = [
 const SETTINGS_NAV: NavItem = { href: '/settings', label: 'Settings', icon: Settings, built: true };
 
 const NAV = [...MAIN_NAV, ...STUDIO_NAV, SETTINGS_NAV];
+
+const SHORTCUTS = [
+  { keys: 'Ctrl K', action: 'Focus search' },
+  { keys: 'Ctrl /', action: 'Show keyboard shortcuts' },
+];
 
 // Phone: the three most-used pages as tabs, everything else under More.
 const PHONE_TABS = ['/home', '/people', '/frameworks'];
@@ -92,6 +102,7 @@ function Shell({ children }: { children: ReactNode }) {
   const progress = useSetupProgress();
   const searchRef = useRef<HTMLInputElement>(null);
   const [cycle, setCycle] = useState('2026-h1');
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const page = NAV.find((n) => pathname.startsWith(n.href))?.label;
 
   useEffect(() => {
@@ -99,6 +110,10 @@ function Shell({ children }: { children: ReactNode }) {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
         searchRef.current?.focus();
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === '/') {
+        e.preventDefault();
+        setShortcutsOpen(true);
       }
     };
     window.addEventListener('keydown', onKey);
@@ -180,9 +195,6 @@ function Shell({ children }: { children: ReactNode }) {
           </DropdownMenu>
         </nav>
         <div className="mt-auto hidden p-3 md:block">
-          <div className="mb-2">
-            <NavLink item={SETTINGS_NAV} active={pathname === SETTINGS_NAV.href} />
-          </div>
           {progress.complete ? (
             <div className="text-muted-foreground mb-1 flex items-center gap-2 px-2 py-1.5 text-xs">
               <Check className="text-success size-3.5" aria-hidden /> Setup complete
@@ -226,13 +238,30 @@ function Shell({ children }: { children: ReactNode }) {
                 <ChevronsUpDown className="text-muted-foreground size-4 shrink-0" aria-hidden />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent side="top" align="start" className="w-56">
-              <DropdownMenuLabel className="grid">
-                <span className="text-sm font-medium">{user.name}</span>
-                <span className="text-muted-foreground text-xs font-normal">Organization Administrator</span>
+            <DropdownMenuContent side="top" align="start" className="w-60">
+              <DropdownMenuLabel className="grid gap-0.5 font-normal">
+                <span className="text-muted-foreground truncate text-xs">{user.email}</span>
+                <span className="truncate text-sm font-medium">{user.name}</span>
+                <span className="text-muted-foreground text-xs">Organization Administrator</span>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem disabled>Profile</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => router.push(SETTINGS_NAV.href)}>
+                <Settings aria-hidden /> Organization settings
+              </DropdownMenuItem>
+              <DropdownMenuItem disabled>
+                <UserRound aria-hidden /> Your profile
+                <span className="bg-secondary text-muted-foreground ml-auto rounded px-1.5 text-[11px] leading-5">Soon</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem disabled>
+                <CircleQuestionMark aria-hidden /> Get help
+                <span className="bg-secondary text-muted-foreground ml-auto rounded px-1.5 text-[11px] leading-5">Soon</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => setShortcutsOpen(true)}>
+                <Keyboard aria-hidden /> Keyboard shortcuts
+                <DropdownMenuShortcut>Ctrl /</DropdownMenuShortcut>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem onSelect={() => router.push('/login')}>
                 <LogOut aria-hidden /> Log out
               </DropdownMenuItem>
@@ -240,6 +269,22 @@ function Shell({ children }: { children: ReactNode }) {
           </DropdownMenu>
         </div>
       </aside>
+      <Dialog open={shortcutsOpen} onOpenChange={setShortcutsOpen}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Keyboard shortcuts</DialogTitle>
+            <DialogDescription>On a Mac, use Cmd instead of Ctrl.</DialogDescription>
+          </DialogHeader>
+          <ul className="grid gap-2 text-sm">
+            {SHORTCUTS.map((s) => (
+              <li key={s.keys} className="flex items-center justify-between gap-4">
+                {s.action}
+                <kbd className="bg-secondary text-muted-foreground rounded border px-1.5 text-xs leading-5">{s.keys}</kbd>
+              </li>
+            ))}
+          </ul>
+        </DialogContent>
+      </Dialog>
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <div className="flex h-14 shrink-0 items-center gap-4 border-b px-5 md:px-10">
           <nav aria-label="Breadcrumb" className="hidden min-w-0 items-center gap-1.5 text-sm lg:flex">
