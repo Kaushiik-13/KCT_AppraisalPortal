@@ -14,7 +14,7 @@ No implementation of the **new production-oriented module** has been verified ye
 - Any faculty-facing recommendations or follow-up actions require explicit institutional policy and access rules.
 - Keep sandbox examples separate from enabled recommendations. Where policy permits, show an output only to its intended, authorized audience with its reason, version, provenance, limitations, and clear indication whether any follow-up is optional or required.
 - The shared [project role/access proposal](../../project/UI-UX.md) describes cross-platform visibility boundaries; this module owns recommendation-specific audience and output details.
-- Proposed: the institution's organization administrators build, evaluate and publish recommendation models or rule sets; faculty and supervisors only see recommendations the institution has published and enabled for them. See [RD-001 in Decisions](DECISIONS.md).
+- Proposed: the institution's organization administrators build, evaluate and publish recommendation models or rule sets; faculty and reviewers only see recommendations the institution has published and enabled for them. See [RD-001 in Decisions](DECISIONS.md).
 - Recommendation logic, any additional approval step, data use, and technical deployment remain undecided. Do not adopt PoC behavior as production design.
 
 ## Known limitations

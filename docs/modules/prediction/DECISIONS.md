@@ -13,10 +13,10 @@ No implementation of the new production-oriented Prediction module has been veri
 ### Proposed decision
 
 - An institution's **organization administrators** train, evaluate and publish prediction models for their own institution.
-- **Faculty members and supervisors do not train or publish models.** They can only see an output that the institution has published and enabled for them.
-- **Publishing** is the act that moves a model from the administrator's sandbox to use. A sandbox or experimental result is not a published prediction and must not appear to faculty or supervisors.
-- A published model makes outputs available only to the audiences the institution enables under its policy, within each person's access scope: a faculty member sees only their own result, and a supervisor sees only results for assigned faculty when permitted.
-- A prediction is an **estimate**. It never decides, releases or changes a KPI mark; only a supervisor's per-KPI release makes a mark official.
+- **Faculty members and reviewers do not train or publish models.** They can only see an output that the institution has published and enabled for them.
+- **Publishing** is the act that moves a model from the administrator's sandbox to use. A sandbox or experimental result is not a published prediction and must not appear to faculty or reviewers.
+- A published model makes outputs available only to the audiences the institution enables under its policy, within each person's access scope: a faculty member sees only their own result, and a reviewer sees only results for assigned faculty when permitted.
+- A prediction is an **estimate**. It never decides, releases or changes a KPI mark; only a reviewer's per-KPI release makes a mark official.
 
 ### Rationale
 

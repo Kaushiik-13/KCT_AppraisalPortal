@@ -141,7 +141,7 @@ These eight principles are product-wide rules, not claims that the current PoC h
 
 ### 2.4.1 Mandatory shadcn/ui component policy — approved
 
-**Decision:** AFPI adopts **shadcn/ui as the mandatory default UI component system** for all future Organization, Employee, Supervisor and Developer interfaces. This is a design and code-review requirement, not a claim that the existing JSX/CSS PoC has been migrated. Navigation taxonomy and detailed page layouts are deliberately deferred until feature implementation; this decision governs their eventual implementation.
+**Decision:** AFPI adopts **shadcn/ui as the mandatory default UI component system** for all future Organization, Employee, Reviewer and Developer interfaces. This is a design and code-review requirement, not a claim that the existing JSX/CSS PoC has been migrated. Navigation taxonomy and detailed page layouts are deliberately deferred until feature implementation; this decision governs their eventual implementation.
 
 - **Standard stack:** shadcn/ui components, Tailwind CSS, centralized semantic CSS-variable tokens, and Lucide React icons in the React/Next.js codebase.
 - **Component-first:** Use the official shadcn/ui component for common controls (Button, Input, Select, Checkbox, Radio, Switch, Textarea, Tabs, Dialog, AlertDialog, Sheet, DropdownMenu, Popover, Tooltip, Card, Badge, Table, Skeleton, Sidebar, Breadcrumb, etc.) where a suitable component exists. Do not hand-roll duplicate primitives.
@@ -178,15 +178,15 @@ These eight principles are product-wide rules, not claims that the current PoC h
 
 ## 03. Information Architecture
 
-**Status:** The first-release product direction has three core institution-facing roles: Organization Administrator, Faculty Member, and Supervisor/Reviewer. A Supervisor may also have their own faculty experience. A separate Platform Developer audience may support AFPI platform operations, but it is outside the core institution appraisal workflow described here. Detailed page hierarchy, menu labels, route definitions and navigation layout remain **proposed/deferred**; role scopes and exact permissions/URLs are not an authorization contract. This does not establish a production codebase, navigation shell, or security implementation.
+**Status:** The first-release product direction has three core institution-facing roles: Organization Administrator, Faculty Member, and Reviewer. A Reviewer may also have their own faculty experience. A separate Platform Developer audience may support AFPI platform operations, but it is outside the core institution appraisal workflow described here. Detailed page hierarchy, menu labels, route definitions and navigation layout remain **proposed/deferred**; role scopes and exact permissions/URLs are not an authorization contract. This does not establish a production codebase, navigation shell, or security implementation.
 
 ### 3.1 Primary users and workspace model — agreed
 
 AFPI's entry-point information architecture is **persona/workspace-first**, not one identical module menu for everyone:
 
-1. **Organization Administrators:** Builders and facilitators of the institution's appraisal operations. They set up people and assignments; create KPIs/KRAs and appraisal cycles; configure prediction and recommendation workspaces, including sandbox evaluation; and view institution-level KPI, KRA, and faculty analytics. In the agreed workflow, administrators do not perform supervisor reviews or release KPI marks.
-2. **Faculty Members:** Complete assigned KPIs, submit required information and evidence, track review progress, and see their own KPI marks after a supervisor releases them, plus other outputs explicitly permitted by institutional policy.
-3. **Supervisors/Reviewers:** Perform operational reviews for assigned faculty, review submitted evidence, decide and release marks for each KPI, provide feedback, and view analytics limited to their authorized faculty. A supervisor may also be a faculty member and retain their own faculty experience.
+1. **Organization Administrators:** Builders and facilitators of the institution's appraisal operations. They set up people and assignments; create KPIs/KRAs and appraisal cycles; configure prediction and recommendation workspaces, including sandbox evaluation; and view institution-level KPI, KRA, and faculty analytics. In the agreed workflow, administrators do not perform reviews or release KPI marks.
+2. **Faculty Members:** Complete assigned KPIs, submit required information and evidence, track review progress, and see their own KPI marks after a reviewer releases them, plus other outputs explicitly permitted by institutional policy.
+3. **Reviewers:** Perform operational reviews for assigned faculty, review submitted evidence, decide and release marks for each KPI, provide feedback, and view analytics limited to their authorized faculty. A reviewer may also be a faculty member and retain their own faculty experience.
 
 These role responsibilities describe the agreed product direction, not a deployed access-control implementation. Exact assignment, role, review, and visibility rules still require design.
 
@@ -197,7 +197,7 @@ The three institution-facing roles are the **core first-release audiences**, not
 ```text
 AFPI Platform — common identity, access checks and reusable capabilities
 ├── Organization Administrator Workspace
-│   ├── Institution setup, members, roles and supervisor assignments
+│   ├── Institution setup, members, roles and reviewer assignments
 │   ├── KPI/KRA and appraisal-cycle configuration
 │   ├── Evidence requirements and approved scoring configuration
 │   ├── Prediction/recommendation workspaces and sandbox evaluation
@@ -206,10 +206,10 @@ AFPI Platform — common identity, access checks and reusable capabilities
 │   ├── Assigned KPI / appraisal tasks
 │   ├── KPI information and evidence submission
 │   ├── Submission and review status
-│   ├── KPI marks after supervisor release
+│   ├── KPI marks after reviewer release
 │   ├── Authorized predictions, recommendations and follow-up
 │   └── Clarification / review requests where offered
-├── Supervisor / Reviewer Workspace
+├── Reviewer Workspace
 │   ├── Assigned faculty review queues and evidence inspection
 │   ├── Per-KPI mark decisions, release and feedback
 │   └── Analytics for authorized faculty
@@ -227,7 +227,7 @@ AFPI Platform — common identity, access checks and reusable capabilities
     └── Additional capabilities as the platform expands
 ```
 
-**Key distinction:** A *module* supplies capabilities; a *workspace* exposes only the tasks and outputs appropriate to the current user. Organization Administrators configure the appraisal operation, create KPIs/KRAs, configure model workspaces, and review institution-level analytics. Faculty submit assigned evidence. Supervisors review assigned submissions and release marks per KPI. A submitted value is not automatically verified, and an internal calculation is not a released mark. Platform Developers, if included in the eventual product, author and maintain platform capabilities; this does not grant access to institutional faculty data by default.
+**Key distinction:** A *module* supplies capabilities; a *workspace* exposes only the tasks and outputs appropriate to the current user. Organization Administrators configure the appraisal operation, create KPIs/KRAs, configure model workspaces, and review institution-level analytics. Faculty submit assigned evidence. Reviewers review assigned submissions and release marks per KPI. A submitted value is not automatically verified, and an internal calculation is not a released mark. Platform Developers, if included in the eventual product, author and maintain platform capabilities; this does not grant access to institutional faculty data by default.
 
 Labels above are candidate content areas, not confirmed screens or available routes. The operational Developer Workspace may in practice be a separate tool or application; a common visual shell is **not** a requirement, and neither deployment architecture nor production UI has been chosen.
 
@@ -239,14 +239,14 @@ Labels above are candidate content areas, not confirmed screens or available rou
 - **Least privilege:** only authorized operations are actionable; direct URLs and APIs are independently checked server-side. A missing/denied resource must not leak its existence or details.
 - **Scalable:** future modules may add capabilities to one or more workspaces without creating a separate, incompatible navigation system.
 - **Global search:** future capability; not required for the first production release.
-- **No premature layout decision:** sidebar, header, mobile navigation, URL scheme and workspace switcher are deferred to IA validation and wireframes.
+- **No premature layout decision:** sidebar, header, mobile navigation, URL scheme and workspace switcher are deferred to IA validation and wireframes. The Organization UI prototype proposes one administrator layout (left sidebar with Home, People, Invitations and Settings; a top bar on phones) for stakeholder review; it is a proposal, not an agreed decision. See [Organization UI flow](../modules/organization/UI-FLOW.md).
 
 ### 3.4 Workspace capability matrix — proposed, not an authorization contract
 
-| Capability | Organization Admin | Faculty Member | Supervisor / Reviewer | Platform Developer |
+| Capability | Organization Admin | Faculty Member | Reviewer | Platform Developer |
 |---|---|---|---|---|
 | Organization onboarding and settings | Configure institution where authorized | Complete own onboarding as approved | No institution-wide admin authority by default | No institutional admin authority by default |
-| Members and assignments | Manage permitted members and supervisor assignments | View own permitted profile and tasks | View assigned faculty context | No broad employee-record access |
+| Members and assignments | Manage permitted members and reviewer assignments | View own permitted profile and tasks | View assigned faculty context | No broad employee-record access |
 | KPIs, KRAs and appraisal setup | Create/configure KPI/KRA, cycles, evidence requirements and assignments | Submit evidence for assigned KPIs; view own released marks | Review assigned KPI submissions | No automatic institutional policy authority |
 | Review and mark release | Facilitate operations; does not release marks in the agreed role split | View own marks after release | Review assigned faculty, decide and release per-KPI marks, provide feedback | No automatic review authority |
 | Prediction | Configure/build and evaluate models in an institution sandbox; view institution-level analytics | View only outputs permitted by policy | View scoped analytics/outputs when permitted | Maintain platform runtime; no automatic data access |
@@ -256,7 +256,7 @@ Labels above are candidate content areas, not confirmed screens or available rou
 | Platform deployment/diagnostics | No platform-operator privilege by default | No | No | Authorized operational tasks only |
 | Audit history | Relevant organization activity as permitted | Own decision history if permitted | Relevant assigned review history | Platform operational audit; protected institutional audit only by explicit scoped support approval |
 
-This matrix is **UX intent**, not a claim about implemented authorization. Exact permissions, supervisor assignments, model approval duties, and output visibility remain to be defined. The first release is intended for one institution; future cross-organization access requires a separate isolation design.
+This matrix is **UX intent**, not a claim about implemented authorization. Exact permissions, reviewer assignments, model approval duties, and output visibility remain to be defined. The first release is intended for one institution; future cross-organization access requires a separate isolation design.
 
 ### 3.5 Context, multi-workspace users and exceptions
 
@@ -298,7 +298,7 @@ For each journey document **actor and authorization context → trigger → prec
 ### 4.2 Organization Administrator — onboard institution
 
 **Actor:** Authorized institutional setup administrator. **Trigger:** Set up or enter the initial institution workspace.
-**Flow:** Verify identity/eligibility → enter institution name, type, official contact and locale → create and verify the first administrator account → optionally add organizational units → inspect setup and policy requirements → correct validation errors → confirm authorized setup → receive the institution workspace and clear next tasks. Employee invitations and role/supervisor assignments follow as a separate guided step, with an import option for larger institutions. Do not request or store an organization's shared email password.
+**Flow:** Verify identity/eligibility → enter institution name, type, official contact and locale → create and verify the first administrator account → optionally add organizational units → inspect setup and policy requirements → correct validation errors → confirm authorized setup → receive the institution workspace and clear next tasks. Employee invitations and role/reviewer assignments follow as a separate guided step, with an import option for larger institutions. Do not request or store an organization's shared email password.
 **Alternatives:** Duplicate organization, expired invitation, lost connectivity, no privilege, session expiry, partially completed setup; recover permitted drafts without leaking any institutional data.  
 **Outcome:** Confirmed organizational workspace with auditable consequential setup actions.  
 **Test:** Admin completes setup without hidden instructions; users outside scope cannot create or inspect the institution.
@@ -306,18 +306,18 @@ For each journey document **actor and authorization context → trigger → prec
 ### 4.3 Organization Administrator — manage employees and governance
 
 **Actor:** Authorized organization administrator, subject to narrower responsibilities under #44.  
-**Flow:** Select active organization → view permitted members → invite employees individually or import a validated roster → assign faculty or supervisor responsibilities and supervisor-to-faculty scopes → review the assignment summary and sensitive changes → confirm → see invitation/assignment status and relevant audit event. Keep organization access, appraisal responsibilities, and supervisor scope understandable as distinct concepts.
-**Alternatives:** Invalid or duplicate employee, malformed import row, unresolved supervisor assignment, unauthorized change, conflicting update or revoked access. Allow correction and retry without losing valid rows.
+**Flow:** Select active organization → view permitted members → invite employees individually or import a validated roster → assign faculty or reviewer responsibilities and reviewer-to-faculty scopes → review the assignment summary and sensitive changes → confirm → see invitation/assignment status and relevant audit event. Keep organization access, appraisal responsibilities, and reviewer scope understandable as distinct concepts.
+**Alternatives:** Invalid or duplicate employee, malformed import row, unresolved reviewer assignment, unauthorized change, conflicting update or revoked access. Allow correction and retry without losing valid rows.
 **Outcome:** Employees have the appropriate authorized entry path, and institutional changes are accountable.  
 **Test:** No privilege escalation, double submission or cross-organization information leak.
 
 ### 4.4 Organization Administrator — configure appraisal and model workspaces
 
 **Actor:** Organization administrator responsible for institutional setup and facilitation.
-**Flow:** Enter the institution workspace → create an appraisal cycle → configure KPIs/KRAs, evidence requirements, approved scoring rules and assignments → validate and preview the cycle → build, train, and evaluate prediction and recommendation models in a sandbox → inspect model results and limitations → view authorized institution-level KPI, KRA, faculty performance and level analytics. Operational evidence review and per-KPI mark release belong to assigned supervisors.
+**Flow:** Enter the institution workspace → create an appraisal cycle → configure KPIs/KRAs, evidence requirements, approved scoring rules and assignments → validate and preview the cycle → build, train, and evaluate prediction and recommendation models in a sandbox → inspect model results and limitations → view authorized institution-level KPI, KRA, faculty performance and level analytics. Operational evidence review and per-KPI mark release belong to assigned reviewers.
 **Alternatives:** Invalid KPI configuration, missing evidence rule, unsuitable dataset, failed training/evaluation, stale model, or unauthorized configuration. Preserve drafts and show actual system status.
-**Outcome:** Faculty can complete assigned appraisals, supervisors can review them, and administrators can understand institution-level performance and model readiness.
-**Test:** Administrators can distinguish configuration, evaluation, review, and release states and do not see a mark as released before the supervisor releases it.
+**Outcome:** Faculty can complete assigned appraisals, reviewers can review them, and administrators can understand institution-level performance and model readiness.
+**Test:** Administrators can distinguish configuration, evaluation, review, and release states and do not see a mark as released before the reviewer releases it.
 
 ### 4.5 Employee — join and access personal workspace
 
@@ -330,7 +330,7 @@ For each journey document **actor and authorization context → trigger → prec
 ### 4.6 Faculty Member — view released KPI marks and permitted outputs
 
 **Actor:** Authorized employee of a participating institution.  
-**Flow:** Open personal workspace → review KPI submission and status → view marks for each KPI after the assigned supervisor releases them → distinguish marks from predictions and recommendations → inspect relevant explanation and evidence where authorized → take a permitted follow-up action or request clarification.
+**Flow:** Open personal workspace → review KPI submission and status → view marks for each KPI after the assigned reviewer releases them → distinguish marks from predictions and recommendations → inspect relevant explanation and evidence where authorized → take a permitted follow-up action or request clarification.
 **Alternatives:** Pending review, returned evidence, mark not yet released, prediction not enabled, unavailable/stale model output, disputed result, or access change. Label model outputs as estimates with their cycle/model context; never present them as official marks or imply they changed a released mark. An unreleased result must not appear final.
 **Outcome:** Faculty understand their own released KPI marks and any other results made available under policy.
 **Test:** Representative faculty can tell whether a KPI is submitted, under review, returned, or released, and can find the explanation for a released mark.
@@ -340,22 +340,22 @@ For each journey document **actor and authorization context → trigger → prec
 **Actor:** Faculty member assigned institutional KPIs and evidence requirements.
 **Flow:** Open assigned KPI → read required information and verification criteria → enter KPI input(s) and attach supporting evidence → review entered vs extracted values where relevant → validate → save draft or explicitly **submit for verification** → track submitted, under review, returned for correction, verified and scored/released states as applicable.  
 **Alternatives:** Missing document, unreadable evidence, conflicting extracted values, network failure, unsaved changes, denied access or return for correction.  
-**Outcome:** Auditable submission and transparent review state, followed by a mark visible to faculty only after supervisor release.
+**Outcome:** Auditable submission and transparent review state, followed by a mark visible to faculty only after reviewer release.
 **Test:** Faculty can submit and correct evidence without editing KPI/scoring definitions and without accessing other faculty members' results.
 
-### 4.8 Supervisor/Reviewer — review submissions and release KPI marks
+### 4.8 Reviewer — review submissions and release KPI marks
 
-**Actor:** Supervisor/reviewer assigned to the faculty member and appraisal period.
-**Flow:** Open assigned review queue → inspect an assigned faculty member's KPI submission and evidence → record the review decision and mark under approved institutional rules → return the submission with feedback when correction is needed, or release the mark for that KPI → review analytics for assigned faculty. A supervisor who is also a faculty member can access personal tasks separately and must not review or release their own submissions.
+**Actor:** Reviewer assigned to the faculty member and appraisal period.
+**Flow:** Open assigned review queue → inspect an assigned faculty member's KPI submission and evidence → record the review decision and mark under approved institutional rules → return the submission with feedback when correction is needed, or release the mark for that KPI → review analytics for assigned faculty. A reviewer who is also a faculty member can access personal tasks separately and must not review or release their own submissions.
 **Alternatives:** Missing or unreadable evidence, conflicting values, duplicate action, self-review conflict, reassignment, unavailable policy, or revoked access. Block prohibited actions and show a clear status and auditable recovery path.
-**Outcome:** Faculty receive KPI marks and feedback only after the responsible supervisor releases them; review actions remain traceable.
-**Test:** Supervisors act only on assigned faculty, distinguish returned/under-review/released items, and confirm which KPI marks are visible to the faculty member.
+**Outcome:** Faculty receive KPI marks and feedback only after the responsible reviewer releases them; review actions remain traceable.
+**Test:** Reviewers act only on assigned faculty, distinguish returned/under-review/released items, and confirm which KPI marks are visible to the faculty member.
 
 ### 4.9 Role visibility and result meaning
 
 The following is a **proposed UX/access boundary** for design review, not a deployed authorization contract:
 
-| Capability or result | Organization administrator | Supervisor/reviewer | Faculty member |
+| Capability or result | Organization administrator | Reviewer | Faculty member |
 |---|---|---|---|
 | Organization setup, memberships and role/scope assignment | Configure within approved institutional authority | No access unless separately authorized | No access |
 | KPI/KRA and cycle configuration | Configure and validate | View the active requirements for assigned reviews | View assigned requirements |
@@ -364,7 +364,7 @@ The following is a **proposed UX/access boundary** for design review, not a depl
 | Analytics | Institution-wide, subject to approved duties | Assigned faculty only | Personal results only |
 | Prediction/recommendation models | Build/evaluate in controlled workspace | View only outputs authorized for review context | View own enabled outputs, clearly labeled as estimates |
 
-Use separate labels and visual treatment for **submitted evidence**, **supervisor decision/released mark**, and **model prediction/recommendation**. Show missing, stale, unavailable, or low-confidence model output as such. Never infer finality from a model score. Exact visibility, model approval, and data-use policy remain open for institutional approval.
+Use separate labels and visual treatment for **submitted evidence**, **reviewer decision/released mark**, and **model prediction/recommendation**. Show missing, stale, unavailable, or low-confidence model output as such. Never infer finality from a model score. Exact visibility, model approval, and data-use policy remain open for institutional approval.
 
 ### 4.10 Platform Developer — create, test and publish nodes/tools/plugins
 
@@ -381,10 +381,10 @@ Use separate labels and visual treatment for **submitted evidence**, **superviso
 
 ```text
 Organization Admin: create KPIs/KRAs, set cycles/assignments, configure models and view institution analytics
-           ↓ faculty tasks and supervisor assignments are established
+           ↓ faculty tasks and reviewer assignments are established
 Faculty: submit assigned KPI information and evidence
-           ↓ assigned supervisor reviews evidence and decides per-KPI marks
-Supervisor: release marks for each KPI and view authorized faculty analytics
+           ↓ assigned reviews evidence and decides per-KPI marks
+Reviewer: release marks for each KPI and view authorized faculty analytics
            ↓ released results become visible to the faculty member
 Faculty: view own released marks and other outputs permitted by policy
 
@@ -400,7 +400,7 @@ Different users interact with the **same capabilities**, but through responsibil
 
 - Confirm policy ownership, required approvals, who is allowed to train/publish models, and visibility of faculty predictions with institutional stakeholders.
 - Approve role/scopes and any support-access exception under #44 before protected routes are coded.
-- The first release is intended to include the complete core journeys for organization administrators, faculty members, and supervisors/reviewers described in 4.2–4.8. Detailed requirements and implementation remain to be designed and verified.
+- The first release is intended to include the complete core journeys for organization administrators, faculty members, and reviewers described in 4.2–4.8. Detailed requirements and implementation remain to be designed and verified.
 - Include keyboard/screen-reader, responsive, draft recovery, session-expiry, in-progress job, revoked-access and data provenance variants in relevant test scenarios.
 - Measure task success, critical errors, completion time and comprehension separately for each persona.
 - Detailed module journeys and screens belong to their owning `docs/modules/<module>/UI-UX.md` and module-owned PRs.

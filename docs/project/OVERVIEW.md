@@ -1,6 +1,6 @@
 # AFPI — Project overview
 
-**Adaptive Faculty Performance Intelligence (AFPI)** is being redesigned as a **production-oriented, modular faculty appraisal and analytics product**, with a longer-term SaaS direction. The first release is intended to deliver the complete core workflow for organization administrators, faculty members, and supervisors/reviewers at one institution. The product may later evolve to serve multiple organizations; that is not a first-release requirement. Existing PoC code and documents remain historical reference only; the new architecture and module designs must be defined and verified independently.
+**Adaptive Faculty Performance Intelligence (AFPI)** is being redesigned as a **production-oriented, modular faculty appraisal and analytics product**, with a longer-term SaaS direction. The first release is intended to deliver the complete core workflow for organization administrators, faculty members, and reviewers at one institution. The product may later evolve to serve multiple organizations; that is not a first-release requirement. Existing PoC code and documents remain historical reference only; the new architecture and module designs must be defined and verified independently.
 
 ## Actors and responsibilities
 
@@ -8,12 +8,12 @@ In software engineering, an **actor** represents a role interacting with a syste
 
 | Actor | Responsibilities |
 |---|---|
-| **Organization Administrator** | Set up the institution and its employees; assign roles and supervisor scopes; configure appraisal cycles, KPIs/KRAs, evidence and approved scoring rules; build and evaluate prediction/recommendation models in sandboxes; view authorized institution-level analytics. Administrators do not conduct operational evidence review or release KPI marks in the described workflow. |
+| **Organization Administrator** | Set up the institution and its employees; assign roles and reviewer scopes; configure appraisal cycles, KPIs/KRAs, evidence and approved scoring rules; build and evaluate prediction/recommendation models in sandboxes; view authorized institution-level analytics. Administrators do not conduct operational evidence review or release KPI marks in the described workflow. |
 | **Faculty member** | Complete assigned KPIs, save and submit information/evidence, track review and correction progress, and view their own released marks plus predictions or recommendations enabled for them by institutional policy. |
-| **Supervisor / reviewer** | Perform their own faculty-member tasks where applicable; review submissions only for assigned faculty, request corrections, record decisions, release marks per KPI, provide feedback, and inspect analytics within their assigned scope. |
+| **Reviewer** | Perform their own faculty-member tasks where applicable; review submissions only for assigned faculty, request corrections, record decisions, release marks per KPI, provide feedback, and inspect analytics within their assigned scope. |
 | **Platform Developer** | Create reusable nodes, tools and plugins; test and debug them in an isolated playground; version and publish approved capabilities; maintain AFPI software and supporting infrastructure |
 
-**Actor relationships:** A supervisor may also be a faculty member and retain their own faculty workflow, while receiving additional, assignment-scoped review and analytics capabilities. They must not review or release marks for their own submissions. Administrators configure and facilitate the process; supervisors perform operational reviews and release per-KPI marks. Prediction and recommendation outputs are advisory and must be visually distinct from human-reviewed, released marks. These are proposed product responsibilities, **not a deployed RBAC contract**. Exact permissions and access scopes remain to be designed. The first-release direction is one institution; multi-organization isolation is a later design concern.
+**Actor relationships:** A reviewer may also be a faculty member and retain their own faculty workflow, while receiving additional, assignment-scoped review and analytics capabilities. They must not review or release marks for their own submissions. Administrators configure and facilitate the process; reviewers perform operational reviews and release per-KPI marks. Prediction and recommendation outputs are advisory and must be visually distinct from human-reviewed, released marks. These are proposed product responsibilities, **not a deployed RBAC contract**. Exact permissions and access scopes remain to be designed. The first-release direction is one institution; multi-organization isolation is a later design concern.
 
 ### Use-case interaction overview
 
@@ -23,7 +23,7 @@ The following **Mermaid use-case-style diagram** illustrates major actors and in
 flowchart LR
   org["Organization Administrator"]
   emp["Employee"]
-  sup["Supervisor<br/>(also an Employee)"]
+  sup["Reviewer<br/>(also an Employee)"]
   dev["Platform Developer"]
 
   subgraph afpi["AFPI — System Boundary"]
@@ -33,7 +33,7 @@ flowchart LR
     models(["Develop/configure prediction & recommendation models"])
     submit(["Submit KPI inputs & evidence"])
     verify(["Review evidence and decide KPI marks"])
-    release(["Supervisor releases marks per KPI"])
+    release(["Reviewer releases marks per KPI"])
     results(["View authorized scores & recommendations"])
     analytics(["View authorized team reports & analytics"])
     nodes(["Build nodes, tools & plugins"])
@@ -71,10 +71,10 @@ flowchart LR
   style afpi fill:#ffffff,stroke:#64748b,stroke-width:1.5px
 ```
 
-**Interpretation:** Organization administrators configure and facilitate the evaluation system; faculty supply evidence and view their own released outcomes; supervisors review assigned faculty, release marks for each KPI, and use scoped analytics. The first release is expected to cover this complete core workflow plus administrator KPI/KRA setup, model workspaces/sandbox, and institution analytics. This is product direction, not a claim that any capability has shipped. Detailed navigation, policy rules, and screens remain to be designed.
+**Interpretation:** Organization administrators configure and facilitate the evaluation system; faculty supply evidence and view their own released outcomes; reviewers review assigned faculty, release marks for each KPI, and use scoped analytics. The first release is expected to cover this complete core workflow plus administrator KPI/KRA setup, model workspaces/sandbox, and institution analytics. This is product direction, not a claim that any capability has shipped. Detailed navigation, policy rules, and screens remain to be designed.
 
 ## Modules
-- **Framework Studio:** configurable KPI/KRA and appraisal-cycle setup, faculty evidence submissions, supervisor review, and per-KPI mark release.
+- **Framework Studio:** configurable KPI/KRA and appraisal-cycle setup, faculty evidence submissions, review, and per-KPI mark release.
 - **Prediction:** administrator model-building/evaluation workspace and sandbox, with role-appropriate prediction outputs and analytics to be defined.
 - **Recommendation:** administrator recommendation-building/evaluation workspace and sandbox, with role-appropriate outputs and analytics to be defined.
 - **Organization:** institution setup, membership and assignments, and the administrative workspace that facilitates the appraisal process.

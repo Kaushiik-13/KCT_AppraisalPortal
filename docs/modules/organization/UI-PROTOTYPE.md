@@ -167,9 +167,9 @@ KPI, KRA, scoring and weight settings belong to Framework Studio, and model sett
 
 ## Open decisions raised by the prototype
 
-- Wording: "Reviewer" is used in the UI; the project documents say "Supervisor/reviewer" and "Faculty". Confirm the product vocabulary for non-educational organizations.
+- Wording: "Reviewer" is used in the UI; the project documents say "Reviewer" and "Faculty". Confirm the product vocabulary for non-educational organizations.
 - Scope of Configuration. The documented onboarding places time zone on the institution profile; the prototype moves it to a Configuration step. Confirm which fields belong in onboarding and which in later Settings.
-- Whether prediction and recommendation visibility to faculty and supervisors (policy) and integration status (email, single sign-on, AI assistance on or off) belong in Configuration. Not included yet.
+- Whether prediction and recommendation visibility to faculty and reviewers (policy) and integration status (email, single sign-on, AI assistance on or off) belong in Configuration. Not included yet.
 - Whether departments can be nested, and what happens to people when a department is removed (the prototype moves them to "No department").
 - Import file format, size limit and duplicate handling; the prototype adds sample rows instead of reading a file.
 - Sign-in method, verification method and code lifetime.

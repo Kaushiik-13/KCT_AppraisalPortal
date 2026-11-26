@@ -12,7 +12,7 @@ The codebase is organized as a small npm workspace for the JavaScript applicatio
 
 | Path | Responsibility | Current state |
 |---|---|---|
-| `apps/web/` | Next.js application for the administrator, faculty, and supervisor experiences | Clean starter shell. No product UI or workflow has been carried over from the PoC. |
+| `apps/web/` | Next.js application for the administrator, faculty, and reviewer experiences | Contains the nonfunctional Organization UI prototype (sign-up, onboarding, sign-in, invitations, Home, People, Invitations, Settings) with sample data and no backend. See [Organization UI prototype](../modules/organization/UI-PROTOTYPE.md). No PoC UI has been carried over. |
 | `apps/api/` | NestJS modular monolith and application API | Health endpoint and empty modules for identity/access, organization, Framework Studio, prediction, recommendation, and analytics. No business workflows or persistence are implemented. |
 | `services/model-training/` | Future Python model training and evaluation worker/service | Reserved with a README only. Its data contract, job lifecycle, and governance need agreement before implementation. |
 | `packages/contracts/` | Shared API schemas and generated types | Reserved. No cross-application contract has been approved yet. |
@@ -27,8 +27,8 @@ The first release is intended to deliver the complete core appraisal and analyti
 
 1. Administrators configure the organization, KPIs/KRAs, appraisal cycle, assignments, and model workspaces/sandboxes.
 2. Faculty submit KPI information and evidence and follow review progress.
-3. Supervisors/reviewers assess assigned submissions, record decisions, and release marks for each KPI.
-4. Administrators, supervisors, and faculty see analytics and results appropriate to their approved access.
+3. Reviewers assess assigned submissions, record decisions, and release marks for each KPI.
+4. Administrators, reviewers, and faculty see analytics and results appropriate to their approved access.
 
 The repository layout supports those responsibilities without forcing each area to run as a separate service. The API is a modular monolith by default; the model-training service remains a future boundary until its contract and operational needs are settled. The product is designed for one institution in its first release. Future multi-organization support is a design consideration, not an implemented tenant-isolation feature.
 

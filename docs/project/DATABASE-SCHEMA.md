@@ -8,7 +8,7 @@
 
 The confirmed first-release workflows imply that future design work will need to consider these information areas. These are not approved entity names, tables, relationships, or a complete data inventory.
 
-- Institution setup, members, roles, and supervisor-to-faculty assignments.
+- Institution setup, members, roles, and reviewer-to-faculty assignments.
 - Appraisal cycles, KPI/KRA definitions, evidence requirements, and approved scoring configuration.
 - Faculty KPI submissions, evidence-file references, reviewer decisions, feedback, and per-KPI mark-release history.
 - Prediction and recommendation datasets, sandbox experiments, training/evaluation jobs, model versions, and approved outputs.

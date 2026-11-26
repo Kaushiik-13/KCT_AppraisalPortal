@@ -12,7 +12,7 @@ sequenceDiagram
   participant Org as Organization setup
   participant Framework as Framework Studio
   participant Faculty
-  participant Supervisor as Supervisor/reviewer
+  participant Reviewer as Reviewer
   participant Analytics
   participant Models as Prediction/recommendation workspaces
 
@@ -20,13 +20,13 @@ sequenceDiagram
   Admin->>Framework: Create KPIs/KRAs, cycle, assignments and evidence requirements
   Admin->>Models: Build/train/evaluate models in sandbox
   Faculty->>Framework: Submit assigned KPI information and evidence
-  Framework-->>Supervisor: Make assigned submission available for review
-  Supervisor->>Framework: Record decision and release mark per KPI
+  Framework-->>Reviewer: Make assigned submission available for review
+  Reviewer->>Framework: Record decision and release mark per KPI
   Framework-->>Faculty: Show released KPI mark and feedback
   Framework->>Analytics: Provide authorized appraisal and mark data
   Models->>Analytics: Provide approved model outputs, when permitted
   Analytics-->>Admin: Institution-level analytics
-  Analytics-->>Supervisor: Analytics for authorized faculty
+  Analytics-->>Reviewer: Analytics for authorized faculty
   Analytics-->>Faculty: Own authorized results
 ```
 
@@ -37,12 +37,12 @@ The sequence is conceptual. It does not settle whether modules communicate throu
 | Capability | Owns | Integrates with |
 |---|---|---|
 | Organization | Institution setup, membership, assignments, and administrative context | Framework configuration, access decisions, institution dashboards |
-| Framework Studio | KPI/KRA definitions, appraisal cycles, evidence requirements, approved scoring configuration, supervisor review, feedback, and per-KPI mark release | Faculty submissions and analytics |
+| Framework Studio | KPI/KRA definitions, appraisal cycles, evidence requirements, approved scoring configuration, review, feedback, and per-KPI mark release | Faculty submissions and analytics |
 | Prediction | Prediction model workspace, sandbox/evaluation flow, and approved prediction outputs | Authorized institution data and analytics; faculty visibility remains policy-controlled |
 | Recommendation | Recommendation model/workflow configuration, sandbox/evaluation, and approved outputs | Authorized institution data and analytics; faculty visibility remains policy-controlled |
 | Analytics | Role-appropriate views and metrics derived from approved source data | Organization, framework/review, prediction, and recommendation data |
 
-These are proposed logical boundaries, not a decision that each capability is a separately deployed service. Supervisor review is a capability within Framework Studio, not a fifth top-level module. Analytics may be a shared application capability rather than an independently owned module; the final boundary is open.
+These are proposed logical boundaries, not a decision that each capability is a separately deployed service. Review is a capability within Framework Studio, not a fifth top-level module. Analytics may be a shared application capability rather than an independently owned module; the final boundary is open.
 
 ## Contract requirements to resolve
 
