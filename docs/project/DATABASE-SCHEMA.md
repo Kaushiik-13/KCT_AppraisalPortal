@@ -25,3 +25,7 @@ The confirmed first-release workflows imply that future design work will need to
 - How can institution ownership be explicit in the first release while allowing future multi-organization isolation to be designed and tested?
 
 Do not add an ER diagram or physical schema until the ownership, policy, and persistence decisions are reviewed. Any future design must distinguish the one-institution first-release target from later multi-tenant capability.
+
+## Proposed direction
+
+The proposed storage choice (PostgreSQL plus object storage) and the rules that follow from it are in the [data architecture decision](DATA-ARCHITECTURE.md), under review in Issue #73. The first module-level proposal is the [Organization database schema](../modules/organization/DATABASE-SCHEMA.md).
