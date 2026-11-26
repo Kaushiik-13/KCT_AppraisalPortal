@@ -55,6 +55,10 @@ Treat invitation, organization membership, appraisal role, and supervisor-to-fac
 - Analytics loading, empty, stale, partially available, or access denied.
 - Session expired, permission removed, or institution context unavailable.
 
+## Current implementation: design prototype
+
+A nonfunctional, clickable prototype of part of this journey exists in `apps/web` (Issue #69). It has no backend, authentication, email, persistence or validation. It covers sign up, email verification, organization details, departments, employees (including per-department import), roles and reviewers, configuration, and a review-and-finish screen with a send confirmation. It also covers log in and password reset, accepting an invitation (with an expired-link state), and a signed-in administrator shell with a home (KPIs and charts on sample data), invitations, people (with departments) and settings screens. Most of the required states above are not built. The prototype differs from the proposed journey in a few ways: account creation and verification come before setup, the profile step is called "Organization" and supports any kind of organization, a Configuration step (dates, email, access, evidence) is added, and "reviewer" wording is used. Screens, tokens, components, data shapes, open decisions and deviations are recorded in [UI prototype and design reference](UI-PROTOTYPE.md).
+
 ## Known limitations and open decisions
 
 - First-release onboarding, identity verification, role assignment, and exact permission rules are not defined.
