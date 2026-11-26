@@ -21,12 +21,20 @@ export function StatGrid({ label, children }: { label: string; children: ReactNo
   );
 }
 
-/** Titled card used for charts and lists. */
-export function Panel({ title, children }: { title: string; children: ReactNode }) {
+/** Titled card used for charts and lists. `aside` sits to the right of the title, for a tag or a short note. */
+export function Panel({ title, aside, children }: { title: string; aside?: ReactNode; children: ReactNode }) {
   return (
-    <section className="bg-card grid h-full content-start gap-3 rounded-lg border p-4">
-      <h2 className="text-sm font-semibold">{title}</h2>
+    <section className="bg-card grid h-full min-w-0 content-start gap-3 rounded-lg border p-4">
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="text-sm font-semibold">{title}</h2>
+        {aside}
+      </div>
       {children}
     </section>
   );
+}
+
+/** Small grey tag, for example "Sample data". */
+export function Tag({ children }: { children: ReactNode }) {
+  return <span className="bg-secondary text-muted-foreground shrink-0 rounded px-1.5 text-[11px] leading-5">{children}</span>;
 }

@@ -52,7 +52,7 @@ export function LineChart({ points, ariaLabel, min, max, ticks, formatTick = (v)
                 strokeDasharray="3 3"
                 style={{ stroke: 'var(--muted-foreground)' }}
               />
-              <text x={x(marker.index) - 4} y={T + 10} textAnchor="end" fontSize="11" style={{ fill: 'var(--muted-foreground)' }}>
+              <text x={x(marker.index) - 4} y={H - B - 6} textAnchor="end" fontSize="11" style={{ fill: 'var(--muted-foreground)' }}>
                 {marker.label}
               </text>
             </g>
@@ -77,4 +77,12 @@ export function LineChart({ points, ariaLabel, min, max, ticks, formatTick = (v)
       )}
     </div>
   );
+}
+
+/** Rounds a maximum up to a readable number (1, 2 or 5 times a power of ten) and returns three ticks: 0, half, max. */
+export function niceTicks(rawMax: number): { max: number; ticks: number[] } {
+  const m = Math.max(rawMax, 1);
+  const p = 10 ** Math.floor(Math.log10(m));
+  const max = ([1, 2, 5, 10].find((s) => s * p >= m) ?? 10) * p;
+  return { max, ticks: [0, max / 2, max] };
 }
