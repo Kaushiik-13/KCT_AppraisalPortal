@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { TriangleAlert } from 'lucide-react';
 import { AnalyticsFilters } from '@/components/frameworks/analytics-filters';
 import { FrameworkAnalytics } from '@/components/frameworks/framework-analytics';
 import { FrameworksEmpty } from '@/components/frameworks/frameworks-empty';
@@ -52,15 +51,7 @@ export default function FrameworksPage() {
       {analytics.state === 'empty' ? (
         <FrameworksEmpty canBuild={canBuild} onStartFromTemplate={() => setStage('built')} />
       ) : (
-        <>
-          {canBuild && (
-            <p className="border-warning/30 bg-warning/10 text-warning flex items-start gap-2 rounded-lg border px-3 py-2.5 text-sm">
-              <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden />
-              Weights, maximums and caps are placeholders until scoring policy is approved.
-            </p>
-          )}
-          <FrameworkAnalytics analytics={analytics} sections={canBuild ? ADMIN_SECTIONS : REVIEWER_SECTIONS} />
-        </>
+        <FrameworkAnalytics analytics={analytics} sections={canBuild ? ADMIN_SECTIONS : REVIEWER_SECTIONS} />
       )}
 
       <PrototypeStageSwitch />
