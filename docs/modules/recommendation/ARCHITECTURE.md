@@ -16,7 +16,7 @@ Recommendation provides organization administrators with a sandboxed workspace t
 
 - Consume only institution data and configuration approved for the intended recommendation purpose.
 - Make recommendation version, provenance, evaluation status, and limitations available to downstream views.
-- Integrate with analytics and, if approved, faculty or supervisor experiences under explicit visibility rules.
+- Integrate with analytics and, if approved, faculty or reviewer experiences under explicit visibility rules.
 - Use asynchronous training/evaluation only if the selected implementation requires it; the runtime and job model are not decided.
 
 ## Known limitations

@@ -9,12 +9,12 @@ Provide the institution setup and administrative workspace that configures and f
 No implementation of the **new production-oriented module** has been verified yet. A **nonfunctional UI design prototype** of the onboarding screens and the first signed-in administrator screens (login, home, invitations, people, settings) exists in `apps/web` (no backend, authentication, email, persistence or validation); see [UI prototype and design reference](UI-PROTOTYPE.md). Historical PoC functionality, where available, is retained solely in the [legacy archive](../../reference/legacy/README.md).
 
 ## Proposed design
-- Set up the first-release institution workspace and manage permitted members and supervisor assignments.
+- Set up the first-release institution workspace and manage permitted members and reviewer assignments.
 - Provide entry points for appraisal-cycle configuration, KPI/KRA setup, prediction/recommendation workspaces, and institution-level analytics, while leaving each domain's rules with its owning module.
 - Support the first release for one institution. Keep institutional ownership explicit in product concepts so future multi-organization support can be designed, but do not claim multi-tenant isolation.
-- Organization administrators facilitate configuration and operations. Supervisors conduct operational reviews and release marks for each KPI; administrators do not release marks in the agreed workflow.
+- Organization administrators facilitate configuration and operations. Reviewers conduct operational reviews and release marks for each KPI; administrators do not release marks in the agreed workflow.
 - The user journey and authorization model are proposed; technical persistence, API, and permission contracts remain undecided.
-- The role visibility boundaries are summarized in the shared [project UI/UX proposal](../../project/UI-UX.md); this module owns institution onboarding, membership, and supervisor assignment details.
+- The role visibility boundaries are summarized in the shared [project UI/UX proposal](../../project/UI-UX.md); this module owns institution onboarding, membership, and reviewer assignment details.
 
 ## Known limitations
 - Technical design, persistence model, integration contracts and production verification are not yet established.

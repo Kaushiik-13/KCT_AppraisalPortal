@@ -8,7 +8,7 @@ The production-oriented product is to be designed anew. The existing proof of co
 
 ## Product direction
 
-- The first release must provide the complete core appraisal and analytics workflow for organization administrators, faculty members, and supervisors/reviewers.
+- The first release must provide the complete core appraisal and analytics workflow for organization administrators, faculty members, and reviewers.
 - The first release is intended for one institution. Multi-organization access is a possible later product evolution, not a first-release requirement.
 - The design should keep institution-owned configuration and data clearly bounded so future multi-tenancy can be evaluated without claiming that tenant isolation is already implemented.
 - The product is analytics-oriented: it combines configurable KPIs/KRAs, evidence review, released marks, prediction/recommendation capabilities, and role-appropriate analytics.
@@ -19,7 +19,7 @@ The production-oriented product is to be designed anew. The existing proof of co
 flowchart LR
   Admin[Organization administrator]
   Faculty[Faculty member]
-  Supervisor[Supervisor / reviewer]
+  Reviewer[Reviewer]
   Web[AFPI web experience]
   API[Application API and access checks]
   Org[Organization setup and administration]
@@ -30,7 +30,7 @@ flowchart LR
 
   Admin --> Web
   Faculty --> Web
-  Supervisor --> Web
+  Reviewer --> Web
   Web --> API
   API --> Org
   API --> Framework
@@ -46,22 +46,22 @@ The boxes show logical responsibilities, not separate deployable services. The A
 
 ### Organization administration
 
-Organization administrators configure and facilitate the institution's appraisal process. Their first-release needs include creating KPIs and KRAs, configuring appraisal cycles and assignments, providing faculty with the required submission process, configuring prediction and recommendation capabilities, and viewing institution-level analytics. They establish the operating environment; supervisors perform the operational review and release KPI marks.
+Organization administrators configure and facilitate the institution's appraisal process. Their first-release needs include creating KPIs and KRAs, configuring appraisal cycles and assignments, providing faculty with the required submission process, configuring prediction and recommendation capabilities, and viewing institution-level analytics. They establish the operating environment; reviewers perform the operational review and release KPI marks.
 
 ### Appraisal framework and review operations
 
-Framework Studio owns the configurable appraisal concepts: KPIs, KRAs, cycles, evidence requirements, and approved scoring rules. Its supervisor-review capability handles submitted evidence, reviewer decisions, and the supervisor's release of marks for each KPI. Review is a capability within Framework Studio, not a fifth top-level module. The exact policy formula, review states, override rules, and audit events require institutional decisions and are not specified by this proposal.
+Framework Studio owns the configurable appraisal concepts: KPIs, KRAs, cycles, evidence requirements, and approved scoring rules. Its review capability handles submitted evidence, reviewer decisions, and the reviewer's release of marks for each KPI. Review is a capability within Framework Studio, not a fifth top-level module. The exact policy formula, review states, override rules, and audit events require institutional decisions and are not specified by this proposal.
 
 ### Prediction, recommendation, and analytics
 
-Organization administrators need model-building, training, and evaluation workspaces, including sandboxes for prediction and recommendation models. Faculty-facing outputs and their release rules must be defined by institutional policy. Analytics should support administrator views across the institution, including KPI/KRA and faculty performance/level analytics, and supervisor views limited to authorized faculty; faculty members see their own authorized results. Specific measures, level definitions, and model governance remain to be agreed.
+Organization administrators need model-building, training, and evaluation workspaces, including sandboxes for prediction and recommendation models. Faculty-facing outputs and their release rules must be defined by institutional policy. Analytics should support administrator views across the institution, including KPI/KRA and faculty performance/level analytics, and reviewer views limited to authorized faculty; faculty members see their own authorized results. Specific measures, level definitions, and model governance remain to be agreed.
 
 ## Proposed end-to-end flow
 
 1. An organization administrator sets up the appraisal structure, KPIs/KRAs, cycles, assignments, and evidence requirements.
 2. Faculty members complete assigned KPIs, submit information and evidence, and track review progress.
-3. A supervisor reviews submissions for assigned faculty, records the KPI mark and decision through Framework Studio, and releases the mark to the faculty member.
-4. The application updates the authorized dashboards: institution-wide for administrators, scoped team analytics for supervisors, and personal results for faculty.
+3. A reviews submissions for assigned faculty, records the KPI mark and decision through Framework Studio, and releases the mark to the faculty member.
+4. The application updates the authorized dashboards: institution-wide for administrators, scoped team analytics for reviewers, and personal results for faculty.
 5. Administrators build, train, and evaluate prediction/recommendation models in their workspaces and sandbox. The rules for training data, approval, publication, and employee visibility must be decided before implementation.
 
 This flow is product direction, not a verified implementation or final state machine.
@@ -70,9 +70,9 @@ This flow is product direction, not a verified implementation or final state mac
 
 - Treat the institution as an explicit boundary for configuration, appraisal data, model assets, and analytics.
 - Resolve a user's role and permitted scope before returning sensitive data. A role label alone is not sufficient to grant access to every faculty record.
-- Scope supervisor review and analytics to assigned faculty; scope faculty results to the individual; grant administrators only the institution-level access their approved duties require.
+- Scope review and analytics to assigned faculty; scope faculty results to the individual; grant administrators only the institution-level access their approved duties require.
 - Separate configuration authority from operational review and score release. An administrator's broad setup responsibility does not itself make a KPI mark final.
-- Support a person holding faculty and supervisor responsibilities without merging their data scopes; prevent self-review and self-release. Exact delegation and conflict-of-interest policies require institutional approval.
+- Support a person holding faculty and reviewer responsibilities without merging their data scopes; prevent self-review and self-release. Exact delegation and conflict-of-interest policies require institutional approval.
 - Keep consequential evidence, review decisions, released marks, and model outputs traceable to their relevant source and version.
 - Present prediction/recommendation outputs as model-generated estimates with relevant model/version and availability context. Do not let them silently replace or modify a human-reviewed mark; faculty visibility and explanation requirements require policy approval.
 - Do not infer or publish scores, model outputs, or review decisions as final before the authorized human action and applicable institutional rules are satisfied.

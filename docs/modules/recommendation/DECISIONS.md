@@ -13,10 +13,10 @@ No implementation of the new production-oriented Recommendation module has been 
 ### Proposed decision
 
 - An institution's **organization administrators** build, evaluate and publish recommendation models or rule sets for their own institution.
-- **Faculty members and supervisors do not build or publish recommendations.** They can only see a recommendation that the institution has published and enabled for them.
-- **Publishing** is the act that moves a configuration from the administrator's sandbox to use. A sandbox example is not a live recommendation and must not appear to faculty or supervisors.
-- A published recommendation is shown only to the named audiences the institution enables under its policy, within each person's access scope: a faculty member sees only their own, and a supervisor sees only those for assigned faculty when permitted.
-- A recommendation is advice. It never decides, releases or changes a KPI mark; only a supervisor's per-KPI release makes a mark official.
+- **Faculty members and reviewers do not build or publish recommendations.** They can only see a recommendation that the institution has published and enabled for them.
+- **Publishing** is the act that moves a configuration from the administrator's sandbox to use. A sandbox example is not a live recommendation and must not appear to faculty or reviewers.
+- A published recommendation is shown only to the named audiences the institution enables under its policy, within each person's access scope: a faculty member sees only their own, and a reviewer sees only those for assigned faculty when permitted.
+- A recommendation is advice. It never decides, releases or changes a KPI mark; only a reviewer's per-KPI release makes a mark official.
 
 ### Rationale
 

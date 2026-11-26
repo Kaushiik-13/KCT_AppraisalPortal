@@ -14,14 +14,14 @@ Framework Studio owns appraisal configuration and the core submission/review lif
 
 - KPI/KRA definitions, appraisal cycles, assignments and evidence requirements.
 - Faculty KPI information/evidence submissions and their progress states.
-- Supervisor review of assigned faculty submissions, decisions, feedback, and release of marks per KPI.
+- Review of assigned faculty submissions, decisions, feedback, and release of marks per KPI.
 - Approved scoring configuration and the appraisal information needed by analytics.
 
 Organization administration supplies institution/member/assignment context. Prediction and Recommendation own their model workspaces and outputs. Analytics consumes appropriate appraisal data but must honor viewer permissions.
 
 ## Proposed logical flow
 
-`configure cycle → assign faculty and supervisors → submit evidence → supervisor review → release mark per KPI → update authorized views`
+`configure cycle → assign faculty and reviewers → submit evidence → review → release mark per KPI → update authorized views`
 
 The flow does not specify a final state machine, API, database model, or separately deployed service. Cross-module contracts are tracked in the project [integration document](../../project/INTEGRATION.md).
 
