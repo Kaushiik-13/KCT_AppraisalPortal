@@ -55,7 +55,7 @@ const STUDIO_NAV: NavItem[] = [
   { href: '/recommendation', label: 'Recommendation', icon: Lightbulb, built: false },
 ];
 
-const SETTINGS_NAV: NavItem = { href: '/settings', label: 'Settings', icon: Settings, built: true };
+const SETTINGS_NAV: NavItem = { href: '/settings', label: 'Organization settings', icon: Settings, built: true };
 
 const NAV = [...MAIN_NAV, ...STUDIO_NAV, SETTINGS_NAV];
 
@@ -103,7 +103,7 @@ function Shell({ children }: { children: ReactNode }) {
   const searchRef = useRef<HTMLInputElement>(null);
   const [cycle, setCycle] = useState('2026-h1');
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
-  const page = NAV.find((n) => pathname.startsWith(n.href))?.label;
+  const page = pathname === '/profile' ? 'Your profile' : NAV.find((n) => pathname.startsWith(n.href))?.label;
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -191,6 +191,10 @@ function Shell({ children }: { children: ReactNode }) {
                   </DropdownMenuItem>
                 );
               })}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onSelect={() => router.push('/profile')}>
+                <UserRound aria-hidden /> Your profile
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </nav>
@@ -245,9 +249,8 @@ function Shell({ children }: { children: ReactNode }) {
                 <span className="text-muted-foreground text-xs">Organization Administrator</span>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem disabled>
+              <DropdownMenuItem onSelect={() => router.push('/profile')}>
                 <UserRound aria-hidden /> Your profile
-                <span className="bg-secondary text-muted-foreground ml-auto rounded px-1.5 text-[11px] leading-5">Soon</span>
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={() => router.push(SETTINGS_NAV.href)}>
                 <Settings aria-hidden /> Organization settings

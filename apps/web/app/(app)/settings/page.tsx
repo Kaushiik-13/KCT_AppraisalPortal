@@ -77,7 +77,7 @@ export default function SettingsPage() {
 
   return (
     <>
-      <PageHeader title="Settings" description="Organization-wide settings. Changes apply to everyone once you save." />
+      <PageHeader title="Organization settings" description="Organization-wide settings. Changes apply to everyone once you save." />
 
       <div className="grid gap-8 md:grid-cols-[200px_minmax(0,1fr)]">
         <nav aria-label="Settings sections" className="flex gap-1 overflow-x-auto md:grid md:content-start md:overflow-visible">
