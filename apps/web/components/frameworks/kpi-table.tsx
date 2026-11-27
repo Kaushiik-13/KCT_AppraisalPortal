@@ -14,7 +14,7 @@ const COLUMNS: { key: SortKey; label: string; numeric?: boolean; className?: str
   { key: 'code', label: 'Code', className: 'w-14 pl-3 sm:w-16' },
   { key: 'name', label: 'KPI' },
   { key: 'kraName', label: 'KRA', className: 'hidden w-52 md:table-cell' },
-  { key: 'submissions', label: 'Submitted', numeric: true, className: 'hidden w-24 sm:table-cell' },
+  { key: 'submissions', label: 'Submissions', numeric: true, className: 'hidden w-28 sm:table-cell' },
   { key: 'submittedPercent', label: 'Rate', numeric: true, className: 'w-20' },
   { key: 'returnPercent', label: 'Returned', numeric: true, className: 'hidden w-24 sm:table-cell' },
 ];

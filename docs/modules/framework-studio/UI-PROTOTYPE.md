@@ -32,7 +32,7 @@ The prototype is **administrators only** for now. Reviewer views are not built; 
 
 In the style of Vercel analytics and the Stripe dashboard. Everything on it is about the KRAs and KPIs:
 
-1. **Metric strip:** **KRAs** and **KPIs** (live and drafts), **Submissions** (made of expected), **Average submission** across live KPIs, **Waiting for review** (with average review time) and **Overdue**. The submission, review and overdue numbers double as tabs: clicking one (or using the arrow keys) switches the chart below to that number week by week, with the deadline marked.
+1. **Metric strip:** **KPIs** (with how many KRAs and how many are live), **Employees** appraised this cycle, **KPI submissions** (made of expected, where expected = employees × live KPIs), **Submission rate**, **Waiting for review** (with average review time) and **Overdue**. A line above the strip says what a submission is: one employee's answer to one KPI. The submission, review and overdue numbers double as tabs: clicking one (or using the arrow keys) switches the chart below to that number week by week, with the deadline marked.
 2. **Submission panel** with tabs: **By KRA**, **By KPI** and **By department**, each row showing the count and the rate.
 3. **KPI panel** with tabs: **KPIs per KRA** (live and draft counts), **Least submitted** and **To fix** (KPIs missing inputs or scoring rules).
 4. **KPI table:** code, KPI, KRA, submitted count, rate, return rate and status, with filter pills (All, Live, Draft), search and sortable columns.
@@ -42,7 +42,7 @@ Marks are not shown on the Overview: they would be invented until scoring policy
 Filters for KRA and department sit above. States:
 
 - **Nothing built** (where the prototype starts): "No KRAs or KPIs yet", one line on what to do, and two buttons: **New KRA**, which opens the New KRA dialog, and **Use a template**, which loads sample KRAs and KPIs.
-- **No KPI live yet** (after the first KRA, while every KPI is a draft): the strip shows KRAs, KPIs, drafts and to fix; the KPI panel shows KPIs per KRA and To fix; the table shows dashes.
+- **No KPI live yet** (after the first KRA, while every KPI is a draft): the strip shows KRAs, KPIs, draft KPIs and KPIs to fix; the KPI panel shows KPIs per KRA and To fix; the table shows dashes.
 - **Cycle running:** appraisal cycles are not built, so as soon as one KPI is live the prototype shows a **sample** cycle (2026 H1), labelled "sample submissions until appraisal cycles are built". KPIs you create get generated sample numbers too.
 
 ### KRAs and KPIs library (`/frameworks/library`)
