@@ -63,50 +63,75 @@ export function MetricStrip({ metrics, marker: singleMarker, periods, markers, h
 
   const config = { value: { label: active?.seriesLabel ?? active?.label ?? '', color: active?.danger ? 'var(--destructive)' : 'var(--chart-1)' } } satisfies ChartConfig;
 
+  const plain = metrics.filter((m) => !chartable.includes(m));
+  // Up to three numbers stay on one row on phones; more wrap two per row.
+  // From sm up, both rows share one column width so a short row lines up with the one below.
+  const cols = (n: number, wide = n) => ({
+    className: cn('grid sm:[grid-template-columns:repeat(var(--w),minmax(0,1fr))]', n <= 3 ? '[grid-template-columns:repeat(var(--n),minmax(0,1fr))]' : 'grid-cols-2'),
+    style: { ['--n' as string]: n, ['--w' as string]: wide },
+  });
+  const edge = (i: number, n: number, bottom = true) => cn(n <= 3 ? i > 0 && 'border-l' : i % 2 === 1 && 'border-l', i > 0 && 'sm:border-l', bottom && 'border-b');
+  const cell = 'grid content-start gap-0.5 px-3 py-3.5 sm:px-4';
+  const big = 'text-xl font-semibold tracking-tight tabular-nums sm:text-2xl';
+  const body = (m: StripMetric, strong?: boolean) => (
+    <>
+      <span className={cn('text-xs', strong ? 'text-foreground' : 'text-muted-foreground')}>{m.label}</span>
+      <span className={cn(big, m.danger && 'text-destructive')}>{m.value}</span>
+      {m.sub && <span className="text-muted-foreground truncate text-xs">{m.sub}</span>}
+    </>
+  );
+
   return (
     <section className="bg-card overflow-hidden rounded-xl border" aria-label="Key numbers">
-      <div
-        role={chartable.length ? 'tablist' : undefined}
-        aria-label="Choose a number to chart"
-        className="grid grid-cols-2 lg:[grid-template-columns:repeat(var(--n),minmax(0,1fr))]"
-        style={{ ['--n' as string]: metrics.length }}
-        onKeyDown={(e) => {
-          if (e.key === 'ArrowRight') move(1);
-          if (e.key === 'ArrowLeft') move(-1);
-        }}
-      >
-        {metrics.map((m, i) => {
-          const canChart = (seriesOf(m)?.length ?? 0) > 1;
-          const isActive = canChart && m.key === active?.key;
-          return (
-            <button
-              key={m.key}
-              id={`metric-tab-${m.key}`}
-              type="button"
-              role={canChart ? 'tab' : undefined}
-              aria-selected={canChart ? isActive : undefined}
-              tabIndex={canChart ? (isActive ? 0 : -1) : -1}
-              disabled={!canChart}
-              onClick={() => canChart && setSelected(m.key)}
-              className={cn(
-                'relative grid content-start gap-0.5 border-b px-4 py-3.5 text-left transition-colors outline-none',
-                'focus-visible:ring-ring/50 focus-visible:ring-2 focus-visible:ring-inset',
-                i % 2 === 1 && 'border-l',
-                i > 0 && 'lg:border-l',
-                !isActive && chartable.length > 0 && 'bg-muted/40',
-                canChart && !isActive && 'hover:bg-muted/70 cursor-pointer',
-                !canChart && 'cursor-default',
-                isActive && 'bg-card lg:border-b-transparent',
-              )}
-            >
-              {isActive && <span className="bg-foreground absolute inset-x-0 top-0 h-0.5" aria-hidden />}
-              <span className={cn('text-xs', isActive ? 'text-foreground' : 'text-muted-foreground')}>{m.label}</span>
-              <span className={cn('text-2xl font-semibold tracking-tight tabular-nums', m.danger && 'text-destructive')}>{m.value}</span>
-              {m.sub && <span className="text-muted-foreground truncate text-xs">{m.sub}</span>}
-            </button>
-          );
-        })}
-      </div>
+      {/* Numbers with no chart: plain text, so they never look like tabs. */}
+      {plain.length > 0 && (
+        <dl {...cols(plain.length, Math.max(plain.length, chartable.length))}>
+          {plain.map((m, i) => (
+            <div key={m.key} className={cn(cell, edge(i, plain.length, chartable.length > 0))}>
+              <dt className="text-muted-foreground text-xs">{m.label}</dt>
+              <dd className={cn(big, m.danger && 'text-destructive')}>{m.value}</dd>
+              {m.sub && <dd className="text-muted-foreground truncate text-xs">{m.sub}</dd>}
+            </div>
+          ))}
+        </dl>
+      )}
+
+      {chartable.length > 0 && (
+        <div
+          role="tablist"
+          aria-label="Choose a number to chart"
+          {...cols(chartable.length)}
+          onKeyDown={(e) => {
+            if (e.key === 'ArrowRight') move(1);
+            if (e.key === 'ArrowLeft') move(-1);
+          }}
+        >
+          {chartable.map((m, i) => {
+            const isActive = m.key === active?.key;
+            return (
+              <button
+                key={m.key}
+                id={`metric-tab-${m.key}`}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                tabIndex={isActive ? 0 : -1}
+                onClick={() => setSelected(m.key)}
+                className={cn(
+                  cell,
+                  'relative cursor-pointer text-left transition-colors outline-none',
+                  'focus-visible:ring-ring/50 focus-visible:ring-2 focus-visible:ring-inset',
+                  edge(i, chartable.length),
+                  isActive ? 'bg-card sm:border-b-transparent' : 'bg-muted/40 hover:bg-muted/70',
+                )}
+              >
+                {isActive && <span className="bg-foreground absolute inset-x-0 top-0 h-0.5" aria-hidden />}
+                {body(m, isActive)}
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {active && seriesOf(active) && (
         <div className="bg-card px-2 pt-3 pb-2 sm:px-4" role="tabpanel" aria-labelledby={`metric-tab-${active.key}`}>
