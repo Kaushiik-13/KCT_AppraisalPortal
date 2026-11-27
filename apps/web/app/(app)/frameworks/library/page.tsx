@@ -2,9 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Archive, Copy, History, Lock, MoreHorizontal, Pencil, Plus, RotateCcw } from 'lucide-react';
+import { Archive, Copy, History, MoreHorizontal, Pencil, Plus, RotateCcw } from 'lucide-react';
 import { KraDialog } from '@/components/frameworks/kra-dialog';
-import { PrototypeStageSwitch } from '@/components/frameworks/prototype-stage-switch';
 import { VersionsDialog } from '@/components/frameworks/versions-dialog';
 import { SearchField } from '@/components/search-field';
 import { Button } from '@/components/ui/button';
@@ -21,7 +20,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { colorOf } from '@/lib/department-colors';
 import { inputsSummary, relativeDay } from '@/lib/frameworks/format';
 import type { Kpi, KpiStatus, Kra } from '@/lib/frameworks/types';
-import { editableContent, frameworkActions, useDemoViewer, useFrameworkLibrary } from '@/lib/frameworks/use-framework-library';
+import { editableContent, frameworkActions, useFrameworkLibrary } from '@/lib/frameworks/use-framework-library';
 import { cn } from '@/lib/utils';
 
 const ALL = 'all';
@@ -37,11 +36,10 @@ function problemsOf(k: Kpi): string[] {
   return out;
 }
 
-// KRAs and KPIs library (#79). Admins only; reviewers get a read-only note.
+// KRAs and KPIs library (#79). Administrators only for now.
 export default function FrameworkLibraryPage() {
   const router = useRouter();
   const { kras, kpis } = useFrameworkLibrary();
-  const { viewer } = useDemoViewer();
   const [selected, setSelected] = useState<string>(ALL);
   const [status, setStatus] = useState<StatusFilter>('all');
   const [query, setQuery] = useState('');
@@ -67,18 +65,6 @@ export default function FrameworkLibraryPage() {
     .filter((k) => selected === ARCHIVED || status === 'all' || k.status === status)
     .filter((k) => !query.trim() || `${k.code} ${k.name}`.toLowerCase().includes(query.trim().toLowerCase()))
     .sort((a, b) => a.code.localeCompare(b.code, undefined, { numeric: true }));
-
-  if (viewer !== 'admin') {
-    return (
-      <>
-        <section className="bg-card text-muted-foreground flex items-center gap-3 rounded-xl border p-6 text-sm">
-          <Lock className="size-4 shrink-0" aria-hidden />
-          Only administrators can edit KRAs and KPIs. Your team&apos;s progress is on the Frameworks overview.
-        </section>
-        <PrototypeStageSwitch />
-      </>
-    );
-  }
 
   const newKpi = () => {
     const target = kra && !kra.archived ? kra.id : activeKras[0]?.id;
@@ -333,8 +319,6 @@ export default function FrameworkLibraryPage() {
           )}
         </div>
       </div>
-
-      <PrototypeStageSwitch />
 
       <KraDialog
         open={kraDialog.open}

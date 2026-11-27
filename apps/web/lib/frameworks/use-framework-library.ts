@@ -6,23 +6,22 @@ import type { Kpi, KpiContent, Kra } from './types';
 
 /**
  * Prototype store for Framework Studio. Frontend only: there is no backend yet.
- * - stage: empty (nothing built), built (framework exists, no submissions), active (a cycle is running)
- * - viewer: admin (can build) or reviewer (read-only, own team only)
+ * - stage: empty (nothing built), built (framework exists, no submissions), active (a cycle is running).
+ *   The prototype starts empty; "Start from template" or creating a KRA moves it to built.
  * - kras / kpis: the organization's library, editable, kept in sessionStorage like the rest of the prototype
  * One shared store, so every component that reads it updates together. Replaced by API calls later.
  */
 export type DemoStage = 'empty' | 'built' | 'active';
-export type DemoViewer = 'admin' | 'reviewer';
-type State = { stage: DemoStage; viewer: DemoViewer; kras: Kra[]; kpis: Kpi[] };
+type State = { stage: DemoStage; kras: Kra[]; kpis: Kpi[] };
 
-const KEY = 'afpi-frameworks-demo';
-const DEFAULT_STAGE: DemoStage = 'active';
+const KEY = 'afpi-frameworks-v2';
+const DEFAULT_STAGE: DemoStage = 'empty';
 
 export function libraryFor(stage: DemoStage): { kras: Kra[]; kpis: Kpi[] } {
   return stage === 'empty' ? { kras: [], kpis: [] } : { kras: SAMPLE_KRAS, kpis: SAMPLE_KPIS };
 }
 
-const SERVER: State = { stage: DEFAULT_STAGE, viewer: 'admin', ...libraryFor(DEFAULT_STAGE) };
+const SERVER: State = { stage: DEFAULT_STAGE, ...libraryFor(DEFAULT_STAGE) };
 const listeners = new Set<() => void>();
 let current: State | null = null;
 
@@ -32,7 +31,7 @@ function read(): State {
     const saved = JSON.parse(sessionStorage.getItem(KEY) ?? 'null') as Partial<State> | null;
     const stage: DemoStage = saved?.stage === 'empty' || saved?.stage === 'built' || saved?.stage === 'active' ? saved.stage : DEFAULT_STAGE;
     const lib = Array.isArray(saved?.kras) && Array.isArray(saved?.kpis) ? { kras: saved.kras, kpis: saved.kpis } : libraryFor(stage);
-    current = { stage, viewer: saved?.viewer === 'reviewer' ? 'reviewer' : 'admin', ...lib };
+    current = { stage, ...lib };
   } catch {
     current = SERVER;
   }
@@ -93,9 +92,6 @@ const setKras = (fn: (kras: Kra[]) => Kra[]) => write({ kras: fn(read().kras) })
 export const frameworkActions = {
   setStage(stage: DemoStage) {
     write({ stage, ...libraryFor(stage) });
-  },
-  setViewer(viewer: DemoViewer) {
-    write({ viewer });
   },
 
   addKra(kra: Omit<Kra, 'id'>): string {
@@ -217,11 +213,4 @@ export function useFrameworkLibrary() {
   return { kras, kpis, stage, setStage: frameworkActions.setStage };
 }
 
-/** Prototype stand-in for the signed-in person's role on Frameworks screens. */
-export function useDemoViewer() {
-  const { viewer } = useState_();
-  return { viewer, setViewer: frameworkActions.setViewer };
-}
-
 export const setDemoStage = frameworkActions.setStage;
-export const setDemoViewer = frameworkActions.setViewer;

@@ -29,7 +29,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { colorOf } from '@/lib/department-colors';
 import type { KpiContent } from '@/lib/frameworks/types';
-import { editableContent, frameworkActions, useDemoViewer, useFrameworkLibrary } from '@/lib/frameworks/use-framework-library';
+import { editableContent, frameworkActions, useFrameworkLibrary } from '@/lib/frameworks/use-framework-library';
 import { useSetup } from '@/lib/setup-store';
 import { cn } from '@/lib/utils';
 
@@ -61,7 +61,6 @@ export default function KpiEditorPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const { kras, kpis } = useFrameworkLibrary();
-  const { viewer } = useDemoViewer();
   const { departments } = useSetup();
   const kpi = kpis.find((k) => k.id === id);
 
@@ -101,7 +100,7 @@ export default function KpiEditorPage() {
     );
   }
 
-  const readOnly = viewer !== 'admin' || kpi.status === 'archived';
+  const readOnly = kpi.status === 'archived';
   const kra = kras.find((k) => k.id === content.kraId);
   const audiences = ['All teaching staff', 'All staff', ...departments.map((d) => `${d.name} department`)];
   const checks = checksOf(content);

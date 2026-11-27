@@ -20,9 +20,11 @@ On phones the top tabs are Home, People and Frameworks, and everything else is u
 
 | Route | Screen | Who |
 |---|---|---|
-| `/frameworks` | Overview: analytics | Administrators (whole organization) and reviewers (their own team) |
-| `/frameworks/library` | KRAs and KPIs library | Administrators. Reviewers see a read-only note. |
+| `/frameworks` | Overview: analytics | Administrators |
+| `/frameworks/library` | KRAs and KPIs library | Administrators |
 | `/frameworks/kpis/[id]` | KPI editor in focus mode (no sidebar) | Administrators. Archived KPIs open read-only. |
+
+The prototype is **administrators only** for now. Reviewer views are not built; the analytics components take a scope so they can be reused for them later.
 
 ## Screens
 
@@ -36,9 +38,9 @@ In the style of Vercel analytics and the Stripe dashboard:
 
 Filters for KRA and department sit above. States:
 
-- **Nothing built:** a guide (create KRAs, add KPIs, test and publish) with **Start from template** and **Create from scratch**. Reviewers see "No framework published yet".
-- **Framework built:** the strip shows the framework's own numbers (KRAs, live KPIs, drafts, to fix) and the table shows dashes until a cycle runs.
-- **Cycle running:** everything above.
+- **Nothing built** (where the prototype starts): a guide (create KRAs, add KPIs, test and publish) with **Start from template**, which loads sample KRAs and KPIs, and **Create from scratch**, which opens the New KRA dialog.
+- **Framework built** (after the template or the first KRA): the strip shows the framework's own numbers (KRAs, live KPIs, drafts, to fix), the To fix panel lists unfinished KPIs and the table shows dashes, because no cycle has run.
+- **Cycle running:** the submission, review and mark analytics described above. No cycles exist yet, so this state is designed and built but not reachable in the prototype.
 
 ### KRAs and KPIs library (`/frameworks/library`)
 
@@ -73,21 +75,22 @@ A full-width focus mode with its own top bar: back to the library, code and name
 |---|---|
 | `lib/frameworks/types.ts` | KRA, KPI, input, scoring rule, version and analytics shapes. These become shared contracts when the API exists. |
 | `lib/frameworks/sample-data.ts` | Sample KRAs, KPIs and results. Not approved policy. |
-| `lib/frameworks/use-framework-library.ts` | One shared store for KRAs and KPIs with actions (add and edit KRAs, create, save, publish, discard, duplicate, archive and restore KPIs), plus the prototype stage and viewer. |
+| `lib/frameworks/use-framework-library.ts` | One shared store for KRAs and KPIs with actions (add and edit KRAs, create, save, publish, discard, duplicate, archive and restore KPIs). It starts empty and is kept in `sessionStorage` under `afpi-frameworks-v2`. |
 | `lib/frameworks/use-framework-analytics.ts` | `useFrameworkAnalytics(scope, filters)` over a pure `buildFrameworkAnalytics` function. Scope is the organization or one reviewer's team. |
 | `lib/frameworks/scoring.ts` | Runs a test submission through the rules. |
 | `components/dashboard/` | `MetricStrip` and `RankedPanel`, shared with Home. |
 | `components/frameworks/` | Analytics, KPI table, empty state, library dialogs, editor sections and the prototype view switch. |
 
-Components never check roles. Each page decides who is looking and passes in what they may see or do, so a reviewer page can reuse the analytics unchanged.
+Components never check roles. Each page decides who is looking and passes in what they may see or do, so a reviewer page can reuse the analytics later.
 
-**Prototype view switch:** a dashed box at the bottom of Frameworks pages switches between *Nothing built*, *Framework built* and *Cycle running*, and between *Admin* and *Reviewer*. Switching the stage resets the library to the sample data. It is not part of the product.
+To start again from nothing, clear the browser tab's site data or open a new tab.
 
 ## Known limitations
 
 - Everything is a prototype: no backend, and changes last only for the browser tab.
 - Scoring rules, weights, maximums and caps are not approved policy (#20). Marks and analytics are sample data.
-- Appraisal cycles, assigning KPIs to people and the employee and reviewer submission screens are not built. Cycles keeping "their" version is described, not implemented.
+- Administrators only. Reviewer and employee screens are not built.
+- Appraisal cycles and assigning KPIs to people are not built, so the cycle-running analytics cannot be reached yet. Cycles keeping "their" version is described, not implemented.
 - The appraisal-cycle selector in the top bar does not filter anything.
 - File uploads are shown but not tested in Preview and test.
 - Checked by hand and with scripted browser runs at 1366 by 900 (desktop) and 390 wide (phone). Dark mode, keyboard-only use and screen readers were not reviewed in depth.
