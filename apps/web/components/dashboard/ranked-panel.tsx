@@ -32,6 +32,8 @@ export type RankedTab = {
   empty?: string;
   /** Legend or note under the list. */
   note?: ReactNode;
+  /** Custom content instead of the ranked rows, for example an expandable list. */
+  content?: ReactNode;
 };
 
 /**
@@ -82,6 +84,11 @@ export function RankedPanel({ tabs, limit = 6 }: { tabs: RankedTab[]; limit?: nu
         })}
       </div>
 
+      {tab.content ? (
+        <div role="tabpanel" className="px-4 pt-1 pb-3">
+          {tab.content}
+        </div>
+      ) : (
       <div role="tabpanel" className="px-4 pt-2 pb-3">
         {rows.length > 0 && (
           <div className={cn(cols, 'text-muted-foreground pb-1 text-[11px]')} aria-hidden>
@@ -115,6 +122,7 @@ export function RankedPanel({ tabs, limit = 6 }: { tabs: RankedTab[]; limit?: nu
         </ul>
         {tab.note && <div className="text-muted-foreground mt-2 text-xs">{tab.note}</div>}
       </div>
+      )}
     </section>
   );
 }

@@ -34,7 +34,7 @@ In the style of Vercel analytics and the Stripe dashboard. Everything on it is a
 
 1. **Metric strip:** **KPIs** (with how many KRAs and how many are live), **Employees** appraised this cycle, **KPI submissions** (made of expected, where expected = employees × live KPIs), **Submission rate**, **Waiting for review** (with average review time) and **Late submissions** (average days after the deadline, and how many were late). A line above the strip says what a submission is: one employee's answer to one KPI. The submission and review numbers double as tabs: clicking one (or using the arrow keys) switches the chart below to that number over time, with the deadline marked. A **Weekly / Monthly** switch above the chart changes the scale: weekly points are dated by the week's start (5 Jan, 12 Jan and so on) and monthly points show the month (Jan to Jun).
 2. **Submission panel** with tabs: **By KRA**, **By KPI** and **By department**. Each row has the name, a slim bar and two aligned columns, **Submitted** (count) and **Rate**.
-3. **KPI panel** with tabs: **KPIs per KRA** (a two-tone bar, dark for live and light for draft, with Draft and Live columns), **Least submitted** and **To fix** (KPIs missing inputs or scoring rules).
+3. **KPI panel** with tabs: **KRAs**, **Least submitted** and **To fix** (KPIs missing inputs or scoring rules). **KRAs** lists each KRA with its KPI count; click one to open the KPIs inside it (code, name and, while a cycle runs, submission rate). Each KPI links to its editor. One KRA is open at a time.
 
 On phones the bar moves under the name so names are not cut off.
 4. **KPI table:** code, KPI, KRA, submitted count, rate, return rate and status, with filter pills (All, Live, Draft), search and sortable columns.

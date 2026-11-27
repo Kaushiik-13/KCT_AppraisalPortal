@@ -4,6 +4,7 @@ import { MetricStrip, type StripMetric } from '@/components/dashboard/metric-str
 import { RankedPanel, type RankedTab } from '@/components/dashboard/ranked-panel';
 import type { AnalyticsSection, FrameworkAnalytics as Analytics } from '@/lib/frameworks/types';
 import { KpiTable } from './kpi-table';
+import { KraGroups } from './kra-groups';
 
 type FrameworkAnalyticsProps = {
   analytics: Analytics;
@@ -128,36 +129,20 @@ export function FrameworkAnalytics({ analytics: a, sections }: FrameworkAnalytic
       ]
     : [];
 
-  const perKra: RankedTab | null = h
+  const kraGroups: RankedTab | null = h
     ? {
-        key: 'perKra',
-        label: 'KPIs per KRA',
-        metaLabel: 'Draft',
-        valueLabel: 'Live',
-        rows: h.kpisPerKra.map((k) => ({
-          id: k.id,
-          label: k.name,
-          value: k.live,
-          value2: k.drafts,
-          meta: String(k.drafts),
-          display: String(k.live),
-        })),
-        empty: 'No KRAs yet.',
-        note: (
-          <span className="flex items-center gap-3">
-            <span className="flex items-center gap-1.5">
-              <span className="bg-primary size-2 rounded-full" aria-hidden /> Live
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="bg-primary/30 size-2 rounded-full" aria-hidden /> Draft
-            </span>
-          </span>
+        key: 'kras',
+        label: 'KRAs',
+        valueLabel: '',
+        rows: [],
+        content: (
+          <KraGroups kras={h.kpisPerKra.map((k) => ({ id: k.id, name: k.name }))} kpis={a.kpiRows} showRates={a.state === 'active'} />
         ),
       }
     : null;
 
   const kpiTabs: RankedTab[] = [
-    ...(perKra ? [perKra] : []),
+    ...(kraGroups ? [kraGroups] : []),
     ...(p
       ? [
           {
