@@ -41,7 +41,7 @@ On phones the bar moves under the name so names are not cut off.
 
 Marks are not shown on the Overview: they would be invented until scoring policy is approved (#20).
 
-Filters for KRA and department sit above. States:
+Filter chips for KRA and department sit above (dashed when off, solid with the picked value and a clear button when on, plus Reset), with the running cycle on the right. States:
 
 - **Nothing built** (where the prototype starts): "No KRAs or KPIs yet", one line on what to do, and two buttons: **New KRA**, which opens the New KRA dialog, and **Use a template**, which loads sample KRAs and KPIs.
 - **No KPI live yet** (after the first KRA, while every KPI is a draft): the strip shows KRAs, KPIs, draft KPIs and KPIs to fix; the KPI panel shows KPIs per KRA and To fix; the table shows dashes.

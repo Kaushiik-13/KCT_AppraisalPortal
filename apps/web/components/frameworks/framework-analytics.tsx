@@ -177,7 +177,7 @@ export function FrameworkAnalytics({ analytics: a, sections }: FrameworkAnalytic
     <div className="grid gap-4 *:min-w-0">
       {a.state === 'active' && (
         <p className="text-muted-foreground -mb-1 px-1 text-xs">
-          Cycle 2026 H1 · one submission is one employee&apos;s answer to one KPI · sample numbers until appraisal cycles are built
+          One submission is one employee&apos;s answer to one KPI · sample numbers until appraisal cycles are built
         </p>
       )}
       <MetricStrip

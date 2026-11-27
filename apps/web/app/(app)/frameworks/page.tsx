@@ -26,16 +26,22 @@ export default function FrameworksPage() {
   }
 
   return (
-    <>
-      <div className="-mt-3 flex justify-end">
+    <div className="-mt-3 grid gap-3 *:min-w-0">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <AnalyticsFilters
           value={filters}
           onChange={setFilters}
           kras={kras.filter((k) => !k.archived).map((k) => ({ id: k.id, name: k.name }))}
           departments={departments.map((d) => ({ id: d.id, name: d.name }))}
         />
+        {analytics.state === 'active' && (
+          <span className="text-muted-foreground flex items-center gap-2 text-xs">
+            <span className="bg-primary size-1.5 rounded-full" aria-hidden />
+            Cycle 2026 H1 · running
+          </span>
+        )}
       </div>
       <FrameworkAnalytics analytics={analytics} sections={SECTIONS} />
-    </>
+    </div>
   );
 }
