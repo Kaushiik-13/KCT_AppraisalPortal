@@ -1,6 +1,5 @@
 'use client';
 
-import { CalendarClock } from 'lucide-react';
 import { MetricStrip, type StripMetric } from '@/components/dashboard/metric-strip';
 import { RankedPanel, type RankedTab } from '@/components/dashboard/ranked-panel';
 import type { AnalyticsSection, FrameworkAnalytics as Analytics } from '@/lib/frameworks/types';
@@ -8,129 +7,169 @@ import { KpiTable } from './kpi-table';
 
 type FrameworkAnalyticsProps = {
   analytics: Analytics;
-  /** Which sections to show. The page decides: admins get all four, reviewers get no health. */
+  /** Which sections to show. The page decides. */
   sections: AnalyticsSection[];
 };
 
 const pct = (v: number) => `${Math.round(v)}%`;
 
 /**
- * Framework Studio analytics in a Vercel-analytics / Stripe style: a metric strip that switches one chart,
- * two ranked panels, then the KPI table. Presentational only: it never checks roles or fetches data,
- * so the admin page and a reviewer page can both use it.
+ * Framework Studio analytics, about the KRAs and KPIs only: how many there are, how much has been
+ * submitted against them, what is waiting for review and what is overdue, by KRA, KPI and department.
+ * Presentational only: it never checks roles or fetches data.
  */
 export function FrameworkAnalytics({ analytics: a, sections }: FrameworkAnalyticsProps) {
   const show = (s: AnalyticsSection) => sections.includes(s);
-  const isOrg = a.scope.kind === 'organization';
   const p = a.participation;
   const r = a.review;
-  const o = a.outcomes;
-  const h = show('health') ? a.health : null;
+  const h = a.health;
   const week = (pick: (w: Analytics['weekly']['points'][number]) => number) => a.weekly.points.map((w) => ({ label: w.label, value: pick(w) }));
 
-  // Headline numbers. While no cycle is running, show the framework's own numbers instead.
+  const framework: StripMetric[] = [
+    { key: 'kras', label: 'KRAs', value: String(h?.kras ?? 0), sub: 'areas of work' },
+    { key: 'kpis', label: 'KPIs', value: String(h?.kpis ?? 0), sub: `${h?.published ?? 0} live · ${h?.drafts ?? 0} ${h?.drafts === 1 ? 'draft' : 'drafts'}` },
+  ];
+
   let metrics: StripMetric[];
-  if (p && r) {
+  if (p && r && show('participation')) {
     const expected = Object.values(p.byStatus).reduce((x, y) => x + y, 0);
     const made = expected - p.byStatus.notStarted;
-    const marks = o?.avgByKpi ?? [];
-    const avgMark = marks.length ? marks.reduce((x, k) => x + k.value, 0) / marks.length : 0;
     metrics = [
-      { key: 'rate', label: 'Submission rate', value: pct(p.submissionRate), sub: `${made} of ${expected} expected`, series: week((w) => w.submissionRate), yDomain: [0, 100], yTicks: [0, 25, 50, 75, 100], yFormat: pct },
-      { key: 'waiting', label: 'Waiting for review', value: String(r.queue), sub: `oldest ${r.oldestWaitingDays} days`, series: week((w) => w.waiting) },
+      ...framework,
+      {
+        key: 'submitted',
+        label: 'Submissions',
+        value: String(made),
+        sub: `of ${expected} expected`,
+        series: week((w) => Math.round((w.submissionRate / 100) * expected)),
+        seriesLabel: 'Submissions',
+      },
+      {
+        key: 'rate',
+        label: 'Average submission',
+        value: pct(p.submissionRate),
+        sub: 'across live KPIs',
+        series: week((w) => w.submissionRate),
+        seriesLabel: 'Average submission',
+        yDomain: [0, 100],
+        yTicks: [0, 25, 50, 75, 100],
+        yFormat: pct,
+      },
+      ...(show('review')
+        ? [
+            {
+              key: 'waiting',
+              label: 'Waiting for review',
+              value: String(r.queue),
+              sub: `avg review ${r.avgDaysToReview} days`,
+              series: week((w) => w.waiting),
+            },
+          ]
+        : []),
       { key: 'overdue', label: 'Overdue', value: String(p.overdue), sub: 'past the deadline', danger: p.overdue > 0, series: week((w) => w.overdue) },
-      { key: 'released', label: 'Released marks', value: String(p.byStatus.released), sub: `avg ${avgMark.toFixed(1)} / 5 · sample`, series: week((w) => w.released) },
     ];
   } else {
     metrics = [
-      { key: 'kras', label: 'KRAs', value: String(a.health?.kras ?? 0) },
-      { key: 'live', label: 'Live KPIs', value: String(a.health?.published ?? 0), sub: `of ${a.health?.kpis ?? 0}` },
-      { key: 'drafts', label: 'Drafts', value: String(a.health?.drafts ?? 0) },
-      { key: 'fix', label: 'To fix', value: String(a.health?.incomplete.length ?? 0), danger: (a.health?.incomplete.length ?? 0) > 0, sub: 'before publishing' },
+      ...framework,
+      { key: 'drafts', label: 'Drafts', value: String(h?.drafts ?? 0), sub: 'not live yet' },
+      { key: 'fix', label: 'To fix', value: String(h?.incomplete.length ?? 0), sub: 'before publishing', danger: (h?.incomplete.length ?? 0) > 0 },
     ];
   }
 
   const published = a.kpiRows.filter((k) => k.status === 'published');
+  // Expected submissions for one KPI = people in scope; a KRA's count is the sum over its live KPIs.
+  const kraSubmitted = (kraId: string) => published.filter((k) => k.kraId === kraId).reduce((s, k) => s + k.submissions, 0);
 
-  const leftTabs: RankedTab[] = p
+  const submissionTabs: RankedTab[] = p
     ? [
         {
-          key: 'kpis',
-          label: 'KPIs',
+          key: 'kra',
+          label: 'By KRA',
           valueLabel: 'Submitted',
           max: 100,
-          rows: [...published].sort((x, y) => y.submittedPercent - x.submittedPercent).map((k) => ({ id: k.id, prefix: k.code, label: k.name, value: k.submittedPercent, display: pct(k.submittedPercent) })),
+          rows: p.byKra.map((k) => ({ id: k.id, label: k.name, value: k.percent, display: `${kraSubmitted(k.id)} · ${pct(k.percent)}` })),
         },
-        { key: 'kras', label: 'KRAs', valueLabel: 'Submitted', max: 100, rows: p.byKra.map((k) => ({ id: k.id, label: k.name, value: k.percent, display: pct(k.percent) })) },
-        ...(isOrg
-          ? [
-              {
-                key: 'departments',
-                label: 'Departments',
-                valueLabel: 'Submitted',
-                max: 100,
-                rows: p.byDepartment.map((d) => ({ id: d.id, label: d.name, value: d.percent, display: pct(d.percent) })),
-                empty: 'Add departments in People to compare them.',
-              },
-            ]
-          : []),
+        {
+          key: 'kpi',
+          label: 'By KPI',
+          valueLabel: 'Submitted',
+          max: 100,
+          rows: [...published]
+            .sort((x, y) => y.submittedPercent - x.submittedPercent)
+            .map((k) => ({ id: k.id, prefix: k.code, label: k.name, value: k.submittedPercent, display: `${k.submissions} · ${pct(k.submittedPercent)}` })),
+        },
+        {
+          key: 'department',
+          label: 'By department',
+          valueLabel: 'Submitted',
+          max: 100,
+          rows: p.byDepartment.map((d) => ({ id: d.id, label: d.name, value: d.percent, display: pct(d.percent) })),
+          empty: 'Add departments in People to compare them.',
+        },
       ]
     : [];
 
-  const toFix: RankedTab | null = h
-    ? { key: 'fix', label: 'To fix', valueLabel: 'Problem', rows: h.incomplete.map((k) => ({ id: k.id, prefix: k.code, label: k.name, display: k.problem })), empty: 'Every KPI is ready to publish.' }
+  const perKra: RankedTab | null = h
+    ? {
+        key: 'perKra',
+        label: 'KPIs per KRA',
+        valueLabel: 'KPIs',
+        rows: h.kpisPerKra.map((k) => ({
+          id: k.id,
+          label: k.name,
+          value: k.live + k.drafts,
+          display: k.drafts ? `${k.live} live · ${k.drafts} draft` : `${k.live} live`,
+        })),
+        empty: 'No KRAs yet.',
+      }
     : null;
 
-  const rightTabs: RankedTab[] = [
-    ...(r && show('review')
+  const kpiTabs: RankedTab[] = [
+    ...(perKra ? [perKra] : []),
+    ...(p
       ? [
           {
-            key: 'returned',
-            label: 'Returned',
-            valueLabel: 'Return rate',
+            key: 'least',
+            label: 'Least submitted',
+            valueLabel: 'Submitted',
             max: 100,
             rows: [...published]
-              .sort((x, y) => y.returnPercent - x.returnPercent)
-              .map((k) => ({ id: k.id, prefix: k.code, label: k.name, value: k.returnPercent, display: pct(k.returnPercent), danger: k.returnPercent >= 25 })),
-            note: 'A high return rate often means the KPI is unclear.',
+              .sort((x, y) => x.submittedPercent - y.submittedPercent)
+              .map((k) => ({ id: k.id, prefix: k.code, label: k.name, value: k.submittedPercent, display: pct(k.submittedPercent), danger: k.submittedPercent < 40 })),
           },
         ]
       : []),
-    ...(o && show('outcomes')
+    ...(h && show('health')
       ? [
           {
-            key: 'marks',
-            label: 'Marks',
-            valueLabel: 'Average / 5',
-            max: 5,
-            rows: o.avgByKra.map((k) => ({ id: k.id, label: k.name, value: k.value, display: k.value.toFixed(1) })),
-            note: 'Sample data until scoring policy is approved.',
+            key: 'fix',
+            label: 'To fix',
+            valueLabel: 'Problem',
+            rows: h.incomplete.map((k) => ({ id: k.id, prefix: k.code, label: k.name, display: k.problem })),
+            empty: 'Every KPI is ready to publish.',
           },
         ]
       : []),
-    ...(toFix ? [toFix] : []),
   ];
 
   return (
     <div className="grid gap-4 *:min-w-0">
+      {a.state === 'active' && (
+        <p className="text-muted-foreground -mb-1 px-1 text-xs">Cycle 2026 H1 · sample submissions until appraisal cycles are built</p>
+      )}
       <MetricStrip
         metrics={metrics}
         marker={a.weekly.points[a.weekly.deadlineIndex] ? { at: a.weekly.points[a.weekly.deadlineIndex].label, label: 'Deadline' } : undefined}
       />
 
       {a.state === 'noSubmissions' && (
-        <p className="text-muted-foreground flex items-center gap-2 px-1 text-sm">
-          <CalendarClock className="size-4 shrink-0" aria-hidden />
-          Submission, review and mark numbers start once a cycle is running.
-        </p>
+        <p className="text-muted-foreground px-1 text-sm">Submission, review and overdue numbers start once a cycle is running.</p>
       )}
 
-      {(leftTabs.length > 0 || rightTabs.length > 0) && (
-        <div className="grid gap-4 lg:grid-cols-2">
-          {leftTabs.length > 0 && <RankedPanel tabs={leftTabs} />}
-          {rightTabs.length > 0 && <RankedPanel tabs={rightTabs} />}
-        </div>
-      )}
+      <div className={submissionTabs.length ? 'grid gap-4 lg:grid-cols-2' : 'grid gap-4'}>
+        {submissionTabs.length > 0 && <RankedPanel tabs={submissionTabs} />}
+        {kpiTabs.length > 0 && <RankedPanel tabs={kpiTabs} />}
+      </div>
 
       {a.kpiRows.length > 0 && (
         <div className="pt-4">

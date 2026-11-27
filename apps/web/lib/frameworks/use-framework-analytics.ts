@@ -11,6 +11,7 @@ import {
   SAMPLE_REVIEW,
   SAMPLE_STATUS_SHARE,
   SAMPLE_WEEKLY_PROGRESS,
+  type KpiSample,
 } from './sample-data';
 import type {
   AnalyticsFilters,
@@ -42,6 +43,16 @@ type Input = {
 
 const pct = (v: number) => Math.round(v * 100);
 
+/** Stable sample results for any KPI: the template's own figures, or numbers derived from the KPI id. */
+function sampleResult(id: string): KpiSample {
+  const known = SAMPLE_KPI_RESULTS[id];
+  if (known) return known;
+  let h = 0;
+  for (const ch of id) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  const r = (n: number) => ((h >> n) % 100) / 100;
+  return { submitted: 0.4 + r(1) * 0.55, returnRate: 0.02 + r(7) * 0.25, avgMark: 3 + r(13) * 1.5, fullMarkShare: r(19) * 0.5 };
+}
+
 /**
  * Pure function: builds the analytics for one scope and set of filters.
  * Kept separate from React so it can be unit tested and later swapped for an API call.
@@ -49,6 +60,8 @@ const pct = (v: number) => Math.round(v * 100);
 export function buildFrameworkAnalytics({ kras, kpis, stage, departments, employees, scope, filters }: Input): FrameworkAnalytics {
   const base = { scope, filters, health: null, participation: null, review: null, outcomes: null, kpiRows: [], weekly: { points: [], deadlineIndex: 0 } };
   if (stage === 'empty' || kras.length === 0) return { ...base, state: 'empty' };
+  // Cycles are not built yet. In the prototype a sample cycle "runs" as soon as one KPI is live.
+  const cycleRunning = kpis.some((k) => k.status === 'published');
 
   const isOrg = scope.kind === 'organization';
   const inKra = (k: Kpi) => !filters.kraId || k.kraId === filters.kraId;
@@ -57,7 +70,7 @@ export function buildFrameworkAnalytics({ kras, kpis, stage, departments, employ
 
   const health: HealthStats | null = isOrg
     ? {
-        kras: shownKras.length,
+        kras: shownKras.filter((k) => !k.archived).length,
         kpis: live.length,
         published: live.filter((k) => k.status === 'published').length,
         drafts: live.filter((k) => k.status === 'draft').length,
@@ -71,6 +84,14 @@ export function buildFrameworkAnalytics({ kras, kpis, stage, departments, employ
           }))
           .filter((k) => k.problem),
         unapprovedScoring: live.filter((k) => k.hasScoringRules).length,
+        kpisPerKra: shownKras
+          .filter((k) => !k.archived)
+          .map((k) => ({
+            id: k.id,
+            name: k.name,
+            live: live.filter((x) => x.kraId === k.id && x.status === 'published').length,
+            drafts: live.filter((x) => x.kraId === k.id && x.status === 'draft').length,
+          })),
       }
     : null;
 
@@ -90,7 +111,7 @@ export function buildFrameworkAnalytics({ kras, kpis, stage, departments, employ
     evidenceRequired: k.evidenceRequired,
   });
 
-  if (stage === 'built') return { ...base, state: 'noSubmissions', health, kpiRows: live.map(emptyRow) };
+  if (!cycleRunning) return { ...base, state: 'noSubmissions', health, kpiRows: live.map(emptyRow) };
 
   // People in scope. Reviewers see only their reviewees; the department filter applies to admins only.
   const reviewees = scope.kind === 'reviewer' ? employees.filter((e) => e.reviewerId === scope.reviewerId) : [];
@@ -102,9 +123,9 @@ export function buildFrameworkAnalytics({ kras, kpis, stage, departments, employ
   const avgDeptRate = SAMPLE_DEPARTMENT_RATES.reduce((a, r) => a + r, 0) / SAMPLE_DEPARTMENT_RATES.length;
   const factor = isOrg && deptIndex >= 0 ? SAMPLE_DEPARTMENT_RATES[deptIndex % SAMPLE_DEPARTMENT_RATES.length] / avgDeptRate : 1;
 
-  const published = live.filter((k) => k.status === 'published' && SAMPLE_KPI_RESULTS[k.id]);
+  const published = live.filter((k) => k.status === 'published');
   const rows = published.map((k) => {
-    const r = SAMPLE_KPI_RESULTS[k.id];
+    const r = sampleResult(k.id);
     const share = Math.min(1, r.submitted * factor);
     return { kpi: k, r, share, submissions: Math.round(share * people) };
   });

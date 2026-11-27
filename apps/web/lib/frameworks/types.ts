@@ -124,6 +124,8 @@ export type HealthStats = {
   incomplete: { id: string; code: string; name: string; problem: string }[];
   /** KPIs whose scoring rules are still unapproved placeholders. */
   unapprovedScoring: number;
+  /** How many live and draft KPIs each KRA holds, including KRAs with none. */
+  kpisPerKra: { id: string; name: string; live: number; drafts: number }[];
 };
 
 export type ParticipationStats = {

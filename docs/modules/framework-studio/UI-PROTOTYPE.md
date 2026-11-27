@@ -30,17 +30,20 @@ The prototype is **administrators only** for now. Reviewer views are not built; 
 
 ### Overview (`/frameworks`)
 
-In the style of Vercel analytics and the Stripe dashboard:
+In the style of Vercel analytics and the Stripe dashboard. Everything on it is about the KRAs and KPIs:
 
-1. **Metric strip:** submission rate, waiting for review, overdue and released marks. The numbers double as tabs: clicking one (or using the arrow keys) switches the single chart below to that number week by week, with the deadline marked.
-2. **Two ranked panels** with tabs in the header and a light bar behind each row. Left: submissions by KPIs, KRAs or departments. Right: return rate, marks by KRA (sample) or KPIs to fix.
-3. **KPI table:** filter pills (All, Live, Draft), search and sortable columns.
+1. **Metric strip:** **KRAs** and **KPIs** (live and drafts), **Submissions** (made of expected), **Average submission** across live KPIs, **Waiting for review** (with average review time) and **Overdue**. The submission, review and overdue numbers double as tabs: clicking one (or using the arrow keys) switches the chart below to that number week by week, with the deadline marked.
+2. **Submission panel** with tabs: **By KRA**, **By KPI** and **By department**, each row showing the count and the rate.
+3. **KPI panel** with tabs: **KPIs per KRA** (live and draft counts), **Least submitted** and **To fix** (KPIs missing inputs or scoring rules).
+4. **KPI table:** code, KPI, KRA, submitted count, rate, return rate and status, with filter pills (All, Live, Draft), search and sortable columns.
+
+Marks are not shown on the Overview: they would be invented until scoring policy is approved (#20).
 
 Filters for KRA and department sit above. States:
 
 - **Nothing built** (where the prototype starts): "No KRAs or KPIs yet", one line on what to do, and two buttons: **New KRA**, which opens the New KRA dialog, and **Use a template**, which loads sample KRAs and KPIs.
-- **Framework built** (after the template or the first KRA): the strip shows the framework's own numbers (KRAs, live KPIs, drafts, to fix), the To fix panel lists unfinished KPIs and the table shows dashes, because no cycle has run.
-- **Cycle running:** the submission, review and mark analytics described above. No cycles exist yet, so this state is designed and built but not reachable in the prototype.
+- **No KPI live yet** (after the first KRA, while every KPI is a draft): the strip shows KRAs, KPIs, drafts and to fix; the KPI panel shows KPIs per KRA and To fix; the table shows dashes.
+- **Cycle running:** appraisal cycles are not built, so as soon as one KPI is live the prototype shows a **sample** cycle (2026 H1), labelled "sample submissions until appraisal cycles are built". KPIs you create get generated sample numbers too.
 
 ### KRAs and KPIs library (`/frameworks/library`)
 
@@ -90,7 +93,7 @@ To start again from nothing, clear the browser tab's site data or open a new tab
 - Everything is a prototype: no backend, and changes last only for the browser tab.
 - Scoring rules, weights, maximums and caps are not approved policy (#20). Marks and analytics are sample data.
 - Administrators only. Reviewer and employee screens are not built.
-- Appraisal cycles and assigning KPIs to people are not built, so the cycle-running analytics cannot be reached yet. Cycles keeping "their" version is described, not implemented.
+- Appraisal cycles and assigning KPIs to people are not built. Submission, review and overdue numbers come from a sample cycle shown once a KPI is live. Cycles keeping "their" version is described, not implemented.
 - The appraisal-cycle selector in the top bar does not filter anything.
 - File uploads are shown but not tested in Preview and test.
 - Checked by hand and with scripted browser runs at 1366 by 900 (desktop) and 390 wide (phone). Dark mode, keyboard-only use and screen readers were not reviewed in depth.

@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import type { KpiRow, KpiStatus } from '@/lib/frameworks/types';
 import { cn } from '@/lib/utils';
 
-type SortKey = 'code' | 'name' | 'kraName' | 'submittedPercent' | 'returnPercent' | 'avgMark';
+type SortKey = 'code' | 'name' | 'kraName' | 'submissions' | 'submittedPercent' | 'returnPercent';
 type Sort = { key: SortKey; dir: 'asc' | 'desc' };
 type Filter = 'all' | KpiStatus;
 
@@ -14,9 +14,9 @@ const COLUMNS: { key: SortKey; label: string; numeric?: boolean; className?: str
   { key: 'code', label: 'Code', className: 'w-14 pl-3 sm:w-16' },
   { key: 'name', label: 'KPI' },
   { key: 'kraName', label: 'KRA', className: 'hidden w-52 md:table-cell' },
-  { key: 'submittedPercent', label: 'Submitted', numeric: true, className: 'w-24 sm:w-28' },
+  { key: 'submissions', label: 'Submitted', numeric: true, className: 'hidden w-24 sm:table-cell' },
+  { key: 'submittedPercent', label: 'Rate', numeric: true, className: 'w-20' },
   { key: 'returnPercent', label: 'Returned', numeric: true, className: 'hidden w-24 sm:table-cell' },
-  { key: 'avgMark', label: 'Avg mark', numeric: true, className: 'hidden w-24 sm:table-cell' },
 ];
 
 const STATUS_LABEL: Record<KpiStatus, string> = { published: 'Live', draft: 'Draft', archived: 'Archived' };
@@ -34,7 +34,7 @@ export function KpiTable({ rows, showResults = true }: { rows: KpiRow[]; /** Fal
 
   const shown = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const val = (r: KpiRow) => (sort.key === 'avgMark' ? (r.avgMark ?? -1) : r[sort.key]);
+    const val = (r: KpiRow) => r[sort.key];
     return rows
       .filter((r) => filter === 'all' || r.status === filter)
       .filter((r) => !q || `${r.code} ${r.name} ${r.kraName}`.toLowerCase().includes(q))
@@ -131,12 +131,10 @@ export function KpiTable({ rows, showResults = true }: { rows: KpiRow[]; /** Fal
                   </span>
                 </TableCell>
                 <TableCell className="text-muted-foreground hidden truncate md:table-cell">{r.kraName}</TableCell>
+                <TableCell className="hidden text-right tabular-nums sm:table-cell">{showResults && r.status === 'published' ? r.submissions : <Dash />}</TableCell>
                 <TableCell className="text-right tabular-nums">{showResults && r.status === 'published' ? `${r.submittedPercent}%` : <Dash />}</TableCell>
                 <TableCell className={cn('hidden text-right tabular-nums sm:table-cell', showResults && r.returnPercent >= 25 ? 'text-destructive font-medium' : 'text-muted-foreground')}>
                   {showResults && r.status === 'published' ? `${r.returnPercent}%` : <Dash />}
-                </TableCell>
-                <TableCell className="text-muted-foreground hidden text-right tabular-nums sm:table-cell">
-                  {r.avgMark === null ? <Dash /> : r.avgMark.toFixed(1)}
                 </TableCell>
                 <TableCell className="pr-3 text-right">
                   <span className={cn('text-xs', r.status === 'published' ? 'text-foreground' : 'text-muted-foreground')}>
