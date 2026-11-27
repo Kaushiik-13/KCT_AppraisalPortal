@@ -37,7 +37,7 @@ In the style of Vercel analytics and the Stripe dashboard. Everything on it is a
 3. **KPI panel** with tabs: **KPIs per KRA** (a two-tone bar, dark for live and light for draft, with Draft and Live columns), **Least submitted** and **To fix** (KPIs missing inputs or scoring rules).
 
 On phones the bar moves under the name so names are not cut off.
-4. **KPI table:** code, KPI, KRA, submitted count, rate, return rate and status, with filter pills (All, Live, Draft), search and sortable columns.
+4. **KPIs by KRA:** a table grouped by KRA. Each KRA row shows its KPI count and totals for its live KPIs (submissions, average rate, average return rate). Click a KRA, or **Expand all**, to open the KPIs inside it; each KPI links to its editor and draft KPIs show dashes. Searching opens every KRA with a match. Columns can be sorted within each KRA.
 
 Marks are not shown on the Overview: they would be invented until scoring policy is approved (#20).
 
