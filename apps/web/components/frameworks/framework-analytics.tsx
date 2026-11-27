@@ -137,22 +137,11 @@ export function FrameworkAnalytics({ analytics: a, sections }: FrameworkAnalytic
         rows: h.kpisPerKra.map((k) => ({
           id: k.id,
           label: k.name,
-          value: k.live,
-          value2: k.drafts,
+          value: k.live + k.drafts,
           meta: String(k.drafts),
           display: String(k.live),
         })),
         empty: 'No KRAs yet.',
-        note: (
-          <span className="flex items-center gap-3">
-            <span className="flex items-center gap-1.5">
-              <span className="bg-primary size-2 rounded-full" aria-hidden /> Live
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="bg-primary/30 size-2 rounded-full" aria-hidden /> Draft
-            </span>
-          </span>
-        ),
       }
     : null;
 

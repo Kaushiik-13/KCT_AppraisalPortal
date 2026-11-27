@@ -101,9 +101,9 @@ export function RankedPanel({ tabs, limit = 6 }: { tabs: RankedTab[]; limit?: nu
               {hasBars && (
                 <span className="bg-muted flex h-1.5 overflow-hidden rounded-full max-sm:col-span-2 max-sm:row-start-2 max-sm:mt-1.5" aria-hidden>
                   {r.value !== undefined && (
-                    <span className={cn('h-full transition-[width] duration-500', r.danger ? 'bg-destructive' : 'bg-primary')} style={{ width: pct(r.value) }} />
+                    <span className={cn('h-full transition-[width] duration-500', r.danger ? 'bg-destructive' : 'bg-muted-foreground/60')} style={{ width: pct(r.value) }} />
                   )}
-                  {r.value2 !== undefined && r.value2 > 0 && <span className="bg-primary/30 h-full transition-[width] duration-500" style={{ width: pct(r.value2) }} />}
+                  {r.value2 !== undefined && r.value2 > 0 && <span className="bg-muted-foreground/25 h-full transition-[width] duration-500" style={{ width: pct(r.value2) }} />}
                 </span>
               )}
               {numbers(
