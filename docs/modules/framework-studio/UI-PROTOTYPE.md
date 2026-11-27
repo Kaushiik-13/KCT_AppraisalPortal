@@ -34,7 +34,7 @@ In the style of Vercel analytics and the Stripe dashboard. Everything on it is a
 
 1. **Metric strip:** **KPIs** (with how many KRAs and how many are live), **Employees** appraised this cycle, **KPI submissions** (made of expected, where expected = employees × live KPIs), **Submission rate**, **Waiting for review** (with average review time) and **Late submissions** (average days after the deadline, and how many were late). A line above the strip says what a submission is: one employee's answer to one KPI. Numbers with no chart (KPIs, Employees, Late submissions) sit in a plain top row that is not clickable. The numbers that have a chart (KPI submissions, Submission rate, Waiting for review) sit in a second row styled as tabs: clicking one (or using the arrow keys) switches the chart below to that number over time, with the deadline marked. A **Weekly / Monthly** switch above the chart changes the scale: weekly points are dated by the week's start (5 Jan, 12 Jan and so on) and monthly points show the month (Jan to Jun).
 2. **Submission panel** with tabs: **By KRA**, **By KPI** and **By department**. Each row has the name, a slim bar and two aligned columns, **Submitted** (count) and **Rate**.
-3. **KPI panel** with tabs: **KPIs per KRA** (one grey bar for all KPIs in the KRA, with Draft and Live columns). Panel bars are near-black on a light grey track; red marks problems only, **Least submitted** and **To fix** (KPIs missing inputs or scoring rules).
+3. **KPI panel** with tabs: **KPIs per KRA** (one grey bar for all KPIs in the KRA, with Draft and Live columns). Panel bars use the brand colour (teal) on a light grey track; red marks problems only, **Least submitted** and **To fix** (KPIs missing inputs or scoring rules).
 
 On phones the bar moves under the name so names are not cut off.
 4. **KPIs by KRA:** a table grouped by KRA. Each KRA row shows its KPI count and totals for its live KPIs (submissions, average rate, average return rate). Click a KRA, or **Expand all**, to open the KPIs inside it; each KPI links to its editor and draft KPIs show dashes. Searching opens every KRA with a match. Columns can be sorted within each KRA.
@@ -95,6 +95,7 @@ To start again from nothing, clear the browser tab's site data or open a new tab
 - Everything is a prototype: no backend, and changes last only for the browser tab.
 - Scoring rules, weights, maximums and caps are not approved policy (#20). Marks and analytics are sample data.
 - Administrators only. Reviewer and employee screens are not built.
+- The brand colour is now teal (`--primary` `#0F766E`, dark `#2DD4BF`) across the app. The colour table in `docs/modules/organization/UI-PROTOTYPE.md` still lists the old blue and needs an update by its owner. `--info` (Invited) stays blue.
 - Appraisal cycles and assigning KPIs to people are not built. Submission, review and late numbers come from a sample cycle shown once a KPI is live. Cycles keeping "their" version is described, not implemented.
 - The appraisal-cycle selector in the top bar does not filter anything.
 - File uploads are shown but not tested in Preview and test.
