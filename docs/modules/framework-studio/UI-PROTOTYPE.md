@@ -38,7 +38,7 @@ In the style of Vercel analytics and the Stripe dashboard:
 
 Filters for KRA and department sit above. States:
 
-- **Nothing built** (where the prototype starts): a guide (create KRAs, add KPIs, test and publish) with **Start from template**, which loads sample KRAs and KPIs, and **Create from scratch**, which opens the New KRA dialog.
+- **Nothing built** (where the prototype starts): "No KRAs or KPIs yet", one line on what to do, and two buttons: **New KRA**, which opens the New KRA dialog, and **Use a template**, which loads sample KRAs and KPIs.
 - **Framework built** (after the template or the first KRA): the strip shows the framework's own numbers (KRAs, live KPIs, drafts, to fix), the To fix panel lists unfinished KPIs and the table shows dashes, because no cycle has run.
 - **Cycle running:** the submission, review and mark analytics described above. No cycles exist yet, so this state is designed and built but not reachable in the prototype.
 
