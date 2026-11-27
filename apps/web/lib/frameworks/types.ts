@@ -10,13 +10,57 @@ export type Kra = {
   /** A key from lib/department-colors, reused so all tints match. */
   color: string;
   description: string;
+  /** Archived KRAs are hidden from new work but keep their history. */
+  archived?: boolean;
 };
 
 export type KpiStatus = 'draft' | 'published' | 'archived';
 export type InputType = 'number' | 'choice' | 'yesno' | 'text' | 'date' | 'file';
 
 /** One field the employee fills in for a KPI. */
-export type KpiInput = { id: string; label: string; type: InputType; required: boolean };
+export type KpiInput = {
+  id: string;
+  label: string;
+  type: InputType;
+  required: boolean;
+  /** Short help shown under the field. */
+  help?: string;
+  /** Bounds for number inputs. */
+  min?: number;
+  max?: number;
+  /** Choices for choice inputs. */
+  options?: string[];
+};
+
+/**
+ * One scoring rule: "if <input> <op> <value> then <points>". The first matching rule wins.
+ * Rules are unapproved placeholders until scoring policy is agreed (#20).
+ */
+export type ScoringRule = {
+  id: string;
+  inputId: string;
+  op: 'gte' | 'lte' | 'eq' | 'between';
+  value: number;
+  /** Upper bound for "between". */
+  value2?: number;
+  points: number;
+};
+
+export type KpiEvidence = { fileTypes: string[]; guidance: string };
+
+/** The editable part of a KPI. A published KPI keeps its live content while a draft of the next version is edited. */
+export type KpiContent = {
+  name: string;
+  description: string;
+  kraId: string;
+  appliesTo: string;
+  inputs: KpiInput[];
+  evidenceRequired: boolean;
+  evidence: KpiEvidence;
+  rules: ScoringRule[];
+};
+
+export type KpiVersion = { version: number; publishedAt: string; note: string };
 
 export type Kpi = {
   id: string;
@@ -35,6 +79,15 @@ export type Kpi = {
   appliesTo: string;
   /** False while no scoring rules exist. Rules stay unapproved placeholders until #20 is settled. */
   hasScoringRules: boolean;
+  description: string;
+  evidence: KpiEvidence;
+  rules: ScoringRule[];
+  /** ISO date of the last change. */
+  updatedAt: string;
+  /** Published versions, oldest first. Empty for a KPI never published. */
+  versions: KpiVersion[];
+  /** Pending changes to a published KPI: the next version, not live until published. */
+  draft?: KpiContent;
 };
 
 export type SubmissionStatus = 'notStarted' | 'submitted' | 'inReview' | 'returned' | 'released';

@@ -6,7 +6,7 @@
 Configure appraisal frameworks and support the complete faculty submission, review, and per-KPI mark-release workflow.
 
 ## Current implementation
-No implementation of the **new production-oriented module** has been verified yet. Historical PoC functionality, where available, is retained solely in the [legacy archive](../../reference/legacy/README.md).
+No production implementation exists yet. A clickable, **nonfunctional UI prototype** (Frameworks overview, KRAs and KPIs library, KPI editor with versions) is in `apps/web` with sample data and no backend: see [UI prototype](UI-PROTOTYPE.md). Historical PoC functionality is retained solely in the [legacy archive](../../reference/legacy/README.md).
 
 ## Proposed design
 - Organization administrators create KPIs/KRAs, appraisal cycles, assignments, evidence requirements, and approved scoring configuration.
@@ -23,6 +23,7 @@ No implementation of the **new production-oriented module** has been verified ye
 - [Database and ER diagram](DATABASE-SCHEMA.md)
 - [API](API.md)
 - [UI/UX](UI-UX.md)
+- [UI prototype](UI-PROTOTYPE.md)
 - [Testing](TESTING.md)
 - [Decisions](DECISIONS.md)
 - [Audit register and template](audits/README.md)

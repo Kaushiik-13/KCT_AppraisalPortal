@@ -1,4 +1,4 @@
-import type { Kpi, KpiInput, Kra } from './types';
+import type { Kpi, KpiInput, KpiVersion, Kra, ScoringRule } from './types';
 
 // Prototype sample data, adapted from the previous PoC's PADS template (docs/reference/legacy/).
 // It is NOT approved institutional policy. Marks, weights and caps stay unapproved until #20 is settled.
@@ -17,8 +17,49 @@ const pick = (id: string, label: string): KpiInput => ({ id, label, type: 'choic
 const file = (id: string, label: string): KpiInput => ({ id, label, type: 'file', required: true });
 const yes = (id: string, label: string): KpiInput => ({ id, label, type: 'yesno', required: true });
 
-type K = Omit<Kpi, 'hasDraftChanges' | 'appliesTo'> & Partial<Pick<Kpi, 'hasDraftChanges' | 'appliesTo'>>;
-const kpi = (k: K): Kpi => ({ hasDraftChanges: false, appliesTo: 'All teaching staff', ...k });
+type K = Omit<Kpi, 'hasDraftChanges' | 'appliesTo' | 'description' | 'evidence' | 'rules' | 'updatedAt' | 'versions' | 'draft'> &
+  Partial<Pick<Kpi, 'hasDraftChanges' | 'appliesTo' | 'description'>>;
+
+const DAY = 24 * 60 * 60 * 1000;
+const BASE = Date.UTC(2026, 10, 20);
+const iso = (daysAgo: number) => new Date(BASE - daysAgo * DAY).toISOString();
+
+/** Fills the editor-only fields with plausible sample values. */
+const kpi = (k: K): Kpi => {
+  const first = k.inputs.find((i) => i.type === 'number' || i.type === 'yesno' || i.type === 'choice');
+  const rules: ScoringRule[] =
+    k.hasScoringRules && first
+      ? [
+          { id: `${k.id}-r1`, inputId: first.id, op: 'gte', value: first.type === 'number' ? 3 : 1, points: 5 },
+          { id: `${k.id}-r2`, inputId: first.id, op: 'gte', value: first.type === 'number' ? 1 : 0, points: 2 },
+        ]
+      : [];
+  const versions: KpiVersion[] =
+    k.status === 'draft' ? [] : Array.from({ length: k.version }, (_, i) => ({ version: i + 1, publishedAt: iso(120 - i * 30), note: i === 0 ? 'First version' : 'Clarified the evidence guidance' }));
+  const base: Kpi = {
+    hasDraftChanges: false,
+    appliesTo: 'All teaching staff',
+    description: '',
+    ...k,
+    evidence: { fileTypes: k.evidenceRequired ? ['PDF', 'Images'] : [], guidance: k.evidenceRequired ? 'Attach a signed or official record.' : '' },
+    rules,
+    updatedAt: iso(k.status === 'draft' ? 0 : (k.code.length * 7) % 40),
+    versions,
+  };
+  if (base.hasDraftChanges) {
+    base.draft = {
+      name: base.name,
+      description: 'Count papers presented, not only submitted.',
+      kraId: base.kraId,
+      appliesTo: base.appliesTo,
+      inputs: base.inputs,
+      evidenceRequired: base.evidenceRequired,
+      evidence: base.evidence,
+      rules: base.rules,
+    };
+  }
+  return base;
+};
 
 export const SAMPLE_KPIS: Kpi[] = [
   kpi({ id: 'tl-1', code: 'TL-1', name: 'Teaching pedagogy score', kraId: 'kra-tl', status: 'published', version: 2, inputs: [num('pct', 'Teaching score'), file('ev', 'Review report')], evidenceRequired: true, hasScoringRules: true }),
