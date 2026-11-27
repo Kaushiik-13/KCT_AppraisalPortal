@@ -73,7 +73,12 @@ export function FrameworkAnalytics({ analytics: a, sections }: FrameworkAnalytic
             },
           ]
         : []),
-      { key: 'overdue', label: 'Overdue', value: String(p.overdue), sub: 'past the deadline', danger: p.overdue > 0, series: week((w) => w.overdue) },
+      {
+        key: 'late',
+        label: 'Late submissions',
+        value: `${p.late.avgDays} days`,
+        sub: `avg delay · ${p.late.count} late`,
+      },
     ];
   } else {
     metrics = [

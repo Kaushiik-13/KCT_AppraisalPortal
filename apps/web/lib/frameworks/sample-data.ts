@@ -131,4 +131,7 @@ export const SAMPLE_MARK_BINS = [
   { label: '4–5', share: 0.27 },
 ];
 
+/** Share of answers sent in after the deadline, and their average delay in days. Sample only. */
+export const SAMPLE_LATE = { share: 0.08, avgDays: 2.4 };
+
 export const SAMPLE_REVIEW = { avgDaysToReview: 3.4, oldestWaitingDays: 11, evidence: { missing: 7, unreadable: 3, replaced: 5 } };

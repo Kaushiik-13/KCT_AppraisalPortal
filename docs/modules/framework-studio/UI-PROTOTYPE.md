@@ -32,7 +32,7 @@ The prototype is **administrators only** for now. Reviewer views are not built; 
 
 In the style of Vercel analytics and the Stripe dashboard. Everything on it is about the KRAs and KPIs:
 
-1. **Metric strip:** **KPIs** (with how many KRAs and how many are live), **Employees** appraised this cycle, **KPI submissions** (made of expected, where expected = employees × live KPIs), **Submission rate**, **Waiting for review** (with average review time) and **Overdue**. A line above the strip says what a submission is: one employee's answer to one KPI. The submission, review and overdue numbers double as tabs: clicking one (or using the arrow keys) switches the chart below to that number week by week, with the deadline marked.
+1. **Metric strip:** **KPIs** (with how many KRAs and how many are live), **Employees** appraised this cycle, **KPI submissions** (made of expected, where expected = employees × live KPIs), **Submission rate**, **Waiting for review** (with average review time) and **Late submissions** (average days after the deadline, and how many were late). A line above the strip says what a submission is: one employee's answer to one KPI. The submission and review numbers double as tabs: clicking one (or using the arrow keys) switches the chart below to that number week by week, with the deadline marked.
 2. **Submission panel** with tabs: **By KRA**, **By KPI** and **By department**, each row showing the count and the rate.
 3. **KPI panel** with tabs: **KPIs per KRA** (live and draft counts), **Least submitted** and **To fix** (KPIs missing inputs or scoring rules).
 4. **KPI table:** code, KPI, KRA, submitted count, rate, return rate and status, with filter pills (All, Live, Draft), search and sortable columns.
@@ -93,7 +93,7 @@ To start again from nothing, clear the browser tab's site data or open a new tab
 - Everything is a prototype: no backend, and changes last only for the browser tab.
 - Scoring rules, weights, maximums and caps are not approved policy (#20). Marks and analytics are sample data.
 - Administrators only. Reviewer and employee screens are not built.
-- Appraisal cycles and assigning KPIs to people are not built. Submission, review and overdue numbers come from a sample cycle shown once a KPI is live. Cycles keeping "their" version is described, not implemented.
+- Appraisal cycles and assigning KPIs to people are not built. Submission, review and late numbers come from a sample cycle shown once a KPI is live. Cycles keeping "their" version is described, not implemented.
 - The appraisal-cycle selector in the top bar does not filter anything.
 - File uploads are shown but not tested in Preview and test.
 - Checked by hand and with scripted browser runs at 1366 by 900 (desktop) and 390 wide (phone). Dark mode, keyboard-only use and screen readers were not reviewed in depth.

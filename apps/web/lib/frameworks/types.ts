@@ -134,6 +134,8 @@ export type ParticipationStats = {
   /** Share of expected KPI submissions made, 0 to 100. */
   submissionRate: number;
   overdue: number;
+  /** Answers sent in after the deadline, and how many days late they were on average. */
+  late: { count: number; avgDays: number };
   byStatus: Record<SubmissionStatus, number>;
   mostSubmitted: { id: string; code: string; name: string; submissions: number }[];
   leastSubmitted: { id: string; code: string; name: string; submissions: number }[];
