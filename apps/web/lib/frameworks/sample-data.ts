@@ -113,8 +113,22 @@ export const SAMPLE_KPI_RESULTS: Record<string, KpiSample> = {
 };
 
 /** Cumulative share of expected submissions made, by week of the cycle. Deadline is week 8. */
-export const SAMPLE_WEEKLY_PROGRESS = [0.04, 0.09, 0.17, 0.26, 0.34, 0.45, 0.58, 0.66];
-export const SAMPLE_DEADLINE_WEEK = 7;
+/**
+ * The sample cycle 2026 H1: opens Monday 5 Jan 2026, submission deadline in the week of 25 May,
+ * and "today" is the week of 8 Jun. Each week has the cumulative share of expected submissions made.
+ */
+const CYCLE_START = Date.UTC(2026, 0, 5);
+const WEEKS = 23;
+const FINAL_SHARE = 0.66;
+const curve = (i: number) => 1 / (1 + Math.exp(-(i - 12) / 3.4));
+export const SAMPLE_WEEKS: { start: string; share: number }[] = Array.from({ length: WEEKS }, (_, i) => ({
+  start: new Date(CYCLE_START + i * 7 * 86_400_000).toISOString(),
+  share: Math.round((FINAL_SHARE * (curve(i) - curve(-1))) / (curve(WEEKS - 1) - curve(-1)) * 1000) / 1000,
+}));
+/** Index of the week the submission deadline falls in (week of 25 May). */
+export const SAMPLE_DEADLINE_WEEK = 20;
+/** Kept for older callers: the weekly shares on their own. */
+export const SAMPLE_WEEKLY_PROGRESS = SAMPLE_WEEKS.map((w) => w.share);
 
 /** How the organization's submissions split by status. Shares, 0 to 1. */
 export const SAMPLE_STATUS_SHARE = { notStarted: 0.32, submitted: 0.14, inReview: 0.18, returned: 0.06, released: 0.3 };

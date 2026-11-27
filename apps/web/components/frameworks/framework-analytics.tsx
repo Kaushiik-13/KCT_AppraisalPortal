@@ -23,7 +23,11 @@ export function FrameworkAnalytics({ analytics: a, sections }: FrameworkAnalytic
   const p = a.participation;
   const r = a.review;
   const h = a.health;
-  const week = (pick: (w: Analytics['weekly']['points'][number]) => number) => a.weekly.points.map((w) => ({ label: w.label, value: pick(w) }));
+  // Each chartable number has a weekly and a monthly series.
+  const week = (pick: (w: Analytics['weekly']['points'][number]) => number) => ({
+    weekly: a.weekly.points.map((w) => ({ label: w.label, value: pick(w) })),
+    monthly: a.monthly.points.map((w) => ({ label: w.label, value: pick(w) })),
+  });
 
   const kraWord = (n: number) => `${n} ${n === 1 ? 'KRA' : 'KRAs'}`;
   const framework: StripMetric[] = [
@@ -48,7 +52,7 @@ export function FrameworkAnalytics({ analytics: a, sections }: FrameworkAnalytic
         label: 'KPI submissions',
         value: String(made),
         sub: `of ${expected} (${p.people} × ${liveKpis} KPIs)`,
-        series: week((w) => Math.round((w.submissionRate / 100) * expected)),
+        seriesByPeriod: week((w) => Math.round((w.submissionRate / 100) * expected)),
         seriesLabel: 'Submissions',
       },
       {
@@ -56,7 +60,7 @@ export function FrameworkAnalytics({ analytics: a, sections }: FrameworkAnalytic
         label: 'Submission rate',
         value: pct(p.submissionRate),
         sub: 'of expected',
-        series: week((w) => w.submissionRate),
+        seriesByPeriod: week((w) => w.submissionRate),
         seriesLabel: 'Average submission',
         yDomain: [0, 100],
         yTicks: [0, 25, 50, 75, 100],
@@ -69,7 +73,7 @@ export function FrameworkAnalytics({ analytics: a, sections }: FrameworkAnalytic
               label: 'Waiting for review',
               value: String(r.queue),
               sub: `avg ${r.avgDaysToReview} days to review`,
-              series: week((w) => w.waiting),
+              seriesByPeriod: week((w) => w.waiting),
             },
           ]
         : []),
@@ -174,7 +178,14 @@ export function FrameworkAnalytics({ analytics: a, sections }: FrameworkAnalytic
       )}
       <MetricStrip
         metrics={metrics}
-        marker={a.weekly.points[a.weekly.deadlineIndex] ? { at: a.weekly.points[a.weekly.deadlineIndex].label, label: 'Deadline' } : undefined}
+        periods={[
+          { key: 'weekly', label: 'Weekly' },
+          { key: 'monthly', label: 'Monthly' },
+        ]}
+        markers={{
+          weekly: a.weekly.points[a.weekly.deadlineIndex] ? { at: a.weekly.points[a.weekly.deadlineIndex].label, label: 'Deadline' } : undefined,
+          monthly: a.monthly.points[a.monthly.deadlineIndex] ? { at: a.monthly.points[a.monthly.deadlineIndex].label, label: 'Deadline' } : undefined,
+        }}
       />
 
       {a.state === 'noSubmissions' && (

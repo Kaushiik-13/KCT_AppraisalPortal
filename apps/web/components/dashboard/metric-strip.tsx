@@ -5,6 +5,9 @@ import { Area, AreaChart, CartesianGrid, ReferenceLine, XAxis, YAxis } from 'rec
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
 import { cn } from '@/lib/utils';
 
+type Point = { label: string; value: number };
+export type Period = { key: string; label: string };
+
 export type StripMetric = {
   key: string;
   label: string;
@@ -15,7 +18,9 @@ export type StripMetric = {
   /** Red value, for problems like overdue items. */
   danger?: boolean;
   /** Values over time for the chart. Leave out for a number with no chart. */
-  series?: { label: string; value: number }[];
+  series?: Point[];
+  /** Values for each period when the chart has a period switch, for example { weekly, monthly }. Overrides `series`. */
+  seriesByPeriod?: Record<string, Point[]>;
   /** Name of the measure in the tooltip. Defaults to the label. */
   seriesLabel?: string;
   yDomain?: [number | 'auto', number | 'auto'];
@@ -28,6 +33,10 @@ type MetricStripProps = {
   metrics: StripMetric[];
   /** Dashed vertical line at one x label, for example the deadline week. */
   marker?: { at: string; label: string };
+  /** Optional period switch shown above the chart, for example Weekly and Monthly. */
+  periods?: Period[];
+  /** A marker for each period, used instead of `marker` when periods are given. */
+  markers?: Record<string, { at: string; label: string } | undefined>;
   height?: number;
 };
 
@@ -35,8 +44,11 @@ type MetricStripProps = {
  * A row of headline numbers that doubles as tabs for one chart (Stripe summary strip + Vercel analytics tabs).
  * Click or arrow-key between numbers; the chart below shows the selected one over time.
  */
-export function MetricStrip({ metrics, marker, height = 220 }: MetricStripProps) {
-  const chartable = metrics.filter((m) => m.series && m.series.length > 1);
+export function MetricStrip({ metrics, marker: singleMarker, periods, markers, height = 220 }: MetricStripProps) {
+  const [period, setPeriod] = useState(periods?.[0]?.key ?? '');
+  const seriesOf = (m: StripMetric) => (periods && m.seriesByPeriod ? m.seriesByPeriod[period] : m.series);
+  const marker = periods ? markers?.[period] : singleMarker;
+  const chartable = metrics.filter((m) => (seriesOf(m)?.length ?? 0) > 1);
   const [selected, setSelected] = useState(chartable[0]?.key ?? '');
   const active = chartable.find((m) => m.key === selected) ?? chartable[0];
 
@@ -64,7 +76,7 @@ export function MetricStrip({ metrics, marker, height = 220 }: MetricStripProps)
         }}
       >
         {metrics.map((m, i) => {
-          const canChart = !!m.series && m.series.length > 1;
+          const canChart = (seriesOf(m)?.length ?? 0) > 1;
           const isActive = canChart && m.key === active?.key;
           return (
             <button
@@ -96,15 +108,35 @@ export function MetricStrip({ metrics, marker, height = 220 }: MetricStripProps)
         })}
       </div>
 
-      {active?.series && (
-        <div className="bg-card px-2 pt-4 pb-2 sm:px-4" role="tabpanel" aria-labelledby={`metric-tab-${active.key}`}>
+      {active && seriesOf(active) && (
+        <div className="bg-card px-2 pt-3 pb-2 sm:px-4" role="tabpanel" aria-labelledby={`metric-tab-${active.key}`}>
+          {periods && periods.length > 1 && (
+            <div className="mb-1 flex justify-end px-2" role="group" aria-label="Chart period">
+              <div className="bg-muted inline-flex rounded-md p-0.5 text-xs">
+                {periods.map((pr) => (
+                  <button
+                    key={pr.key}
+                    type="button"
+                    aria-pressed={period === pr.key}
+                    onClick={() => setPeriod(pr.key)}
+                    className={cn(
+                      'focus-visible:ring-ring/50 rounded px-2.5 py-1 transition-colors outline-none focus-visible:ring-2',
+                      period === pr.key ? 'bg-card text-foreground font-medium shadow-xs' : 'text-muted-foreground hover:text-foreground',
+                    )}
+                  >
+                    {pr.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
           <ChartContainer config={config} className="aspect-auto w-full" style={{ height }}>
-            <AreaChart key={active.key} data={active.series} margin={{ left: 4, right: marker ? 28 : 12, top: marker ? 20 : 6 }}>
+            <AreaChart key={`${active.key}-${period}`} data={seriesOf(active)} margin={{ left: 4, right: marker ? 28 : 12, top: marker ? 20 : 6 }}>
               <CartesianGrid vertical={false} strokeDasharray="2 4" />
               <XAxis dataKey="label" tickLine={false} axisLine={false} tickMargin={8} minTickGap={16} />
               <YAxis width={40} tickLine={false} axisLine={false} tickMargin={4} tickCount={4} ticks={active.yTicks} domain={active.yDomain ?? [0, 'auto']} tickFormatter={active.yFormat} />
               <ChartTooltip cursor={{ stroke: 'var(--border)' }} content={<ChartTooltipContent indicator="line" />} />
-              {marker && active.series.some((p) => p.label === marker.at) && (
+              {marker && seriesOf(active)?.some((p) => p.label === marker.at) && (
                 <ReferenceLine
                   x={marker.at}
                   stroke="var(--muted-foreground)"

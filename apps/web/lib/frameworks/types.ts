@@ -166,7 +166,10 @@ export type OutcomeStats = {
 
 /** One week of the running cycle, so each headline number can be charted over time. */
 export type WeekPoint = {
+  /** Short axis label: "5 Jan" for a week, "Jan" for a month. */
   label: string;
+  /** ISO date the week starts, or the last week in the month. */
+  start: string;
   /** Cumulative share of expected submissions made, 0 to 100. */
   submissionRate: number;
   waiting: number;
@@ -205,4 +208,6 @@ export type FrameworkAnalytics = {
   kpiRows: KpiRow[];
   /** Week-by-week values for the headline numbers, with the index of the deadline week. */
   weekly: { points: WeekPoint[]; deadlineIndex: number };
+  /** The same numbers month by month: the last week of each month. */
+  monthly: { points: WeekPoint[]; deadlineIndex: number };
 };

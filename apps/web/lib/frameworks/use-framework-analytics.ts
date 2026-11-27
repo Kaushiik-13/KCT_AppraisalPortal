@@ -11,7 +11,7 @@ import {
   SAMPLE_MARK_BINS,
   SAMPLE_REVIEW,
   SAMPLE_STATUS_SHARE,
-  SAMPLE_WEEKLY_PROGRESS,
+  SAMPLE_WEEKS,
   type KpiSample,
 } from './sample-data';
 import type {
@@ -25,6 +25,7 @@ import type {
   OutcomeStats,
   ParticipationStats,
   ReviewStats,
+  WeekPoint,
   SubmissionStatus,
 } from './types';
 import { useFrameworkLibrary, type DemoStage } from './use-framework-library';
@@ -43,6 +44,8 @@ type Input = {
 };
 
 const pct = (v: number) => Math.round(v * 100);
+const dayMonth = (iso: string) => new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' });
+const monthName = (iso: string) => new Date(iso).toLocaleDateString('en-GB', { month: 'short', timeZone: 'UTC' });
 
 /** Stable sample results for any KPI: the template's own figures, or numbers derived from the KPI id. */
 function sampleResult(id: string): KpiSample {
@@ -59,7 +62,7 @@ function sampleResult(id: string): KpiSample {
  * Kept separate from React so it can be unit tested and later swapped for an API call.
  */
 export function buildFrameworkAnalytics({ kras, kpis, stage, departments, employees, scope, filters }: Input): FrameworkAnalytics {
-  const base = { scope, filters, health: null, participation: null, review: null, outcomes: null, kpiRows: [], weekly: { points: [], deadlineIndex: 0 } };
+  const base = { scope, filters, health: null, participation: null, review: null, outcomes: null, kpiRows: [], weekly: { points: [], deadlineIndex: 0 }, monthly: { points: [], deadlineIndex: 0 } };
   if (stage === 'empty' || kras.length === 0) return { ...base, state: 'empty' };
   // Cycles are not built yet. In the prototype a sample cycle "runs" as soon as one KPI is live.
   const cycleRunning = kpis.some((k) => k.status === 'published');
@@ -157,7 +160,7 @@ export function buildFrameworkAnalytics({ kras, kpis, stage, departments, employ
       ? departments.map((d, i) => ({ id: d.id, name: d.name, percent: pct(SAMPLE_DEPARTMENT_RATES[i % SAMPLE_DEPARTMENT_RATES.length]) }))
       : [],
     overTime: {
-      points: SAMPLE_WEEKLY_PROGRESS.map((v, i) => ({ label: `W${i + 1}`, value: Math.round(v * factor * expected) })),
+      points: SAMPLE_WEEKS.map((w) => ({ label: dayMonth(w.start), value: Math.round(w.share * factor * expected) })),
       deadlineIndex: SAMPLE_DEADLINE_WEEK,
     },
   };
@@ -208,13 +211,14 @@ export function buildFrameworkAnalytics({ kras, kpis, stage, departments, employ
   });
 
   // Sample week-by-week series, shaped so the last week matches the headline numbers.
-  const lastShare = SAMPLE_WEEKLY_PROGRESS[SAMPLE_WEEKLY_PROGRESS.length - 1];
+  const lastShare = SAMPLE_WEEKS[SAMPLE_WEEKS.length - 1].share;
   const weekly = {
     deadlineIndex: SAMPLE_DEADLINE_WEEK,
-    points: SAMPLE_WEEKLY_PROGRESS.map((v, i) => {
+    points: SAMPLE_WEEKS.map(({ start, share: v }, i) => {
       const f = v / lastShare;
       return {
-        label: `W${i + 1}`,
+        label: dayMonth(start),
+        start,
         submissionRate: Math.round(participation.submissionRate * f),
         waiting: Math.round(review.queue * Math.min(1, f * 1.25) * (0.7 + 0.3 * f)),
         overdue: i < SAMPLE_DEADLINE_WEEK ? 0 : participation.overdue,
@@ -223,7 +227,14 @@ export function buildFrameworkAnalytics({ kras, kpis, stage, departments, employ
     }),
   };
 
-  return { ...base, state: 'active', health, participation, review, outcomes, kpiRows, weekly };
+  // Month by month: every value is a running total or a level, so a month shows its last week.
+  const byMonth = new Map<string, WeekPoint>();
+  weekly.points.forEach((w) => byMonth.set(monthName(w.start), { ...w, label: monthName(w.start) }));
+  const monthPoints = [...byMonth.values()];
+  const deadlineMonth = monthName(weekly.points[SAMPLE_DEADLINE_WEEK].start);
+  const monthly = { points: monthPoints, deadlineIndex: monthPoints.findIndex((m) => m.label === deadlineMonth) };
+
+  return { ...base, state: 'active', health, participation, review, outcomes, kpiRows, weekly, monthly };
 }
 
 /** Framework analytics for one scope. Frontend only: returns sample data until the API exists. */
