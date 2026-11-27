@@ -102,23 +102,25 @@ export function FrameworkAnalytics({ analytics: a, sections }: FrameworkAnalytic
         {
           key: 'kra',
           label: 'By KRA',
-          valueLabel: 'Submissions · rate',
+          metaLabel: 'Submitted',
+          valueLabel: 'Rate',
           max: 100,
-          rows: p.byKra.map((k) => ({ id: k.id, label: k.name, value: k.percent, display: `${kraSubmitted(k.id)} · ${pct(k.percent)}` })),
+          rows: p.byKra.map((k) => ({ id: k.id, label: k.name, value: k.percent, meta: String(kraSubmitted(k.id)), display: pct(k.percent) })),
         },
         {
           key: 'kpi',
           label: 'By KPI',
-          valueLabel: 'Submissions · rate',
+          metaLabel: 'Submitted',
+          valueLabel: 'Rate',
           max: 100,
           rows: [...published]
             .sort((x, y) => y.submittedPercent - x.submittedPercent)
-            .map((k) => ({ id: k.id, prefix: k.code, label: k.name, value: k.submittedPercent, display: `${k.submissions} · ${pct(k.submittedPercent)}` })),
+            .map((k) => ({ id: k.id, prefix: k.code, label: k.name, value: k.submittedPercent, meta: String(k.submissions), display: pct(k.submittedPercent) })),
         },
         {
           key: 'department',
           label: 'By department',
-          valueLabel: 'Submission rate',
+          valueLabel: 'Rate',
           max: 100,
           rows: p.byDepartment.map((d) => ({ id: d.id, label: d.name, value: d.percent, display: pct(d.percent) })),
           empty: 'Add departments in People to compare them.',
@@ -130,14 +132,27 @@ export function FrameworkAnalytics({ analytics: a, sections }: FrameworkAnalytic
     ? {
         key: 'perKra',
         label: 'KPIs per KRA',
-        valueLabel: 'KPIs',
+        metaLabel: 'Draft',
+        valueLabel: 'Live',
         rows: h.kpisPerKra.map((k) => ({
           id: k.id,
           label: k.name,
-          value: k.live + k.drafts,
-          display: k.drafts ? `${k.live} live · ${k.drafts} draft` : `${k.live} live`,
+          value: k.live,
+          value2: k.drafts,
+          meta: String(k.drafts),
+          display: String(k.live),
         })),
         empty: 'No KRAs yet.',
+        note: (
+          <span className="flex items-center gap-3">
+            <span className="flex items-center gap-1.5">
+              <span className="bg-primary size-2 rounded-full" aria-hidden /> Live
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="bg-primary/30 size-2 rounded-full" aria-hidden /> Draft
+            </span>
+          </span>
+        ),
       }
     : null;
 
@@ -148,7 +163,7 @@ export function FrameworkAnalytics({ analytics: a, sections }: FrameworkAnalytic
           {
             key: 'least',
             label: 'Least submitted',
-            valueLabel: 'Submission rate',
+            valueLabel: 'Rate',
             max: 100,
             rows: [...published]
               .sort((x, y) => x.submittedPercent - y.submittedPercent)
