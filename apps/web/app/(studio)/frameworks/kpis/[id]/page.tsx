@@ -6,7 +6,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, ArrowRight, Check, CircleAlert, CircleCheck, History, Pencil, RotateCcw } from 'lucide-react';
 import { BasicsSection } from '@/components/frameworks/editor/editor-sections';
 import { VersionsDialog } from '@/components/frameworks/versions-dialog';
-import { FormStep, ScoringStep, StartingPoints } from '@/components/frameworks/workflow/editor-steps';
+import { ScoringStep, StartingPoints } from '@/components/frameworks/workflow/editor-steps';
+import { FormStep } from '@/components/frameworks/workflow/form-step';
 import { StepLibrary, type LibraryPick } from '@/components/frameworks/workflow/step-library';
 import { StepSettings } from '@/components/frameworks/workflow/step-settings';
 import { TestPanel } from '@/components/frameworks/workflow/test-panel';
@@ -30,7 +31,7 @@ import { colorOf } from '@/lib/department-colors';
 import type { KpiContent, WfNode, Workflow } from '@/lib/frameworks/types';
 import { editableContent, frameworkActions, useFrameworkLibrary } from '@/lib/frameworks/use-framework-library';
 import { allRules, createNode, insertStep, isScore, removeStep, startFrom, updateNode, workflowIssues, workflowOf, type RunResult } from '@/lib/frameworks/workflow';
-import { markProgress } from '@/lib/tour/progress';
+import { markProgress, tourActions } from '@/lib/tour/progress';
 import { useSetup } from '@/lib/setup-store';
 import { cn } from '@/lib/utils';
 
@@ -116,6 +117,11 @@ export default function KpiEditorPage() {
       routes: new Set(run.trace.filter((t) => t.route).map((t) => `${t.nodeId}:${t.route}`)),
     };
   }, [run, step]);
+
+  // Each step's tour starts the first time the step is opened.
+  useEffect(() => {
+    if (content) tourActions.startOnce(`editor-${step}`);
+  }, [step, !!content]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const select = useCallback((nodeId: string) => {
     setSlot(null);
@@ -286,7 +292,7 @@ export default function KpiEditorPage() {
           <span className="text-muted-foreground hidden text-xs 2xl:inline" aria-live="polite">
             {readOnly ? 'Read only' : saved === 'saving' ? 'Saving…' : saved === 'saved' ? 'Saved' : isPublished && !editingNext ? 'Edits create a new version' : 'Draft saved'}
           </span>
-          <HelpButton page="editor" />
+          <HelpButton tourId={`editor-${step}`} />
           {kpi.versions.length > 0 && (
             <Button variant="ghost" size="sm" onClick={() => setVersionsOpen(true)} aria-label="Versions">
               <History aria-hidden data-icon="inline-start" /> <span className="hidden lg:inline">Versions</span>

@@ -2,10 +2,8 @@
 
 import type { ReactNode } from 'react';
 import { ArrowRight, FileText, GitBranch, Plus, Split, Waypoints } from 'lucide-react';
-import { EvidenceSection, InputsSection, RulesEditor } from '@/components/frameworks/editor/editor-sections';
+import { RulesEditor } from '@/components/frameworks/editor/editor-sections';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import type { KpiContent, WfNode, Workflow } from '@/lib/frameworks/types';
 import { isScore, orderedSteps, pathLabels, sourcesFor, STARTING_POINTS, type StartingPoint } from '@/lib/frameworks/workflow';
 import { cn } from '@/lib/utils';
@@ -19,63 +17,6 @@ function StepIntro({ n, title, text, children }: { n: number; title: string; tex
         <p className="text-muted-foreground max-w-xl text-sm">{text}</p>
       </div>
       {children}
-    </div>
-  );
-}
-
-/* ---------------- Step 1: Form ---------------- */
-
-/** What the employee fills in, with a live preview of their view beside it. */
-export function FormStep({ content, onChange, readOnly, onNext }: { content: KpiContent; onChange: (p: Partial<KpiContent>) => void; readOnly?: boolean; onNext: () => void }) {
-  return (
-    <div className="mx-auto grid w-full max-w-6xl gap-6 px-4 py-6 md:px-6">
-      <StepIntro n={1} title="Form" text="The fields an employee fills in for this KPI. Use a file field for proof, like a certificate or a paper." />
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
-        <div className="grid content-start gap-6">
-          <section className="bg-card grid gap-4 rounded-xl border p-4" data-tour="form-fields">
-            <h3 className="text-sm font-semibold">Fields</h3>
-            <InputsSection bare content={content} onChange={onChange} readOnly={readOnly} />
-          </section>
-          <section className="bg-card grid gap-4 rounded-xl border p-4" data-tour="form-evidence">
-            <h3 className="text-sm font-semibold">Evidence</h3>
-            <EvidenceSection bare content={content} onChange={onChange} readOnly={readOnly} />
-          </section>
-        </div>
-        <aside className="grid content-start gap-3 lg:sticky lg:top-4 lg:self-start" data-tour="form-preview">
-          <h3 className="text-muted-foreground text-xs font-medium">What the employee sees</h3>
-          <div className="bg-card grid gap-4 rounded-xl border p-5 shadow-xs">
-            <div className="grid gap-1">
-              <h4 className="font-semibold">{content.name || 'Untitled KPI'}</h4>
-              {content.description && <p className="text-muted-foreground text-sm">{content.description}</p>}
-            </div>
-            {content.inputs.length === 0 && <p className="text-muted-foreground text-sm">Fields you add show up here.</p>}
-            {content.inputs.map((i) => (
-              <div key={i.id} className="grid gap-1.5">
-                <Label className="text-sm">
-                  {i.label || 'Untitled field'}
-                  {i.required && <span className="text-destructive"> *</span>}
-                </Label>
-                {i.type === 'file' ? (
-                  <div className="text-muted-foreground flex items-center gap-2 rounded-lg border border-dashed px-3 py-3 text-xs">
-                    <FileText className="size-4" aria-hidden /> Upload a file{content.evidence.fileTypes.length ? ` · ${content.evidence.fileTypes.join(', ')}` : ''}
-                  </div>
-                ) : (
-                  <Input disabled placeholder={i.type === 'yesno' ? 'Yes or no' : i.type === 'choice' ? (i.options?.join(' / ') ?? 'Choose') : i.type === 'date' ? 'Date' : ''} />
-                )}
-                {i.help && <p className="text-muted-foreground text-xs">{i.help}</p>}
-              </div>
-            ))}
-            <Button disabled size="sm" className="justify-self-start">
-              Submit
-            </Button>
-          </div>
-        </aside>
-      </div>
-      <div className="flex justify-end border-t pt-4">
-        <Button onClick={onNext}>
-          Next: Workflow <ArrowRight aria-hidden data-icon="inline-end" />
-        </Button>
-      </div>
     </div>
   );
 }

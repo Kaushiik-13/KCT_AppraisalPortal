@@ -3,7 +3,7 @@
 import { useSyncExternalStore } from 'react';
 import { SAMPLE_KPIS, SAMPLE_KRAS } from './sample-data';
 import type { Kpi, KpiContent, Kra } from './types';
-import { allRules, unstartedWorkflow, workflowOf } from './workflow';
+import { allRules, needsEvidence, unstartedWorkflow, workflowOf } from './workflow';
 
 /**
  * Prototype store for Framework Studio. Frontend only: there is no backend yet.
@@ -59,7 +59,7 @@ const now = () => new Date().toISOString();
 
 /** Fields kept in step with the content, so analytics and lists never disagree with the editor. */
 function derived(c: KpiContent) {
-  return { evidenceRequired: c.evidenceRequired, hasScoringRules: allRules(workflowOf(c)).length > 0 };
+  return { evidenceRequired: needsEvidence(c), hasScoringRules: allRules(workflowOf(c)).length > 0 };
 }
 
 export function contentOf(k: Kpi): KpiContent {

@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { ArrowLeft, ArrowRight, MousePointerClick, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { tourActions, useTourState } from '@/lib/tour/progress';
-import { onPage, tourById, type TourStep } from '@/lib/tour/tours';
+import { onPage, pageTourFor, tourById, type TourStep } from '@/lib/tour/tours';
 
 const CARD_W = 320;
 const GAP = 12;
@@ -35,7 +35,7 @@ type Box = { top: number; left: number; width: number; height: number };
 export function TourHost() {
   const pathname = usePathname();
   const router = useRouter();
-  const { active, seen } = useTourState();
+  const { active } = useTourState();
   const tour = active ? tourById(active.tour) : undefined;
   const step = tour && active ? tour.steps[active.index] : undefined;
   const here = !!step && onPage(step, pathname);
@@ -50,14 +50,20 @@ export function TourHost() {
 
   useEffect(() => setMounted(true), []);
 
-  // The first visit to Frameworks starts the main tour, once. Reads the saved state directly: while the
-  // page hydrates, the hook still holds the empty server snapshot.
+  // The first visit to a page starts its tour, once: the main tour on Frameworks, the page tour elsewhere.
+  // The KPI editor starts a tour per step itself. Reads the saved state directly: while the page hydrates,
+  // the hook still holds the empty server snapshot. Runs on page changes only, so ending a tour does not
+  // start another one on the same page.
   useEffect(() => {
-    if (pathname === '/frameworks' && !tourActions.isRunning() && !tourActions.hasSeen('first-kpi')) {
+    if (tourActions.isRunning() || pathname.startsWith('/frameworks/kpis/')) return;
+    if (pathname === '/frameworks' && !tourActions.hasSeen('first-kpi')) {
       tourActions.start('first-kpi');
       tourActions.go(1);
+      return;
     }
-  }, [pathname, active, seen]);
+    const t = pageTourFor(pathname);
+    if (t) tourActions.startOnce(t.id);
+  }, [pathname]);
 
   // Someone who goes ahead of the tour (opens the library while it still talks about the overview)
   // is met by the first later step for the page they are on, instead of a paused tour.
@@ -69,7 +75,7 @@ export function TourHost() {
 
   const next = () => {
     if (!tour || !active) return;
-    if (active.index >= tour.steps.length - 1) return tourActions.end();
+    if (active.index >= tour.steps.length - 1) return tourActions.end(true);
     tourActions.go(active.index + 1);
   };
   const back = () => active && active.index > 0 && tourActions.go(active.index - 1);

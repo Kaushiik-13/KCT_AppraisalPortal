@@ -1,23 +1,19 @@
 'use client';
 
 import { type ReactNode } from 'react';
-import { ArrowDown, ArrowUp, CircleAlert, Plus, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { Toggle } from '@/components/settings-rows';
-import { INPUT_TYPE_LABEL } from '@/lib/frameworks/format';
 import { OP_LABEL, scorableInputs } from '@/lib/frameworks/scoring';
-import type { InputType, KpiContent, KpiInput, Kra, ScoringRule } from '@/lib/frameworks/types';
+import type { KpiContent, Kra, ScoringRule } from '@/lib/frameworks/types';
 import type { SourceGroup } from '@/lib/frameworks/workflow';
 import { cn } from '@/lib/utils';
 
 type SectionProps = { content: KpiContent; onChange: (patch: Partial<KpiContent>) => void; readOnly?: boolean; /** Hide the section title inside a panel that has its own. */ bare?: boolean };
 
 const uid = (p: string) => `${p}-${Math.random().toString(36).slice(2, 8)}`;
-const FILE_TYPES = ['PDF', 'Word', 'Excel', 'PowerPoint', 'Images', 'Video'];
 
 function Field({ label, hint, htmlFor, children }: { label: string; hint?: string; htmlFor?: string; children: ReactNode }) {
   return (
@@ -106,141 +102,6 @@ export function BasicsSection({
           </Select>
         </Field>
       </div>
-    </div>
-  );
-}
-
-/* ---------------- Inputs ---------------- */
-
-export function InputsSection({ content, onChange, readOnly, bare }: SectionProps) {
-  const set = (inputs: KpiInput[]) => onChange({ inputs });
-  const patch = (id: string, p: Partial<KpiInput>) => set(content.inputs.map((i) => (i.id === id ? { ...i, ...p } : i)));
-  const move = (i: number, d: -1 | 1) => {
-    const next = [...content.inputs];
-    [next[i], next[i + d]] = [next[i + d], next[i]];
-    set(next);
-  };
-  const remove = (id: string) => onChange({ inputs: content.inputs.filter((i) => i.id !== id) });
-
-  return (
-    <div className="grid gap-5">
-      {!bare && <SectionTitle title="Inputs" text="The fields an employee fills in. Use a file upload for proof." />}
-      {content.inputs.length === 0 && (
-        <p className="text-muted-foreground rounded-lg border border-dashed px-4 py-6 text-center text-sm">No form fields yet. A KPI needs at least one.</p>
-      )}
-      <ol className="grid gap-3">
-        {content.inputs.map((input, i) => (
-          <li key={input.id} className="bg-card grid gap-3 rounded-xl border p-4">
-            <div className="flex items-center gap-2">
-              <span className="text-muted-foreground w-6 text-xs tabular-nums">{i + 1}.</span>
-              <Input
-                aria-label={`Input ${i + 1} label`}
-                value={input.label}
-                disabled={readOnly}
-                onChange={(e) => patch(input.id, { label: e.target.value })}
-                placeholder="Label, for example Lectures delivered"
-                className="flex-1"
-              />
-              <Select value={input.type} disabled={readOnly} onValueChange={(type) => patch(input.id, { type: type as InputType, options: type === 'choice' ? (input.options ?? []) : undefined })}>
-                <SelectTrigger className="w-36" aria-label={`Input ${i + 1} type`}>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {(Object.keys(INPUT_TYPE_LABEL) as InputType[]).map((t) => (
-                    <SelectItem key={t} value={t}>
-                      {INPUT_TYPE_LABEL[t]}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid gap-3 pl-8 sm:grid-cols-2">
-              <Input aria-label={`Input ${i + 1} help`} value={input.help ?? ''} disabled={readOnly} onChange={(e) => patch(input.id, { help: e.target.value })} placeholder="Help text (optional)" />
-              {input.type === 'number' && (
-                <div className="flex items-center gap-2">
-                  <Input aria-label="Minimum" type="number" value={input.min ?? ''} disabled={readOnly} onChange={(e) => patch(input.id, { min: e.target.value === '' ? undefined : Number(e.target.value) })} placeholder="Min" />
-                  <span className="text-muted-foreground text-xs">to</span>
-                  <Input aria-label="Maximum" type="number" value={input.max ?? ''} disabled={readOnly} onChange={(e) => patch(input.id, { max: e.target.value === '' ? undefined : Number(e.target.value) })} placeholder="Max" />
-                </div>
-              )}
-              {input.type === 'choice' && (
-                <Input
-                  aria-label="Choices"
-                  value={(input.options ?? []).join(', ')}
-                  disabled={readOnly}
-                  onChange={(e) => patch(input.id, { options: e.target.value.split(',').map((s) => s.trim()).filter(Boolean) })}
-                  placeholder="Choices, separated by commas"
-                />
-              )}
-            </div>
-            <div className="flex items-center gap-3 pl-8">
-              <label className="flex items-center gap-2 text-sm">
-                <Switch checked={input.required} disabled={readOnly} onCheckedChange={(required) => patch(input.id, { required })} aria-label="Required" />
-                Required
-              </label>
-              {!readOnly && (
-                <div className="ml-auto flex items-center gap-1">
-                  <Button variant="ghost" size="icon-xs" aria-label="Move up" disabled={i === 0} onClick={() => move(i, -1)}>
-                    <ArrowUp aria-hidden />
-                  </Button>
-                  <Button variant="ghost" size="icon-xs" aria-label="Move down" disabled={i === content.inputs.length - 1} onClick={() => move(i, 1)}>
-                    <ArrowDown aria-hidden />
-                  </Button>
-                  <Button variant="ghost" size="icon-xs" aria-label="Remove input" onClick={() => remove(input.id)}>
-                    <Trash2 aria-hidden />
-                  </Button>
-                </div>
-              )}
-            </div>
-          </li>
-        ))}
-      </ol>
-      {!readOnly && (
-        <Button variant="outline" className="justify-self-start" onClick={() => set([...content.inputs, { id: uid('in'), label: '', type: 'number', required: true }])}>
-          <Plus aria-hidden data-icon="inline-start" /> Add field
-        </Button>
-      )}
-    </div>
-  );
-}
-
-/* ---------------- Evidence ---------------- */
-
-export function EvidenceSection({ content, onChange, readOnly, bare }: SectionProps) {
-  const ev = content.evidence;
-  const flip = (t: string) => onChange({ evidence: { ...ev, fileTypes: ev.fileTypes.includes(t) ? ev.fileTypes.filter((x) => x !== t) : [...ev.fileTypes, t] } });
-  const hasFileInput = content.inputs.some((i) => i.type === 'file');
-  return (
-    <div className="grid gap-5">
-      {!bare && <SectionTitle title="Evidence" text="Whether proof must be attached, and what kind." />}
-      <label className="bg-card flex items-center justify-between gap-4 rounded-xl border p-4 text-sm">
-        <span className="grid gap-0.5">
-          <span className="font-medium">Evidence required</span>
-          <span className="text-muted-foreground">The reviewer checks it before releasing a mark.</span>
-        </span>
-        <Switch checked={content.evidenceRequired} disabled={readOnly} onCheckedChange={(evidenceRequired) => onChange({ evidenceRequired })} aria-label="Evidence required" />
-      </label>
-      {content.evidenceRequired && (
-        <>
-          {!hasFileInput && (
-            <p className="text-warning flex items-center gap-2 text-sm">
-              <CircleAlert className="size-4" aria-hidden /> Add a file upload input so people can attach it.
-            </p>
-          )}
-          <Field label="Allowed file types">
-            <div className="flex flex-wrap gap-1.5">
-              {FILE_TYPES.map((t) => (
-                <Toggle key={t} on={ev.fileTypes.includes(t)} onClick={() => !readOnly && flip(t)}>
-                  {t}
-                </Toggle>
-              ))}
-            </div>
-          </Field>
-          <Field label="Guidance" htmlFor="ev-guide" hint="Tell people what a good piece of evidence looks like.">
-            <TextArea id="ev-guide" value={ev.guidance} disabled={readOnly} onChange={(e) => onChange({ evidence: { ...ev, guidance: e.target.value } })} placeholder="A signed certificate or the official event report" />
-          </Field>
-        </>
-      )}
     </div>
   );
 }

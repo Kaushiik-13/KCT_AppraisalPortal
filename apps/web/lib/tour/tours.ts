@@ -121,16 +121,25 @@ const FIRST_KPI: Tour = {
       href: '/frameworks/library',
       target: '[data-tour="form-fields"]',
       title: '1. Form',
-      body: 'The fields an employee fills in. Use a file field for proof, like a certificate or a paper.',
-      action: 'Add a field and give it a label.',
+      body: 'The fields an employee fills in. Ask for proof with a file upload field, like a certificate or a paper.',
+      action: 'Add a field.',
       optional: true,
     },
     {
       page: ED,
       href: '/frameworks/library',
-      target: '[data-tour="form-preview"]',
-      title: 'Live preview',
-      body: 'This is what the employee sees. It updates as you add fields.',
+      target: '[data-tour="form-settings"]',
+      title: 'Field settings',
+      body: 'Name the field and pick its type. A required file field makes the KPI need evidence, which the reviewer checks.',
+      action: 'Give the field a label.',
+      optional: true,
+    },
+    {
+      page: ED,
+      href: '/frameworks/library',
+      target: '[data-tour="form-view"]',
+      title: 'Preview',
+      body: 'Switch to Preview to see the form the way the employee will.',
       optional: true,
     },
     {
@@ -265,16 +274,44 @@ const PAGE_TOURS: Tour[] = [
     ],
   },
   {
-    id: 'page-editor',
-    name: 'KPI editor',
+    id: 'editor-form',
+    name: 'Form',
     steps: [
-      { page: ED, href: '/frameworks/library', target: '[data-tour="editor-steps"]', title: 'Four steps', body: 'Form, Workflow, Scoring, Test. Jump between them at any time; a tick means a step is done.' },
+      { page: ED, href: '/frameworks/library', target: '[data-tour="editor-steps"]', title: 'Four steps', body: 'Build a KPI in order: Form, Workflow, Scoring, Test. Jump between them at any time; a tick means a step is done.' },
+      { page: ED, href: '/frameworks/library', target: '[data-tour="form-fields"]', title: 'Fields', body: 'Each row is one thing the employee fills in. Click a row to set it up; the arrows reorder it.' },
+      { page: ED, href: '/frameworks/library', target: '[data-tour="form-add"]', title: 'Add a field', body: 'A number, a choice, yes or no, text, a date, or a file upload for proof.', optional: true },
+      { page: ED, href: '/frameworks/library', target: '[data-tour="form-settings"]', title: 'Field settings', body: 'Label, type and help text. A file field also sets the allowed file types. Making it required makes the KPI need evidence, which the reviewer checks before releasing a mark.' },
+      { page: ED, href: '/frameworks/library', target: '[data-tour="form-view"]', title: 'Preview', body: 'See the form the way the employee will.' },
       { page: ED, href: '/frameworks/library', target: '[data-tour="kpi-details"]', title: 'Details', body: 'Click the name to change it, its code, KRA, description or who it applies to.' },
-      { page: ED, href: '/frameworks/library', target: '[data-tour="form-fields"]', title: 'Form', body: 'Fields the employee fills in, with a live preview beside them.', optional: true },
-      { page: ED, href: '/frameworks/library', target: '[data-tour="canvas"]', title: 'Workflow', body: 'Click a step to set it up. + on a connection adds a step.', optional: true },
-      { page: ED, href: '/frameworks/library', target: '[data-tour="scoring-card"]', title: 'Scoring', body: 'Rules use form answers or values extracted earlier. The first match wins.', optional: true },
-      { page: ED, href: '/frameworks/library', target: '[data-tour="test-panel"]', title: 'Test', body: 'Run a submission as a chosen person and watch its path.', optional: true },
-      { page: ED, href: '/frameworks/library', target: '[data-tour="publish"]', title: 'Publish', body: 'Checks what is left, then makes it live. Later edits become the next version.' },
+      { page: ED, href: '/frameworks/library', target: '[data-tour="form-next"]', title: 'Next: Workflow', body: 'Then decide what happens after someone submits.' },
+    ],
+  },
+  {
+    id: 'editor-workflow',
+    name: 'Workflow',
+    steps: [
+      { page: ED, href: '/frameworks/library', target: '[data-tour="starting-points"]', title: 'Starting point', body: 'Most KPIs score straight from the form. Check evidence first reads values from an uploaded file. Different by role scores leads and team members differently.', optional: true },
+      { page: ED, href: '/frameworks/library', target: '[data-tour="canvas"]', title: 'The workflow', body: 'What happens after someone submits, top to bottom. Each step shows Ready or what it still needs.' },
+      { page: ED, href: '/frameworks/library', target: '[data-tour="canvas"]', title: 'Add and set up steps', body: 'Click a step to set it up in the panel on the right. The + on a connection adds a step: a check, a split by role, or a tool like Extract evidence.' },
+      { page: ED, href: '/frameworks/library', target: '[data-tour="next-scoring"]', title: 'Next: Scoring', body: 'Then set how values turn into points.', optional: true },
+    ],
+  },
+  {
+    id: 'editor-scoring',
+    name: 'Scoring',
+    steps: [
+      { page: ED, href: '/frameworks/library', target: '[data-tour="scoring-card"]', title: 'Scoring rules', body: 'Every Score step in the workflow, with the path it is on. Rules can use form answers and values read from a file earlier on that path.', optional: true },
+      { page: ED, href: '/frameworks/library', target: '[data-tour="scoring-card"]', title: 'How rules work', body: 'The first rule that matches gives its points. No match scores 0.', optional: true },
+      { page: ED, href: '/frameworks/library', target: '[data-tour="step-test"]', title: 'Next: Test', body: 'Try it before it goes live.' },
+    ],
+  },
+  {
+    id: 'editor-test',
+    name: 'Test',
+    steps: [
+      { page: ED, href: '/frameworks/library', target: '[data-tour="test-panel"]', title: 'Run a test', body: 'Choose who is submitting, fill in the form and run it. Nothing is saved.' },
+      { page: ED, href: '/frameworks/library', target: '[data-tour="canvas"]', title: 'The path', body: 'After a run, the steps it went through turn dark, with the points each one gave.' },
+      { page: ED, href: '/frameworks/library', target: '[data-tour="publish"]', title: 'Publish', body: 'Checks what is left, each with a Fix link, then makes it live. Later edits become the next version.' },
     ],
   },
   {
@@ -300,11 +337,16 @@ export const tourById = (id: string) => TOURS.find((t) => t.id === id);
 
 /** The page tour for a path, for the ? button. */
 export function pageTourFor(pathname: string): Tour | undefined {
-  if (pathname.startsWith('/frameworks/kpis/')) return tourById('page-editor');
+  if (pathname.startsWith('/frameworks/kpis/')) return tourById('editor-form');
   if (pathname.startsWith('/frameworks/library')) return tourById('page-library');
   if (pathname.startsWith('/frameworks')) return tourById('page-frameworks');
   const name = pathname.split('/')[1];
   return tourById(`page-${name}`);
 }
+
+/** The guided tour already covers these, so they do not start on their own after it. */
+export const COVERED_BY: Record<string, string[]> = {
+  'first-kpi': ['page-frameworks', 'page-library', 'editor-form', 'editor-workflow', 'editor-scoring', 'editor-test'],
+};
 
 export const onPage = (step: TourStep, pathname: string) => step.page.some((p) => (p === FW_OVERVIEW ? pathname === p : pathname.startsWith(p)));

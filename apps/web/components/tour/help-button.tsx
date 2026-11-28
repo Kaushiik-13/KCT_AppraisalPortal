@@ -5,7 +5,7 @@ import { CircleQuestionMark, ListChecks, Map as MapIcon, Route } from 'lucide-re
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { tourActions } from '@/lib/tour/progress';
-import { pageTourFor } from '@/lib/tour/tours';
+import { pageTourFor, tourById } from '@/lib/tour/tours';
 
 /** Starts the main guided tour from the right place. */
 export function startFirstKpiTour(pathname: string, push: (href: string) => void) {
@@ -15,10 +15,10 @@ export function startFirstKpiTour(pathname: string, push: (href: string) => void
 }
 
 /** The ? button: tour this page, the full guided tour, or the getting-started checklist. */
-export function HelpButton({ page }: { page?: 'editor' }) {
+export function HelpButton({ tourId }: { /** The tour for "Tour this page", when the page has several (the KPI editor's steps). */ tourId?: string }) {
   const pathname = usePathname();
   const router = useRouter();
-  const tour = pageTourFor(page === 'editor' ? '/frameworks/kpis/x' : pathname);
+  const tour = tourId ? tourById(tourId) : pageTourFor(pathname);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -30,7 +30,7 @@ export function HelpButton({ page }: { page?: 'editor' }) {
         <DropdownMenuLabel className="text-muted-foreground text-xs font-normal">Help</DropdownMenuLabel>
         {tour && (
           <DropdownMenuItem onSelect={() => tourActions.start(tour.id)}>
-            <MapIcon aria-hidden /> Tour this page
+            <MapIcon aria-hidden /> {tourId ? `Tour this step: ${tour.name}` : 'Tour this page'}
           </DropdownMenuItem>
         )}
         <DropdownMenuItem onSelect={() => startFirstKpiTour(pathname, router.push)}>

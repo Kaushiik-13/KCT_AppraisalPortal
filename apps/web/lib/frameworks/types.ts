@@ -30,6 +30,10 @@ export type KpiInput = {
   max?: number;
   /** Choices for choice inputs. */
   options?: string[];
+  /** File fields: allowed file types, for example PDF. Empty or missing accepts any file. */
+  fileTypes?: string[];
+  /** File fields: more than one file can be attached. */
+  multiple?: boolean;
 };
 
 /**
@@ -101,7 +105,9 @@ export type KpiContent = {
   kraId: string;
   appliesTo: string;
   inputs: KpiInput[];
+  /** Derived: true when a required file field asks for proof. See `needsEvidence`. */
   evidenceRequired: boolean;
+  /** Kept for older saved drafts. File types and guidance now live on each file field. */
   evidence: KpiEvidence;
   /** Kept for older saved drafts. New scoring lives in the workflow's Score steps. */
   rules: ScoringRule[];

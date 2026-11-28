@@ -15,7 +15,7 @@ export const SAMPLE_KRAS: Kra[] = [
 
 const num = (id: string, label: string): KpiInput => ({ id, label, type: 'number', required: true });
 const pick = (id: string, label: string): KpiInput => ({ id, label, type: 'choice', required: true });
-const file = (id: string, label: string): KpiInput => ({ id, label, type: 'file', required: true });
+const file = (id: string, label: string): KpiInput => ({ id, label, type: 'file', required: true, fileTypes: ['PDF', 'Images'], help: 'Attach a signed or official record.' });
 const yes = (id: string, label: string): KpiInput => ({ id, label, type: 'yesno', required: true });
 
 type K = Omit<Kpi, 'hasDraftChanges' | 'appliesTo' | 'description' | 'evidence' | 'rules' | 'updatedAt' | 'versions' | 'draft' | 'workflow'> &

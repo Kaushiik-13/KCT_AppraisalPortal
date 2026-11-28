@@ -63,7 +63,7 @@ The editor is a **guided, four-step** builder. A step bar in the top bar shows *
 
 **Top bar:** back to the library; the code and name, which open **KPI details** (name, code, description, KRA, who it applies to); the status; the step bar; **?** for help and tours; **Versions**; **Discard**; and **Publish**.
 
-1. **Form:** the fields the employee fills in (number, choice, yes/no, text, date, file upload) and the evidence settings, with a live **What the employee sees** preview beside them.
+1. **Form:** a list of the fields the employee fills in (number, choice, yes/no, text, date, file upload) and, beside it, the selected field's settings, following the PoC's form builder. **Build / Preview** switches to the form as the employee sees it. There is no separate evidence section: proof is a **file upload** field with its own allowed file types, "What counts as proof" text and an option for several files. A **required** file field makes the KPI need evidence, which the reviewer checks before releasing a mark.
 2. **Workflow:** a top-down canvas, laid out automatically, based on the PoC's workflow builder (`legacy/poc/web/src/TreeBuilder.jsx`, `workflowModel.js`, `reusableTools.js`). A new KPI first picks a **starting point**:
    - **Score from the form** (most KPIs): Submit → Score → Review.
    - **Check evidence first:** Submit → Extract evidence → Score → Review.
@@ -91,8 +91,8 @@ Score is the only step that gives marks, so a Condition and a scoring rule can n
 ### Help, tours and getting started
 
 - **?** in the top bar of every page, and **Get help** in the user menu, offer **Tour this page** and **Guided tour: create a KPI**.
-- **Guided tour: create a KPI** runs from the sidebar to a published KPI (21 stops): Frameworks, the library, the New KPI dialog, each editor step, Test and Publish. It points at the real control with a spotlight and a short card. Stops marked **Do this** wait for the person to do it (for example "Click New KPI") and move on by themselves; every stop also has Next, Back and Skip tour. It carries on across pages, catches up when someone goes ahead of it, and shows a **Go there** pill when it is paused on another page. It starts on its own the first time Frameworks is opened.
-- **Page tours** cover Home, People, Invitations, the Frameworks overview, the library, the KPI editor, Your profile and Organization settings.
+- **Guided tour: create a KPI** runs from the sidebar to a published KPI (22 stops): Frameworks, the library, the New KPI dialog, each editor step, Test and Publish. It points at the real control with a spotlight and a short card. Stops marked **Do this** wait for the person to do it (for example "Click New KPI") and move on by themselves; every stop also has Next, Back and Skip tour. It carries on across pages, catches up when someone goes ahead of it, and shows a **Go there** pill when it is paused on another page. It starts on its own the first time Frameworks is opened.
+- **Page tours** cover Home, People, Invitations, the Frameworks overview, the library, Your profile and Organization settings, and each KPI editor step (Form, Workflow, Scoring, Test) has its own. Each starts on its own the first time its page or step is opened, unless another tour is running; in the editor, **?** offers **Tour this step**. Finishing the guided tour counts the Frameworks, library and editor tours as seen; skipping it does not.
 - **Getting started** on the Frameworks overview lists the steps to a first live KPI (create a KRA, create a KPI, add form fields, build the workflow, set scoring rules, test, publish), each linking to where it is done, with a **Guided tour** button. It hides itself when everything is done, or with ×.
 - Stops whose control is not on screen (another layout or state) are skipped. On phones the card docks at the top or bottom, away from the control.
 
@@ -101,7 +101,7 @@ Score is the only step that gives marks, so a Condition and a scoring rule can n
 - Changes save automatically as you type.
 - A draft KPI is edited in place. **Publish** makes it v1.
 - Editing a **live** KPI saves the changes as the next version beside it. The live version stays in use, and cycles that already use it keep it, until you publish. **Discard changes** removes the pending version.
-- Publishing runs checks: a name, and every step's needs (form fields, labels, a file field when evidence is required, a field for each Condition, named roles, every path connected). Missing scoring rules are a warning only. Each item has a **Fix** link that opens the step. A short "what changed" note is recorded.
+- Publishing runs checks: a name, and every step's needs (form fields, labels, a field for each Condition, named roles, every path connected). Missing scoring rules are a warning only. Each item has a **Fix** link that opens the step. A short "what changed" note is recorded.
 - **Versions** lists every published version with its note and date, plus any pending draft.
 
 ## How it is built

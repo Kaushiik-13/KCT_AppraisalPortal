@@ -1,6 +1,7 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
+import { COVERED_BY } from './tours';
 
 // Tour and getting-started state for the prototype. Kept in localStorage because it is a per-person
 // convenience (which tours you have seen, where you paused). Every read and write is guarded: the page
@@ -56,10 +57,17 @@ export const tourActions = {
     const a = read().active;
     if (a) write({ active: { ...a, index } });
   },
-  /** Ends the running tour and remembers it, so it does not start on its own again. */
-  end() {
+  /** Ends the running tour and remembers it, so it does not start on its own again. A finished tour also
+   *  counts the page tours it covered as seen; a skipped one does not. */
+  end(finished = false) {
     const a = read().active;
-    write({ active: null, seen: a && !read().seen.includes(a.tour) ? [...read().seen, a.tour] : read().seen });
+    const add = a ? [a.tour, ...(finished ? (COVERED_BY[a.tour] ?? []) : [])] : [];
+    write({ active: null, seen: [...new Set([...read().seen, ...add])] });
+  },
+  /** Starts a tour the first time its page is visited, unless another is running. */
+  startOnce(tour: string) {
+    if (read().active || read().seen.includes(tour)) return;
+    write({ active: { tour, index: 0 } });
   },
   hasSeen: (tour: string) => read().seen.includes(tour),
   isRunning: () => read().active !== null,

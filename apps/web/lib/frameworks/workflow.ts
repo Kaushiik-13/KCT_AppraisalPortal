@@ -271,7 +271,6 @@ export function workflowIssues(c: KpiContent, wf: Workflow): StepIssue[] {
     if (n.kind === 'trigger') {
       if (c.inputs.length === 0) add('Add at least one form field');
       else if (c.inputs.some((i) => !i.label.trim())) add('Every form field needs a label');
-      if (c.evidenceRequired && !c.inputs.some((i) => i.type === 'file')) add('Add a file field for evidence');
       if (wf.started === false) add('Choose a starting point');
     }
     if (isScore(n)) {
@@ -396,11 +395,14 @@ export function runWorkflow(c: KpiContent, wf: Workflow, values: Record<string, 
   return { trace, points, outcome: 'Stopped', stopped: true };
 }
 
+/** Evidence is a required file field: the reviewer checks it before releasing a mark. */
+export const needsEvidence = (c: Pick<KpiContent, 'inputs'>) => c.inputs.some((i) => i.type === 'file' && i.required);
+
 /** One line under a step on the canvas, saying what it does. */
 export function summaryOf(n: WfNode, c: KpiContent, wf: Workflow): string {
   if (n.kind === 'trigger') {
     const files = c.inputs.filter((i) => i.type === 'file').length;
-    return c.inputs.length ? `${c.inputs.length} ${c.inputs.length === 1 ? 'field' : 'fields'}${files ? ` · ${files} file` : ''}${c.evidenceRequired ? ' · evidence required' : ''}` : 'No form fields yet';
+    return c.inputs.length ? `${c.inputs.length} ${c.inputs.length === 1 ? 'field' : 'fields'}${files ? ` · ${files} file` : ''}${needsEvidence(c) ? ' · evidence required' : ''}` : 'No form fields yet';
   }
   if (n.kind === 'action') {
     if (n.tool === 'extract_evidence') {
