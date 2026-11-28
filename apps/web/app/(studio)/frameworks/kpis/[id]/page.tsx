@@ -185,7 +185,7 @@ export default function KpiEditorPage() {
 
   return (
     <div className="flex h-dvh flex-col">
-      <header className="bg-card z-20 flex flex-wrap items-center gap-x-3 gap-y-2 border-b px-3 py-2.5 md:px-4">
+      <header className="bg-card relative z-20 flex flex-wrap items-center gap-x-3 gap-y-2 border-b px-3 py-2.5 md:px-4">
         <Button variant="ghost" size="sm" asChild>
           <Link href="/frameworks/library" onClick={flush} aria-label="Back to KRAs and KPIs">
             <ArrowLeft aria-hidden data-icon="inline-start" /> <span className="hidden sm:inline">KRAs and KPIs</span>
@@ -194,7 +194,7 @@ export default function KpiEditorPage() {
         <button
           type="button"
           onClick={() => setDetailsOpen(true)}
-          className="hover:bg-muted/60 group flex min-w-0 items-center gap-2 rounded-md px-1.5 py-1"
+          className="hover:bg-muted/60 group flex min-w-0 items-center gap-2 rounded-md px-1.5 py-1 xl:max-w-[calc(50vw-22rem)]"
           aria-label="Edit KPI details"
         >
           {kra && <span className="size-2 shrink-0 rounded-full" style={{ background: colorOf(kra.color).fg }} aria-hidden />}
@@ -206,7 +206,8 @@ export default function KpiEditorPage() {
           {kpi.status === 'archived' ? 'Archived' : isPublished ? `Live v${kpi.version}${editingNext ? ` · editing v${kpi.version + 1}` : ''}` : 'Draft'}
         </span>
 
-        <div className="bg-muted mx-auto inline-flex rounded-md p-0.5 text-xs max-md:order-last max-md:mx-0" role="group" aria-label="Editor mode">
+        {/* Centred on the page on wide screens; the title is capped there so they never overlap. */}
+        <div className="bg-muted inline-flex rounded-md p-0.5 text-xs max-md:order-last xl:absolute xl:left-1/2 xl:-translate-x-1/2" role="group" aria-label="Editor mode">
           {(['build', 'test'] as Mode[]).map((m) => (
             <button
               key={m}
@@ -224,7 +225,7 @@ export default function KpiEditorPage() {
           ))}
         </div>
 
-        <div className="ml-auto flex items-center gap-2 md:ml-0">
+        <div className="ml-auto flex items-center gap-2">
           <span className="text-muted-foreground hidden text-xs lg:inline" aria-live="polite">
             {readOnly ? 'Read only' : saved === 'saving' ? 'Saving…' : saved === 'saved' ? 'Saved' : isPublished && !editingNext ? 'Edits create a new version' : 'Draft saved'}
           </span>
