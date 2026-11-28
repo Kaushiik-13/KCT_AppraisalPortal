@@ -166,7 +166,7 @@ const FIRST_KPI: Tour = {
       href: '/frameworks/library',
       target: '[data-tour="canvas"]',
       title: 'The workflow',
-      body: 'Each step shows Ready or what it still needs. Click a step to set it up. The + on a connection adds a step: a check, a split by role, or a tool like Extract evidence.',
+      body: 'Each step shows Ready or what it still needs. Click a step to set it up. Where a path is open, a Next step card suggests what usually comes next; the + on a connection adds a step in between.',
     },
     {
       page: ED,
@@ -291,8 +291,9 @@ const PAGE_TOURS: Tour[] = [
     name: 'Workflow',
     steps: [
       { page: ED, href: '/frameworks/library', target: '[data-tour="starting-points"]', title: 'Starting point', body: 'Most KPIs score straight from the form. Check evidence first reads values from an uploaded file. Different by role scores leads and team members differently.', optional: true },
-      { page: ED, href: '/frameworks/library', target: '[data-tour="canvas"]', title: 'The workflow', body: 'What happens after someone submits, top to bottom. Each step shows Ready or what it still needs.' },
-      { page: ED, href: '/frameworks/library', target: '[data-tour="canvas"]', title: 'Add and set up steps', body: 'Click a step to set it up in the panel on the right. The + on a connection adds a step: a check, a split by role, or a tool like Extract evidence.' },
+      { page: ED, href: '/frameworks/library', target: '[data-tour="canvas"]', title: 'The workflow', body: 'What happens after someone submits, top to bottom. Each step shows Ready or what it still needs; click one to set it up.' },
+      { page: ED, href: '/frameworks/library', target: '[data-tour="next-step-card"]', title: 'Next step', body: 'Where a path is open, this suggests what usually comes next. One click adds it; More steps lists everything. The dashed Finish step ends the path with the reviewer.', optional: true },
+      { page: ED, href: '/frameworks/library', target: '[data-tour="wf-summary"]', title: 'Summary', body: 'The workflow in words, what is left to do with a Fix link for each, and the values steps can check and score.', optional: true },
       { page: ED, href: '/frameworks/library', target: '[data-tour="next-scoring"]', title: 'Next: Scoring', body: 'Then set how values turn into points.', optional: true },
     ],
   },

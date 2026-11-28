@@ -1,137 +1,153 @@
 'use client';
 
 import { useState } from 'react';
-import { Calculator, Flag, GitBranch, Package, Search, Split, UserCheck, Wrench, X } from 'lucide-react';
-import type { BlockKind, ToolKind } from '@/lib/frameworks/types';
-import { BLOCKS, PLUGINS, TOOLS } from '@/lib/frameworks/workflow';
+import { Calculator, ChevronRight, FileSearch, Flag, GitBranch, Search, Split, UserCheck, X, type LucideIcon } from 'lucide-react';
+import type { BlockKind, KpiContent, ToolKind, Workflow } from '@/lib/frameworks/types';
+import { GOALS, LATER, slotLabel, suggestionsFor, type GoalDef, type GoalId } from '@/lib/frameworks/workflow';
 import { cn } from '@/lib/utils';
-
-const BLOCK_ICON: Partial<Record<BlockKind, typeof Calculator>> = {
-  action: Wrench,
-  condition: GitBranch,
-  split: Split,
-  review: UserCheck,
-  result: Flag,
-};
 
 export type LibraryPick = { kind: BlockKind; tool?: ToolKind };
 
-type Props = {
-  /** True when the chosen + already leads somewhere, so blocks that end a path cannot go there. */
-  midPath: boolean;
-  onPick: (pick: LibraryPick) => void;
-  onClose: () => void;
-};
+export const GOAL_ICON: Record<GoalId, LucideIcon> = { points: Calculator, check: GitBranch, split: Split, read: FileSearch, review: UserCheck, result: Flag };
 
-function Item({ icon: Icon, name, description, disabled, tag, onClick }: { icon: typeof Calculator; name: string; description: string; disabled?: boolean; tag?: string; onClick: () => void }) {
+/** Why a goal cannot go at this +, if it cannot. */
+export function goalBlocked(g: GoalDef, midPath: boolean, hasFile: boolean): string | undefined {
+  if (g.finish && midPath) return 'Only at the end of a path.';
+  if (g.id === 'read' && !hasFile) return 'Add a file upload field in the Form step first.';
+  return undefined;
+}
+
+function GoalItem({ goal, blocked, big, onPick }: { goal: GoalDef; blocked?: string; big?: boolean; onPick: () => void }) {
+  const Icon = GOAL_ICON[goal.id];
   return (
     <li>
       <button
         type="button"
-        disabled={disabled}
-        onClick={onClick}
-        className="hover:bg-muted/70 focus-visible:ring-ring/50 flex w-full items-start gap-3 rounded-lg px-2.5 py-2 text-left outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent"
+        disabled={!!blocked}
+        onClick={onPick}
+        className={cn(
+          'focus-visible:ring-ring/50 flex w-full items-start gap-3 rounded-lg text-left outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50',
+          big ? 'bg-card hover:border-foreground/40 border p-3 shadow-xs' : 'hover:bg-muted/70 px-2.5 py-2 disabled:hover:bg-transparent',
+        )}
       >
-        <span className="bg-muted mt-0.5 grid size-7 shrink-0 place-items-center rounded-md">
-          <Icon className="size-3.5" aria-hidden />
+        <span className={cn('mt-0.5 grid shrink-0 place-items-center rounded-md', big ? 'bg-foreground text-background size-8' : 'bg-muted size-7')}>
+          <Icon className={big ? 'size-4' : 'size-3.5'} aria-hidden />
         </span>
         <span className="grid min-w-0 gap-0.5">
-          <span className="flex items-center gap-2 text-sm font-medium">
-            {name}
-            {tag && <span className="bg-secondary text-muted-foreground rounded px-1.5 text-[11px] font-normal">{tag}</span>}
-          </span>
-          <span className="text-muted-foreground text-xs">{description}</span>
+          <span className="text-sm font-medium">{goal.name}</span>
+          <span className="text-muted-foreground text-xs">{blocked ?? goal.description}</span>
         </span>
       </button>
     </li>
   );
 }
 
+type Props = {
+  content: KpiContent;
+  workflow: Workflow;
+  slot: { parentId: string; route: string };
+  onPick: (pick: LibraryPick) => void;
+  onClose: () => void;
+};
+
 /**
- * The step library, in the PoC's three layers: blocks (steps on the canvas), tools (what an Action runs)
- * and plugins (a ready-made workflow added in one go).
+ * Add a step, chosen by what should happen next rather than by block type. The PoC's blocks, tools and
+ * plugins are still underneath: each goal adds one of them. Steps not built yet are tucked away.
  */
-export function StepLibrary({ midPath, onPick, onClose }: Props) {
+export function StepLibrary({ content, workflow, slot, onPick, onClose }: Props) {
   const [q, setQ] = useState('');
-  const hit = (s: string) => s.toLowerCase().includes(q.trim().toLowerCase());
-  const blocks = BLOCKS.filter((b) => b.kind !== 'action' && hit(`${b.name} ${b.description}`));
-  const tools = TOOLS.filter((t) => hit(`${t.name} ${t.description} action tool`));
-  const plugins = PLUGINS.filter((p) => hit(`${p.name} ${p.description} plugin`));
+  const [later, setLater] = useState(false);
+  const parent = workflow.nodes.find((n) => n.id === slot.parentId);
+  const midPath = !!parent?.routes[slot.route];
+  const hasFile = content.inputs.some((i) => i.type === 'file');
+  const suggested = suggestionsFor(content, workflow, slot.parentId, midPath).slice(0, 2);
+  const hit = (g: { name: string; description: string }) => `${g.name} ${g.description}`.toLowerCase().includes(q.trim().toLowerCase());
+  const searching = q.trim().length > 0;
+  const steps = GOALS.filter((g) => !g.finish && hit(g));
+  const finish = GOALS.filter((g) => g.finish && hit(g));
+  const laterHits = LATER.filter(hit);
+  const pick = (g: GoalDef) => onPick({ kind: g.kind, tool: g.tool });
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="flex items-center gap-2 border-b px-4 py-3">
-        <h2 className="text-sm font-semibold">Add a step</h2>
-        <button type="button" onClick={onClose} aria-label="Close step library" className="text-muted-foreground hover:text-foreground ml-auto">
-          <X className="size-4" aria-hidden />
-        </button>
+    <div className="flex h-full flex-col" data-tour="step-library">
+      <div className="grid gap-0.5 border-b px-4 py-3">
+        <div className="flex items-center gap-2">
+          <h2 className="text-sm font-semibold">What should happen next?</h2>
+          <button type="button" onClick={onClose} aria-label="Close" className="text-muted-foreground hover:text-foreground ml-auto">
+            <X className="size-4" aria-hidden />
+          </button>
+        </div>
+        <p className="text-muted-foreground truncate text-xs">Adding a step {slotLabel(workflow, slot.parentId, slot.route)}</p>
       </div>
       <div className="px-4 pt-3">
         <label className="relative block">
           <Search className="text-muted-foreground pointer-events-none absolute top-2 left-2.5 size-3.5" aria-hidden />
           <input
             type="search"
-            autoFocus
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search blocks and tools"
-            aria-label="Search blocks and tools"
+            placeholder="Search steps"
+            aria-label="Search steps"
             className="bg-background placeholder:text-muted-foreground focus-visible:ring-ring/50 h-8 w-full rounded-md border pr-2 pl-8 text-sm outline-none focus-visible:ring-2"
           />
         </label>
       </div>
-      <div className="grid flex-1 content-start gap-4 overflow-y-auto px-2 py-3">
-        {tools.length > 0 && (
-          <section className="grid gap-1">
-            <h3 className="text-muted-foreground px-2.5 text-xs font-medium">Tools · run as an Action</h3>
-            <ul className="grid">
-              {tools.map((t) => (
-                <Item
-                  key={t.kind}
-                  icon={t.kind === 'score' ? Calculator : Wrench}
-                  name={t.name}
-                  description={t.description}
-                  disabled={t.later}
-                  tag={t.later ? 'Later' : undefined}
-                  onClick={() => onPick({ kind: 'action', tool: t.kind })}
-                />
-              ))}
-            </ul>
-          </section>
-        )}
-        {blocks.length > 0 && (
-          <section className="grid gap-1">
-            <h3 className="text-muted-foreground px-2.5 text-xs font-medium">Blocks</h3>
-            <ul className="grid">
-              {blocks.map((b) => {
-                const ends = b.terminal && midPath;
-                return (
-                  <Item
-                    key={b.kind}
-                    icon={BLOCK_ICON[b.kind] ?? Wrench}
-                    name={b.name}
-                    description={ends ? `${b.description} Only at the end of a path.` : b.description}
-                    disabled={ends}
-                    onClick={() => onPick({ kind: b.kind })}
-                  />
-                );
+      <div className="grid flex-1 content-start gap-5 overflow-y-auto px-2 py-3">
+        {!searching && suggested.length > 0 && (
+          <section className="grid gap-2 px-2">
+            <h3 className="text-muted-foreground text-xs font-medium">Suggested here</h3>
+            <ul className="grid gap-2">
+              {suggested.map((id) => {
+                const g = GOALS.find((x) => x.id === id)!;
+                return <GoalItem key={id} big goal={g} blocked={goalBlocked(g, midPath, hasFile)} onPick={() => pick(g)} />;
               })}
             </ul>
           </section>
         )}
-        {plugins.length > 0 && (
+        {steps.length > 0 && (
           <section className="grid gap-1">
-            <h3 className="text-muted-foreground px-2.5 text-xs font-medium">Plugins · a ready-made workflow</h3>
+            <h3 className="text-muted-foreground px-2.5 text-xs font-medium">Steps</h3>
             <ul className="grid">
-              {plugins.map((p) => (
-                <Item key={p.id} icon={Package} name={p.name} description={p.description} disabled={p.later} tag={p.later ? 'Later' : undefined} onClick={() => {}} />
+              {steps.map((g) => (
+                <GoalItem key={g.id} goal={g} blocked={goalBlocked(g, midPath, hasFile)} onPick={() => pick(g)} />
               ))}
             </ul>
           </section>
         )}
-        {!tools.length && !blocks.length && !plugins.length && <p className="text-muted-foreground px-2.5 text-sm">Nothing matches.</p>}
+        {finish.length > 0 && (
+          <section className="grid gap-1">
+            <h3 className="text-muted-foreground px-2.5 text-xs font-medium">Finish the path</h3>
+            <ul className="grid">
+              {finish.map((g) => (
+                <GoalItem key={g.id} goal={g} blocked={goalBlocked(g, midPath, hasFile)} onPick={() => pick(g)} />
+              ))}
+            </ul>
+          </section>
+        )}
+        {!steps.length && !finish.length && !laterHits.length && <p className="text-muted-foreground px-2.5 text-sm">Nothing matches.</p>}
       </div>
-      <p className={cn('text-muted-foreground border-t px-4 py-2.5 text-xs')}>Steps marked Later come from the PoC and are not built in this prototype.</p>
+      {laterHits.length > 0 && (
+        <div className="border-t px-2 py-1.5">
+          <button
+            type="button"
+            aria-expanded={later || searching}
+            onClick={() => setLater((v) => !v)}
+            className="text-muted-foreground hover:text-foreground flex w-full items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs"
+          >
+            <ChevronRight className={cn('size-3.5 transition-transform', (later || searching) && 'rotate-90')} aria-hidden />
+            Coming later ({laterHits.length})
+          </button>
+          {(later || searching) && (
+            <ul className="grid gap-1 px-2.5 pb-2">
+              {laterHits.map((l) => (
+                <li key={l.name} className="text-muted-foreground text-xs">
+                  <span className="text-foreground/70 font-medium">{l.name}</span> · {l.description}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
     </div>
   );
 }

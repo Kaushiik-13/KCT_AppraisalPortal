@@ -11,6 +11,7 @@ import { FormStep } from '@/components/frameworks/workflow/form-step';
 import { StepLibrary, type LibraryPick } from '@/components/frameworks/workflow/step-library';
 import { StepSettings } from '@/components/frameworks/workflow/step-settings';
 import { TestPanel } from '@/components/frameworks/workflow/test-panel';
+import { WorkflowSummary } from '@/components/frameworks/workflow/workflow-summary';
 import { WorkflowCanvas, type Slot } from '@/components/frameworks/workflow/workflow-canvas';
 import { HelpButton } from '@/components/tour/help-button';
 import {
@@ -30,12 +31,15 @@ import { Label } from '@/components/ui/label';
 import { colorOf } from '@/lib/department-colors';
 import type { KpiContent, WfNode, Workflow } from '@/lib/frameworks/types';
 import { editableContent, frameworkActions, useFrameworkLibrary } from '@/lib/frameworks/use-framework-library';
-import { allRules, createNode, insertStep, isScore, removeStep, startFrom, updateNode, workflowIssues, workflowOf, type RunResult } from '@/lib/frameworks/workflow';
+import { allRules, createNode, GOALS, insertStep, isScore, removeStep, startFrom, updateNode, workflowIssues, workflowOf, type GoalId, type RunResult } from '@/lib/frameworks/workflow';
 import { markProgress, tourActions } from '@/lib/tour/progress';
 import { useSetup } from '@/lib/setup-store';
 import { cn } from '@/lib/utils';
 
 type Step = 'form' | 'workflow' | 'scoring' | 'test';
+
+/** Issues the Form step owns. */
+const FORM_ISSUES = new Set(['Add at least one form field', 'Every form field needs a label']);
 type Run = (RunResult & { snapshot: string }) | null;
 
 const STEPS: { key: Step; label: string }[] = [
@@ -152,15 +156,15 @@ export default function KpiEditorPage() {
   const isPublished = kpi.status === 'published';
   const editingNext = isPublished && kpi.hasDraftChanges;
   const selected = workflow.nodes.find((n) => n.id === selectedId);
-  const slotParent = slot ? workflow.nodes.find((n) => n.id === slot.parentId) : undefined;
   const scoreIds = new Set(workflow.nodes.filter(isScore).map((n) => n.id));
   const triggerId = workflow.nodes.find((n) => n.kind === 'trigger')?.id;
 
   // A step is done when nothing it owns still needs attention.
   const done: Record<Step, boolean> = {
-    form: !issues.some((i) => i.nodeId === triggerId && i.text !== 'Choose a starting point'),
-    workflow: workflow.started !== false && !issues.some((i) => i.blocking && i.nodeId !== triggerId && !scoreIds.has(i.nodeId)),
-    scoring: scoreIds.size > 0 && !issues.some((i) => scoreIds.has(i.nodeId)),
+    form: !issues.some((i) => FORM_ISSUES.has(i.text)),
+    // Workflow owns every blocking issue except the form's and the scoring rules' (an open path after a Score step counts).
+    workflow: workflow.started !== false && !issues.some((i) => i.blocking && !FORM_ISSUES.has(i.text) && !(scoreIds.has(i.nodeId) && i.text.includes('rule'))),
+    scoring: scoreIds.size > 0 && !issues.some((i) => scoreIds.has(i.nodeId) && i.text.includes('rule')),
     test: tested,
   };
 
@@ -178,13 +182,18 @@ export default function KpiEditorPage() {
     if (s !== 'workflow') setSelectedId('');
   };
 
-  const pick = (p: LibraryPick) => {
-    if (!slot) return;
+  // Adds a step at a + and opens its settings.
+  const addAt = (at: Slot, p: LibraryPick) => {
     const node = createNode(p.kind, p.tool);
     if (node.tool === 'extract_evidence') node.extract = { fileInputId: content.inputs.find((i) => i.type === 'file')?.id ?? '', fields: [] };
-    setWorkflow(insertStep(workflow, slot.parentId, slot.route, node));
+    setWorkflow(insertStep(workflow, at.parentId, at.route, node));
     setSlot(null);
     setSelectedId(node.id);
+  };
+  const pick = (p: LibraryPick) => slot && addAt(slot, p);
+  const quickAdd = (at: Slot, goal: GoalId) => {
+    const g = GOALS.find((x) => x.id === goal);
+    if (g) addAt(at, { kind: g.kind, tool: g.tool });
   };
 
   const patchNode = (nodeId: string, patch: Partial<WfNode>) => setWorkflow(updateNode(workflow, nodeId, patch));
@@ -208,7 +217,7 @@ export default function KpiEditorPage() {
         }}
       />
     ) : step === 'workflow' && slot ? (
-      <StepLibrary midPath={!!slotParent?.routes[slot.route]} onPick={pick} onClose={() => setSlot(null)} />
+      <StepLibrary content={content} workflow={workflow} slot={slot} onPick={pick} onClose={() => setSlot(null)} />
     ) : step === 'workflow' && selected ? (
       <StepSettings
         key={selected.id}
@@ -225,7 +234,10 @@ export default function KpiEditorPage() {
         onClose={() => setSelectedId('')}
         onEditForm={() => goTo('form')}
       />
+    ) : step === 'workflow' && workflow.started !== false ? (
+      <WorkflowSummary content={content} workflow={workflow} issues={issues} onSelect={select} />
     ) : null;
+  const summaryOnly = step === 'workflow' && !slot && !selected;
 
   const canvasStep = step === 'workflow' || step === 'test';
 
@@ -369,6 +381,7 @@ export default function KpiEditorPage() {
                 select(nodeId);
               }}
               onAdd={step === 'workflow' && !readOnly && workflow.started !== false ? openSlot : undefined}
+              onQuickAdd={step === 'workflow' && !readOnly && workflow.started !== false ? quickAdd : undefined}
               activeSlot={slot}
               path={path}
             />
@@ -404,8 +417,10 @@ export default function KpiEditorPage() {
                 'bg-card flex min-h-0 flex-col border-l',
                 'md:relative md:w-[380px] md:shrink-0',
                 'max-md:fixed max-md:inset-x-0 max-md:bottom-0 max-md:z-30 max-md:max-h-[72dvh] max-md:rounded-t-2xl max-md:border-t max-md:border-l-0 max-md:shadow-lg',
+                // On phones the summary would cover the canvas; it shows from tablet width up.
+                summaryOnly && 'max-md:hidden',
               )}
-              aria-label={step === 'test' ? 'Test a submission' : slot ? 'Add a step' : 'Step settings'}
+              aria-label={step === 'test' ? 'Test a submission' : slot ? 'Add a step' : summaryOnly ? 'Workflow summary' : 'Step settings'}
             >
               {panel}
             </aside>
@@ -507,7 +522,7 @@ export default function KpiEditorPage() {
                       className="text-primary ml-auto shrink-0 text-xs hover:underline"
                       onClick={() => {
                         setPublishOpen(false);
-                        if (i.nodeId === triggerId && i.text !== 'Choose a starting point') goTo('form');
+                        if (FORM_ISSUES.has(i.text)) goTo('form');
                         else {
                           goTo('workflow');
                           if (i.nodeId !== triggerId) setSelectedId(i.nodeId);

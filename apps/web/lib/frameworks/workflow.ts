@@ -216,6 +216,50 @@ export function allExtracted(c: KpiContent, wf: Workflow): SourceGroup[] {
 
 const flat = (groups: SourceGroup[]) => groups.flatMap((g) => g.items);
 
+/* ---------- Adding a step, by goal ---------- */
+
+/** What a person wants to happen next. Each goal adds one block or tool; the PoC's names stay in the code. */
+export type GoalId = 'points' | 'check' | 'split' | 'read' | 'review' | 'result';
+export type GoalDef = { id: GoalId; name: string; description: string; kind: BlockKind; tool?: ToolKind; finish?: boolean };
+
+export const GOALS: GoalDef[] = [
+  { id: 'points', name: 'Give points', description: 'Turn answers into marks with rules.', kind: 'action', tool: 'score' },
+  { id: 'check', name: 'Check something', description: 'Test one value, then go one way if it is met and another if not.', kind: 'condition' },
+  { id: 'split', name: 'Split by role', description: 'Send leads and team members down different paths.', kind: 'split' },
+  { id: 'read', name: 'Read a file', description: 'Pull values out of an upload, like an indexing or a date, to check or score.', kind: 'action', tool: 'extract_evidence' },
+  { id: 'review', name: 'Hand to the reviewer', description: 'The reviewer checks it and releases the mark. Ends the path.', kind: 'review', finish: true },
+  { id: 'result', name: 'End with an outcome', description: 'Stop this path with a named result, like Not eligible.', kind: 'result', finish: true },
+];
+
+/** Tools and plugins from the PoC that are not built yet. */
+export const LATER = [...TOOLS.filter((t) => t.later).map((t) => ({ name: t.name, description: t.description })), ...PLUGINS.filter((p) => p.later).map((p) => ({ name: `${p.name} plugin`, description: p.description }))];
+
+/**
+ * The goals that usually come next at a + : after the form, points (or reading the file first); after
+ * reading a file, a check; after points, the reviewer. Steps that end a path are left out mid-path.
+ */
+export function suggestionsFor(c: KpiContent, wf: Workflow, parentId: string, midPath: boolean): GoalId[] {
+  const parent = wf.nodes.find((n) => n.id === parentId);
+  const hasFile = c.inputs.some((i) => i.type === 'file');
+  const before = new Set([parentId, ...ancestors(wf, parentId)]);
+  const read = wf.nodes.some((n) => before.has(n.id) && n.tool === 'extract_evidence');
+  const scored = wf.nodes.some((n) => before.has(n.id) && isScore(n));
+  let ids: GoalId[];
+  if (parent?.tool === 'extract_evidence') ids = ['check', 'points'];
+  else if (scored) ids = ['review', 'check', 'split', 'result'];
+  else if (parent?.kind === 'trigger') ids = hasFile && !read ? ['points', 'read', 'check', 'split'] : ['points', 'check', 'split'];
+  else ids = ['points', 'check', 'review'];
+  return ids.filter((id) => !(midPath && GOALS.find((g) => g.id === id)?.finish));
+}
+
+/** The words for a + : "after Employee submits", with the branch when there is one. */
+export function slotLabel(wf: Workflow, parentId: string, route: string): string {
+  const parent = wf.nodes.find((n) => n.id === parentId);
+  if (!parent) return '';
+  const branch = routeLabel(parent, route);
+  return `after ${parent.name || 'this step'}${branch ? `, on ${branch}` : ''}`;
+}
+
 /* ---------- Editing ---------- */
 
 /** Puts a new step on the route `route` of `parentId`. The step takes over whatever that route pointed to. */

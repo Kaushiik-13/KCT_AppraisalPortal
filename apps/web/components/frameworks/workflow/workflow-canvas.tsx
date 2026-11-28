@@ -19,13 +19,17 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { Calculator, CircleAlert, CircleCheck, Flag, GitBranch, Maximize2, Minus, Play, Plus, Split, UserCheck } from 'lucide-react';
+import { GOAL_ICON, goalBlocked } from '@/components/frameworks/workflow/step-library';
 import type { KpiContent, WfNode, Workflow } from '@/lib/frameworks/types';
-import { reachable, routeLabel, routesOf, summaryOf, TOOL_NAME, type StepIssue } from '@/lib/frameworks/workflow';
+import { GOALS, reachable, routeLabel, routesOf, suggestionsFor, summaryOf, TOOL_NAME, type GoalDef, type GoalId, type StepIssue } from '@/lib/frameworks/workflow';
 import { cn } from '@/lib/utils';
 
 const STEP_W = 264;
 const STEP_H = 96;
 const SLOT = 28;
+const CARD_W = 232;
+const FINISH_H = 40;
+const cardHeight = (n: number) => 76 + n * 34;
 
 /** A place a new step can go: the route `route` out of step `parentId`. */
 export type Slot = { parentId: string; route: string };
@@ -40,7 +44,10 @@ type StepData = {
   onSelect: (id: string) => void;
 };
 type SlotData = { slot: Slot; label: string; onAdd: (slot: Slot) => void; active: boolean };
-type AddEdgeData = { slot: Slot; label: string; onAdd?: (slot: Slot) => void; onPath?: boolean; active: boolean };
+/** An open path: what usually comes next, one click each, and More for everything else. */
+type SuggestData = { slot: Slot; label: string; goals: GoalDef[]; onAdd: (slot: Slot) => void; onQuickAdd: (slot: Slot, goal: GoalId) => void; active: boolean };
+type FinishData = { slot: Slot; onQuickAdd: (slot: Slot, goal: GoalId) => void };
+type AddEdgeData = { slot: Slot; label: string; onAdd?: (slot: Slot) => void; onPath?: boolean; active: boolean; dashed?: boolean };
 
 const KIND_META: Record<WfNode['kind'], { label: string; Icon: typeof Play }> = {
   trigger: { label: 'Trigger', Icon: Play },
@@ -130,7 +137,7 @@ function AddEdge({ id, sourceX, sourceY, targetX, targetY, sourcePosition, targe
   const strong = d.onPath === true;
   return (
     <>
-      <BaseEdge id={id} path={path} style={{ stroke: strong ? 'var(--foreground)' : 'var(--border)', strokeWidth: strong ? 2 : 1.5, opacity: d.onPath === false ? 0.4 : 1 }} />
+      <BaseEdge id={id} path={path} style={{ stroke: strong ? 'var(--foreground)' : 'var(--border)', strokeWidth: strong ? 2 : 1.5, opacity: d.onPath === false ? 0.4 : 1, strokeDasharray: d.dashed ? '4 4' : undefined }} />
       <EdgeLabelRenderer>
         <div
           className="nodrag nopan pointer-events-auto absolute flex flex-col items-center gap-1"
@@ -156,7 +163,66 @@ function AddEdge({ id, sourceX, sourceY, targetX, targetY, sourcePosition, targe
   );
 }
 
-const nodeTypes = { step: StepNode, slot: SlotNode };
+const SuggestNode = memo(function SuggestNode({ data }: NodeProps<Node<SuggestData, 'suggest'>>) {
+  const { slot, label, goals, onAdd, onQuickAdd, active } = data;
+  return (
+    <div className="nopan pointer-events-auto" style={{ width: CARD_W }} data-tour="next-step-card">
+      <Handle type="target" position={Position.Top} isConnectable={false} className={hidden} />
+      <div className={cn('bg-card/80 grid gap-1 rounded-xl border border-dashed p-2 backdrop-blur', active && 'border-foreground border-solid')}>
+        <p className="text-muted-foreground truncate px-1.5 pt-0.5 pb-1 text-[11px] font-medium tracking-wide uppercase">Next step{label ? ` · ${label}` : ''}</p>
+        {goals.map((g) => {
+          const Icon = GOAL_ICON[g.id];
+          return (
+            <button
+              key={g.id}
+              type="button"
+              onClick={() => onQuickAdd(slot, g.id)}
+              className="hover:bg-muted focus-visible:ring-ring/50 flex h-8 items-center gap-2 rounded-md px-1.5 text-left text-sm outline-none focus-visible:ring-2"
+            >
+              <span className="bg-muted grid size-6 place-items-center rounded">
+                <Icon className="size-3.5" aria-hidden />
+              </span>
+              {g.name}
+            </button>
+          );
+        })}
+        <button
+          type="button"
+          onClick={() => onAdd(slot)}
+          className="text-muted-foreground hover:text-foreground hover:bg-muted focus-visible:ring-ring/50 flex h-8 items-center gap-2 rounded-md px-1.5 text-left text-sm outline-none focus-visible:ring-2"
+        >
+          <span className="grid size-6 place-items-center rounded border border-dashed">
+            <Plus className="size-3.5" aria-hidden />
+          </span>
+          More steps…
+        </button>
+      </div>
+      <Handle type="source" position={Position.Bottom} isConnectable={false} className={hidden} />
+    </div>
+  );
+});
+
+/** A faint last step that shows where a path should end, and adds it in one click. */
+const FinishNode = memo(function FinishNode({ data }: NodeProps<Node<FinishData, 'finish'>>) {
+  return (
+    <div className="nopan pointer-events-auto" style={{ width: CARD_W }}>
+      <Handle type="target" position={Position.Top} isConnectable={false} className={hidden} />
+      <button
+        type="button"
+        onClick={() => data.onQuickAdd(data.slot, 'review')}
+        className="text-muted-foreground hover:text-foreground hover:border-foreground/40 focus-visible:ring-ring/50 flex w-full items-center gap-2 rounded-xl border border-dashed px-3 text-left text-xs outline-none focus-visible:ring-2"
+        style={{ height: FINISH_H }}
+      >
+        <UserCheck className="size-3.5 shrink-0" aria-hidden />
+        <span className="truncate">
+          <span className="font-medium">Finish:</span> hand to the reviewer
+        </span>
+      </button>
+    </div>
+  );
+});
+
+const nodeTypes = { step: StepNode, slot: SlotNode, suggest: SuggestNode, finish: FinishNode };
 const edgeTypes = { add: AddEdge };
 
 type CanvasProps = {
@@ -167,13 +233,15 @@ type CanvasProps = {
   onSelect: (id: string) => void;
   /** Leave out to hide every + (read only, or test mode). */
   onAdd?: (slot: Slot) => void;
+  /** Adds a suggested step straight away. With it, open paths show suggestion cards instead of a lone +. */
+  onQuickAdd?: (slot: Slot, goal: GoalId) => void;
   activeSlot?: Slot | null;
   /** Steps and routes a test run took. */
   path?: { nodes: Set<string>; routes: Set<string> } | null;
 };
 
 /** Lays the workflow out top-down with dagre, the way the PoC's tree did. */
-function useLayout({ content, workflow, issues, selectedId, onSelect, onAdd, activeSlot, path }: CanvasProps) {
+function useLayout({ content, workflow, issues, selectedId, onSelect, onAdd, onQuickAdd, activeSlot, path }: CanvasProps) {
   return useMemo(() => {
     const reach = reachable(workflow);
     const steps = workflow.nodes.filter((n) => reach.has(n.id));
@@ -209,6 +277,18 @@ function useLayout({ content, workflow, issues, selectedId, onSelect, onAdd, act
             type: 'add',
             data: { slot, label, onAdd, onPath: path ? path.routes.has(`${n.id}:${route}`) : undefined, active: sameSlot(slot) } satisfies AddEdgeData,
           });
+        } else if (onAdd && onQuickAdd) {
+          const hasFile = content.inputs.some((i) => i.type === 'file');
+          const goals = suggestionsFor(content, workflow, n.id, false)
+            .map((id) => GOALS.find((g) => g.id === id)!)
+            .filter((g) => !g.finish && !goalBlocked(g, false, hasFile))
+            .slice(0, 3);
+          const sid = `suggest:${n.id}:${route}`;
+          const fid = `finish:${n.id}:${route}`;
+          nodes.push({ id: sid, type: 'suggest', position: { x: 0, y: 0 }, width: CARD_W, height: cardHeight(goals.length), data: { slot, label, goals, onAdd, onQuickAdd, active: sameSlot(slot) } satisfies SuggestData });
+          nodes.push({ id: fid, type: 'finish', position: { x: 0, y: 0 }, width: CARD_W, height: FINISH_H, data: { slot, onQuickAdd } satisfies FinishData });
+          edges.push({ id: `${n.id}:${route}`, source: n.id, target: sid, type: 'add', data: { slot, label, active: false } satisfies AddEdgeData });
+          edges.push({ id: `${sid}:finish`, source: sid, target: fid, type: 'add', data: { slot, label: '', active: false, dashed: true } satisfies AddEdgeData });
         } else if (onAdd) {
           const sid = `slot:${n.id}:${route}`;
           nodes.push({ id: sid, type: 'slot', position: { x: 0, y: 0 }, width: SLOT, height: SLOT, data: { slot, label, onAdd, active: sameSlot(slot) } satisfies SlotData });
@@ -229,7 +309,7 @@ function useLayout({ content, workflow, issues, selectedId, onSelect, onAdd, act
       n.position = { x: p.x - n.width! / 2, y: p.y - n.height! / 2 };
     }
     return { nodes, edges };
-  }, [content, workflow, issues, selectedId, onSelect, onAdd, activeSlot, path]);
+  }, [content, workflow, issues, selectedId, onSelect, onAdd, onQuickAdd, activeSlot, path]);
 }
 
 function Canvas(props: CanvasProps) {
