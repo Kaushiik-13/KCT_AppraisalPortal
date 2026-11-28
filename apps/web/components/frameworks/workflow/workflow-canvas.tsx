@@ -111,8 +111,22 @@ const SlotNode = memo(function SlotNode({ data }: NodeProps<Node<SlotData, 'slot
 });
 
 function AddEdge({ id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, data }: EdgeProps<Edge<AddEdgeData, 'add'>>) {
-  const [path, labelX, labelY] = getSmoothStepPath({ sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, borderRadius: 10 });
   const d = data!;
+  // Branch edges turn sideways just under the source, so each branch gets its own vertical run into its target.
+  // The label (and +) sit on that run, where they can never overlap another branch's label.
+  const branch = !!d.label;
+  const [path, midX, midY] = getSmoothStepPath({
+    sourceX,
+    sourceY,
+    targetX,
+    targetY,
+    sourcePosition,
+    targetPosition,
+    borderRadius: 10,
+    ...(branch ? { centerY: sourceY + 20 } : {}),
+  });
+  const labelX = branch ? targetX : midX;
+  const labelY = branch ? targetY - (d.onAdd ? 30 : 18) : midY;
   const strong = d.onPath === true;
   return (
     <>
@@ -122,7 +136,7 @@ function AddEdge({ id, sourceX, sourceY, targetX, targetY, sourcePosition, targe
           className="nodrag nopan pointer-events-auto absolute flex flex-col items-center gap-1"
           style={{ transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)` }}
         >
-          {d.label && <span className="bg-background text-muted-foreground rounded border px-1.5 text-[11px] leading-5">{d.label}</span>}
+          {d.label && <span className="bg-card text-foreground max-w-36 truncate rounded-md border px-1.5 text-[11px] leading-5 font-medium shadow-xs">{d.label}</span>}
           {d.onAdd && (
             <button
               type="button"
@@ -204,9 +218,10 @@ function useLayout({ content, workflow, issues, selectedId, onSelect, onAdd, act
     }
 
     const g = new Graph();
-    g.setGraph({ rankdir: 'TB', nodesep: 40, ranksep: 64, marginx: 24, marginy: 24 });
+    g.setGraph({ rankdir: 'TB', nodesep: 48, ranksep: 88, marginx: 24, marginy: 24 });
     g.setDefaultEdgeLabel(() => ({}));
-    nodes.forEach((n) => g.setNode(n.id, { width: n.width!, height: n.height! }));
+    // Open slots are small, but get a wider footprint so the branch labels above them have room.
+    nodes.forEach((n) => g.setNode(n.id, { width: n.type === 'slot' ? 144 : n.width!, height: n.height! }));
     edges.forEach((e) => g.setEdge(e.source, e.target));
     layout(g);
     for (const n of nodes) {
