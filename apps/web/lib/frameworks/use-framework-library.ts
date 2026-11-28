@@ -3,6 +3,7 @@
 import { useSyncExternalStore } from 'react';
 import { SAMPLE_KPIS, SAMPLE_KRAS } from './sample-data';
 import type { Kpi, KpiContent, Kra } from './types';
+import { allRules, defaultWorkflow, workflowOf } from './workflow';
 
 /**
  * Prototype store for Framework Studio. Frontend only: there is no backend yet.
@@ -14,7 +15,7 @@ import type { Kpi, KpiContent, Kra } from './types';
 export type DemoStage = 'empty' | 'built' | 'active';
 type State = { stage: DemoStage; kras: Kra[]; kpis: Kpi[] };
 
-const KEY = 'afpi-frameworks-v2';
+const KEY = 'afpi-frameworks-v3';
 const DEFAULT_STAGE: DemoStage = 'empty';
 
 export function libraryFor(stage: DemoStage): { kras: Kra[]; kpis: Kpi[] } {
@@ -58,7 +59,7 @@ const now = () => new Date().toISOString();
 
 /** Fields kept in step with the content, so analytics and lists never disagree with the editor. */
 function derived(c: KpiContent) {
-  return { evidenceRequired: c.evidenceRequired, hasScoringRules: c.rules.length > 0 };
+  return { evidenceRequired: c.evidenceRequired, hasScoringRules: allRules(workflowOf(c)).length > 0 };
 }
 
 export function contentOf(k: Kpi): KpiContent {
@@ -71,6 +72,7 @@ export function contentOf(k: Kpi): KpiContent {
     evidenceRequired: k.evidenceRequired,
     evidence: k.evidence,
     rules: k.rules,
+    workflow: workflowOf(k),
   };
 }
 
@@ -125,6 +127,7 @@ export const frameworkActions = {
       description: '',
       evidence: { fileTypes: [], guidance: '' },
       rules: [],
+      workflow: defaultWorkflow(),
       updatedAt: now(),
       versions: [],
     };

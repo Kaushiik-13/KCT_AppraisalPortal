@@ -48,6 +48,42 @@ export type ScoringRule = {
 
 export type KpiEvidence = { fileTypes: string[]; guidance: string };
 
+/**
+ * Workflow blocks, following the PoC (legacy/poc/web/src/workflowModel.js):
+ * - trigger: the employee submits the KPI form. Always first, exactly one.
+ * - action: runs one tool (a small step), for example Score.
+ * - condition: checks one form answer and splits into Met / Not met.
+ * - split: sends people down a path by role, for example team members and leads.
+ * - review: hands the submission to the person's reviewer. Ends the automated part.
+ * - result: ends a path with a named outcome.
+ */
+export type BlockKind = 'trigger' | 'action' | 'condition' | 'split' | 'review' | 'result';
+/** Tools an Action block can run. Only Score works in the prototype; the rest come from the PoC and are marked Later. */
+export type ToolKind = 'score' | 'date_range' | 'extract_evidence' | 'compare_evidence' | 'find_duplicates';
+
+export type ConditionOp = ScoringRule['op'] | 'filled';
+/** Who a split branch is for. Matched against the employee's title, or whether they review others. */
+export type RoleMatch = { by: 'title'; contains: string } | { by: 'reviewer' };
+export type SplitBranch = { id: string; label: string; match: RoleMatch };
+
+export type WfNode = {
+  id: string;
+  kind: BlockKind;
+  name: string;
+  tool?: ToolKind;
+  /** Score tool: its rules. Condition: the check. Split: its branches. Result: the outcome. */
+  rules?: ScoringRule[];
+  condition?: { inputId: string; op: ConditionOp; value: number; value2?: number };
+  branches?: SplitBranch[];
+  /** Name of the split's catch-all path. Defaults to "Everyone else". */
+  otherLabel?: string;
+  outcome?: string;
+  /** Next step for each way out of this block. Null means not connected yet. */
+  routes: Record<string, string | null>;
+};
+
+export type Workflow = { nodes: WfNode[] };
+
 /** The editable part of a KPI. A published KPI keeps its live content while a draft of the next version is edited. */
 export type KpiContent = {
   name: string;
@@ -57,7 +93,10 @@ export type KpiContent = {
   inputs: KpiInput[];
   evidenceRequired: boolean;
   evidence: KpiEvidence;
+  /** Kept for older saved drafts. New scoring lives in the workflow's Score steps. */
   rules: ScoringRule[];
+  /** How a submission moves from the form to the reviewer. Missing on older saved drafts: built from `rules`. */
+  workflow?: Workflow;
 };
 
 export type KpiVersion = { version: number; publishedAt: string; note: string };
@@ -82,6 +121,7 @@ export type Kpi = {
   description: string;
   evidence: KpiEvidence;
   rules: ScoringRule[];
+  workflow?: Workflow;
   /** ISO date of the last change. */
   updatedAt: string;
   /** Published versions, oldest first. Empty for a KPI never published. */

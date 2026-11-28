@@ -1,4 +1,5 @@
-import type { Kpi, KpiInput, KpiVersion, Kra, ScoringRule } from './types';
+import type { Kpi, KpiInput, KpiVersion, Kra, ScoringRule, Workflow } from './types';
+import { defaultWorkflow } from './workflow';
 
 // Prototype sample data, adapted from the previous PoC's PADS template (docs/reference/legacy/).
 // It is NOT approved institutional policy. Marks, weights and caps stay unapproved until #20 is settled.
@@ -17,8 +18,8 @@ const pick = (id: string, label: string): KpiInput => ({ id, label, type: 'choic
 const file = (id: string, label: string): KpiInput => ({ id, label, type: 'file', required: true });
 const yes = (id: string, label: string): KpiInput => ({ id, label, type: 'yesno', required: true });
 
-type K = Omit<Kpi, 'hasDraftChanges' | 'appliesTo' | 'description' | 'evidence' | 'rules' | 'updatedAt' | 'versions' | 'draft'> &
-  Partial<Pick<Kpi, 'hasDraftChanges' | 'appliesTo' | 'description'>>;
+type K = Omit<Kpi, 'hasDraftChanges' | 'appliesTo' | 'description' | 'evidence' | 'rules' | 'updatedAt' | 'versions' | 'draft' | 'workflow'> &
+  Partial<Pick<Kpi, 'hasDraftChanges' | 'appliesTo' | 'description' | 'workflow'>>;
 
 const DAY = 24 * 60 * 60 * 1000;
 const BASE = Date.UTC(2026, 10, 20);
@@ -43,6 +44,7 @@ const kpi = (k: K): Kpi => {
     ...k,
     evidence: { fileTypes: k.evidenceRequired ? ['PDF', 'Images'] : [], guidance: k.evidenceRequired ? 'Attach a signed or official record.' : '' },
     rules,
+    workflow: k.workflow ?? defaultWorkflow(rules),
     updatedAt: iso(k.status === 'draft' ? 0 : (k.code.length * 7) % 40),
     versions,
   };
@@ -56,9 +58,48 @@ const kpi = (k: K): Kpi => {
       evidenceRequired: base.evidenceRequired,
       evidence: base.evidence,
       rules: base.rules,
+      workflow: base.workflow,
     };
   }
   return base;
+};
+
+/**
+ * Example of one KPI scored differently by role: a team member needs 1 peer review for full marks, a lead needs 2.
+ * Leads are people who review others; everyone else follows the team member path.
+ */
+const PEER_REVIEWS: Workflow = {
+  nodes: [
+    { id: 'trigger', kind: 'trigger', name: 'Employee submits', routes: { next: 'pr-split' } },
+    {
+      id: 'pr-split',
+      kind: 'split',
+      name: 'Who is submitting?',
+      branches: [{ id: 'lead', label: 'Lead', match: { by: 'reviewer' } }],
+      otherLabel: 'Team member',
+      routes: { lead: 'pr-score-lead', other: 'pr-score-member' },
+    },
+    {
+      id: 'pr-score-lead',
+      kind: 'action',
+      tool: 'score',
+      name: 'Score for leads',
+      rules: [
+        { id: 'prl-1', inputId: 'n', op: 'gte', value: 2, points: 10 },
+        { id: 'prl-2', inputId: 'n', op: 'eq', value: 1, points: 5 },
+      ],
+      routes: { next: 'pr-review' },
+    },
+    {
+      id: 'pr-score-member',
+      kind: 'action',
+      tool: 'score',
+      name: 'Score for team members',
+      rules: [{ id: 'prm-1', inputId: 'n', op: 'gte', value: 1, points: 10 }],
+      routes: { next: 'pr-review' },
+    },
+    { id: 'pr-review', kind: 'review', name: 'Reviewer checks it', routes: {} },
+  ],
 };
 
 export const SAMPLE_KPIS: Kpi[] = [
@@ -66,6 +107,19 @@ export const SAMPLE_KPIS: Kpi[] = [
   kpi({ id: 'tl-2', code: 'TL-2', name: 'Course results', kraId: 'kra-tl', status: 'published', version: 1, inputs: [num('pass', 'Pass percentage'), num('avg', 'Class average')], evidenceRequired: false, hasScoringRules: true }),
   kpi({ id: 'tl-3', code: 'TL-3', name: 'Student feedback', kraId: 'kra-tl', status: 'published', version: 1, inputs: [num('rating', 'Feedback rating')], evidenceRequired: false, hasScoringRules: true }),
   kpi({ id: 'tl-4', code: 'TL-4', name: 'Course materials prepared', kraId: 'kra-tl', status: 'published', version: 1, inputs: [yes('done', 'Materials prepared'), file('ev', 'Materials')], evidenceRequired: true, hasScoringRules: true }),
+  kpi({
+    id: 'tl-6',
+    code: 'TL-6',
+    name: 'Peer reviews completed',
+    kraId: 'kra-tl',
+    status: 'published',
+    version: 1,
+    inputs: [{ id: 'n', label: 'Peer reviews submitted', type: 'number', required: true, min: 0, max: 20 }],
+    evidenceRequired: false,
+    hasScoringRules: true,
+    description: 'Team members need 1 peer review for full marks; leads need 2.',
+    workflow: PEER_REVIEWS,
+  }),
   kpi({ id: 'tl-5', code: 'TL-5', name: 'Guest lecture delivery', kraId: 'kra-tl', status: 'draft', version: 1, inputs: [num('n', 'Lectures delivered'), pick('aud', 'Audience'), file('ev', 'Proof')], evidenceRequired: true, hasScoringRules: false }),
   kpi({ id: 'rd-1', code: 'RD-1', name: 'Journal publications', kraId: 'kra-rd', status: 'published', version: 3, inputs: [num('n', 'Papers published'), pick('idx', 'Indexing'), file('ev', 'Papers')], evidenceRequired: true, hasScoringRules: true }),
   kpi({ id: 'rd-6', code: 'RD-6', name: 'Conference papers', kraId: 'kra-rd', status: 'published', version: 2, hasDraftChanges: true, inputs: [pick('kind', 'Submitted or presented'), file('ev', 'Certificate')], evidenceRequired: true, hasScoringRules: true }),

@@ -57,21 +57,38 @@ Filter chips for KRA and department sit above (dashed when off, solid with the p
 
 ### KPI editor (`/frameworks/kpis/[id]`)
 
-A full-width focus mode with its own top bar: back to the library, code and name, status ("Draft", "Live v2" or "Live v2 · editing v3"), a save indicator, **Versions**, **Discard changes** and **Publish**. Steps:
+A full-screen **workflow canvas**, top-down and laid out automatically, based on the PoC's workflow builder (`legacy/poc/web/src/TreeBuilder.jsx`, `workflowModel.js`, `reusableTools.js`). Steps cannot be dragged freely; a free, n8n-style canvas may replace the auto layout later.
 
-1. **Basics:** name, code, description, KRA, who it applies to.
-2. **Inputs:** fields the employee fills in (number, choice, yes/no, text, date, file upload), each with a label, required switch, help text, min and max for numbers and options for choices. Fields can be reordered and removed.
-3. **Evidence:** whether proof is required, allowed file types and guidance. Warns when evidence is required but there is no file input.
-4. **Scoring:** rules of the form "if *input* *is at least / at most / equals / between* *value* then *points*". The first matching rule wins and no match scores 0. New rules start at 0 points so nothing is awarded by accident.
-5. **Review:** how the assigned reviewer returns or releases a mark. Information only.
-6. **Preview and test:** the form as an employee sees it. **Run test** shows the points and which rule matched, blocks when a required field is empty, reports numbers outside their range, and warns when the inputs or rules changed since the last run.
+**Top bar:** back to the library; the code and name, which open **KPI details** (name, code, description, KRA, who it applies to); the status ("Draft", "Live v2" or "Live v2 · editing v3"); a **Workflow | Test** switch; a save indicator; **Versions**; **Discard**; and **Publish**.
+
+**The PoC's three layers:**
+
+| Layer | What it is | In the prototype |
+|---|---|---|
+| **Blocks** | Steps on the canvas | **Trigger** "Employee submits" (holds the form fields and evidence settings; always first), **Action**, **Condition** (one field: is at least / at most / equals / between / is answered; Met and Not met paths), **Split by role**, **Human review** (hands the submission to the person's reviewer; ends the path), **Result** (ends a path with a named outcome) |
+| **Tools** | What an Action runs | **Score** works: rules of the form "if *field* *is at least / at most / equals / between* *value* then *points*"; the first match wins and no match scores 0. **Check date range**, **Extract evidence**, **Compare evidence** and **Find duplicates** are listed as **Later** |
+| **Plugins** | A ready-made workflow added in one go | **Publication** is listed as **Later** |
+
+Score is the only step that gives marks, so a Condition and a scoring rule can never give two different verdicts (a problem found in the PoC walkthrough). Each path can have its own Score step.
+
+**Building:**
+
+- A new KPI starts with **Employee submits → Score → Reviewer checks it**, so a simple KPI needs no canvas work.
+- **+** on every connection, and on every open path, opens the step library (blocks, tools, plugins, with search). The new step takes over what that connection led to. Blocks that end a path (Human review, Result) can only go on an open path.
+- Clicking a step opens its settings in a drawer on the right (a bottom sheet on phones). **Remove step** joins up a step with one way out; for a Condition or Split it also removes the steps only it led to.
+- Each step shows **Ready** or what it still needs, for example "Add at least one form field", "Choose a field to check" or "Connect every path".
+- Zoom in, zoom out and fit to screen sit at the bottom right.
+
+**Scoring by role:** **Split by role** sends people down different paths. Each role branch matches **people who review others** or **job titles containing** given words (for example "Lead, Manager"); a last path catches everyone else and can be renamed, for example "Team member". The sample KPI **TL-6 Peer reviews completed** shows it: team members get 10 points for 1 peer review, while leads need 2 for 10 points (1 gives 5).
+
+**Test mode:** choose who is submitting (Team member or Lead presets, or any job title and whether they review others), fill the form and **Run test**. The canvas darkens the path taken and fades the rest; the panel shows the points, the outcome and each step's result, for example "Went to Lead" and "Rule 2 matched: 5 points". Clicking a step in the trace opens it. A run stops at the trigger when a required field is empty, and a warning appears when the workflow or form changed after the run.
 
 **Saving and versions:**
 
 - Changes save automatically as you type.
 - A draft KPI is edited in place. **Publish** makes it v1.
 - Editing a **live** KPI saves the changes as the next version beside it. The live version stays in use, and cycles that already use it keep it, until you publish. **Discard changes** removes the pending version.
-- Publishing runs checks: a name, at least one input, every input labelled, a file input when evidence is required (all required), and scoring rules (a warning only). A short "what changed" note is recorded.
+- Publishing runs checks: a name, and every step's needs (form fields, labels, a file field when evidence is required, a field for each Condition, named roles, every path connected). Missing scoring rules are a warning only. Each item has a **Fix** link that opens the step. A short "what changed" note is recorded.
 - **Versions** lists every published version with its note and date, plus any pending draft.
 
 ## How it is built
@@ -80,9 +97,11 @@ A full-width focus mode with its own top bar: back to the library, code and name
 |---|---|
 | `lib/frameworks/types.ts` | KRA, KPI, input, scoring rule, version and analytics shapes. These become shared contracts when the API exists. |
 | `lib/frameworks/sample-data.ts` | Sample KRAs, KPIs and results. Not approved policy. |
-| `lib/frameworks/use-framework-library.ts` | One shared store for KRAs and KPIs with actions (add and edit KRAs, create, save, publish, discard, duplicate, archive and restore KPIs). It starts empty and is kept in `sessionStorage` under `afpi-frameworks-v2`. |
+| `lib/frameworks/use-framework-library.ts` | One shared store for KRAs and KPIs with actions (add and edit KRAs, create, save, publish, discard, duplicate, archive and restore KPIs). It starts empty and is kept in `sessionStorage` under `afpi-frameworks-v3`. |
 | `lib/frameworks/use-framework-analytics.ts` | `useFrameworkAnalytics(scope, filters)` over a pure `buildFrameworkAnalytics` function. Scope is the organization or one reviewer's team. |
-| `lib/frameworks/scoring.ts` | Runs a test submission through the rules. |
+| `lib/frameworks/scoring.ts` | Runs a test submission through one Score step's rules. |
+| `lib/frameworks/workflow.ts` | The workflow model: blocks, tools and plugins, adding and removing steps, the checks shown on steps, and test runs. |
+| `components/frameworks/workflow/` | The canvas (React Flow with a dagre top-down layout), the step library, step settings and the test panel. |
 | `components/dashboard/` | `MetricStrip` and `RankedPanel`, shared with Home. |
 | `components/frameworks/` | Analytics, KPI table, empty state, library dialogs, editor sections and the prototype view switch. |
 
@@ -98,5 +117,8 @@ To start again from nothing, clear the browser tab's site data or open a new tab
 - The brand colour is now near-black (`--primary` `#111111`, dark `#EDEDED`) with neutral greys across the app. The colour table in `docs/modules/organization/UI-PROTOTYPE.md` still lists the old blue and needs an update by its owner. `--info` (Invited) stays blue.
 - Appraisal cycles and assigning KPIs to people are not built. Submission, review and late numbers come from a sample cycle shown once a KPI is live. Cycles keeping "their" version is described, not implemented.
 - The appraisal-cycle selector in the top bar does not filter anything.
-- File uploads are shown but not tested in Preview and test.
+- File uploads are shown but not tested in Test mode.
+- Only the Score tool runs. Check date range, Extract evidence, Compare evidence, Find duplicates and the Publication plugin are listed as Later.
+- Split by role matches free-text job titles, which is approximate. A proper list of roles or designations belongs to the Organization module. The Overview still counts expected submissions as employees × live KPIs, not per role.
+- The canvas uses an automatic top-down layout; steps cannot be dragged or freely connected, and there is no undo yet.
 - Checked by hand and with scripted browser runs at 1366 by 900 (desktop) and 390 wide (phone). Dark mode, keyboard-only use and screen readers were not reviewed in depth.
