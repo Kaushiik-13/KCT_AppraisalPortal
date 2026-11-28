@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { AnalyticsFilters } from '@/components/frameworks/analytics-filters';
 import { FrameworkAnalytics } from '@/components/frameworks/framework-analytics';
 import { FrameworksEmpty } from '@/components/frameworks/frameworks-empty';
+import { GettingStarted } from '@/components/tour/getting-started';
 import type { AnalyticsFilters as Filters, AnalyticsSection } from '@/lib/frameworks/types';
 import { useFrameworkAnalytics } from '@/lib/frameworks/use-framework-analytics';
 import { useFrameworkLibrary } from '@/lib/frameworks/use-framework-library';
@@ -22,11 +23,17 @@ export default function FrameworksPage() {
   const analytics = useFrameworkAnalytics({ kind: 'organization' }, filters);
 
   if (analytics.state === 'empty') {
-    return <FrameworksEmpty canBuild onStartFromTemplate={() => setStage('built')} onCreateFromScratch={() => router.push('/frameworks/library#new-kra')} />;
+    return (
+      <div className="-mt-3 grid gap-4">
+        <GettingStarted />
+        <FrameworksEmpty canBuild onStartFromTemplate={() => setStage('built')} onCreateFromScratch={() => router.push('/frameworks/library#new-kra')} />
+      </div>
+    );
   }
 
   return (
     <div className="-mt-3 grid gap-3 *:min-w-0">
+      <GettingStarted />
       <div className="flex flex-wrap items-center justify-between gap-2">
         <AnalyticsFilters
           value={filters}

@@ -3,13 +3,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, Check, CircleAlert, CircleCheck, History, Pencil, RotateCcw } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, CircleAlert, CircleCheck, History, Pencil, RotateCcw } from 'lucide-react';
 import { BasicsSection } from '@/components/frameworks/editor/editor-sections';
 import { VersionsDialog } from '@/components/frameworks/versions-dialog';
+import { FormStep, ScoringStep, StartingPoints } from '@/components/frameworks/workflow/editor-steps';
 import { StepLibrary, type LibraryPick } from '@/components/frameworks/workflow/step-library';
 import { StepSettings } from '@/components/frameworks/workflow/step-settings';
 import { TestPanel } from '@/components/frameworks/workflow/test-panel';
 import { WorkflowCanvas, type Slot } from '@/components/frameworks/workflow/workflow-canvas';
+import { HelpButton } from '@/components/tour/help-button';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,15 +29,23 @@ import { Label } from '@/components/ui/label';
 import { colorOf } from '@/lib/department-colors';
 import type { KpiContent, WfNode, Workflow } from '@/lib/frameworks/types';
 import { editableContent, frameworkActions, useFrameworkLibrary } from '@/lib/frameworks/use-framework-library';
-import { allRules, createNode, insertStep, removeStep, updateNode, workflowIssues, workflowOf, type RunResult } from '@/lib/frameworks/workflow';
+import { allRules, createNode, insertStep, isScore, removeStep, startFrom, updateNode, workflowIssues, workflowOf, type RunResult } from '@/lib/frameworks/workflow';
+import { markProgress } from '@/lib/tour/progress';
 import { useSetup } from '@/lib/setup-store';
 import { cn } from '@/lib/utils';
 
-type Mode = 'build' | 'test';
+type Step = 'form' | 'workflow' | 'scoring' | 'test';
 type Run = (RunResult & { snapshot: string }) | null;
 
-// KPI editor (#79): a top-down workflow canvas, following the PoC's blocks, tools and plugins.
-// Changes save as you type: into the draft, or beside the live version.
+const STEPS: { key: Step; label: string }[] = [
+  { key: 'form', label: 'Form' },
+  { key: 'workflow', label: 'Workflow' },
+  { key: 'scoring', label: 'Scoring' },
+  { key: 'test', label: 'Test' },
+];
+
+// KPI editor (#79) in four guided steps: Form, Workflow (a top-down canvas following the PoC's blocks,
+// tools and plugins), Scoring and Test. Steps are a guide, not a lock. Changes save as you type.
 export default function KpiEditorPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
@@ -46,10 +56,11 @@ export default function KpiEditorPage() {
   const [content, setContent] = useState<KpiContent | null>(null);
   const [code, setCode] = useState('');
   const [saved, setSaved] = useState<'idle' | 'saving' | 'saved'>('idle');
-  const [mode, setMode] = useState<Mode>('build');
+  const [step, setStep] = useState<Step>('form');
   const [selectedId, setSelectedId] = useState('');
   const [slot, setSlot] = useState<Slot | null>(null);
   const [run, setRun] = useState<Run>(null);
+  const [tested, setTested] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [publishOpen, setPublishOpen] = useState(false);
   const [discardOpen, setDiscardOpen] = useState(false);
@@ -65,12 +76,15 @@ export default function KpiEditorPage() {
     if (!kpi) return;
     const key = `${kpi.id}:${kpi.version}:${kpi.status}:${kpi.hasDraftChanges ? 1 : 0}`;
     if (loadedFor.current === key && content) return;
+    const first = loadedFor.current === '';
     loadedFor.current = key;
     const c = editableContent(kpi);
     const withFlow = { ...c, workflow: workflowOf(c) };
     setContent(withFlow);
     latest.current = withFlow;
     setCode(kpi.code);
+    // New KPIs start on the form; KPIs that already have one open on their workflow.
+    if (first) setStep(withFlow.inputs.length ? 'workflow' : 'form');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [kpi?.id, kpi?.version, kpi?.status, kpi?.hasDraftChanges]);
 
@@ -96,12 +110,12 @@ export default function KpiEditorPage() {
   const setWorkflow = useCallback((wf: Workflow) => change({ workflow: wf, rules: allRules(wf) }), [change]);
   const issues = useMemo(() => (content && workflow ? workflowIssues(content, workflow) : []), [content, workflow]);
   const path = useMemo(() => {
-    if (!run || mode !== 'test') return null;
+    if (!run || step !== 'test') return null;
     return {
       nodes: new Set(run.trace.map((t) => t.nodeId)),
       routes: new Set(run.trace.filter((t) => t.route).map((t) => `${t.nodeId}:${t.route}`)),
     };
-  }, [run, mode]);
+  }, [run, step]);
 
   const select = useCallback((nodeId: string) => {
     setSlot(null);
@@ -133,6 +147,16 @@ export default function KpiEditorPage() {
   const editingNext = isPublished && kpi.hasDraftChanges;
   const selected = workflow.nodes.find((n) => n.id === selectedId);
   const slotParent = slot ? workflow.nodes.find((n) => n.id === slot.parentId) : undefined;
+  const scoreIds = new Set(workflow.nodes.filter(isScore).map((n) => n.id));
+  const triggerId = workflow.nodes.find((n) => n.kind === 'trigger')?.id;
+
+  // A step is done when nothing it owns still needs attention.
+  const done: Record<Step, boolean> = {
+    form: !issues.some((i) => i.nodeId === triggerId && i.text !== 'Choose a starting point'),
+    workflow: workflow.started !== false && !issues.some((i) => i.blocking && i.nodeId !== triggerId && !scoreIds.has(i.nodeId)),
+    scoring: scoreIds.size > 0 && !issues.some((i) => scoreIds.has(i.nodeId)),
+    test: tested,
+  };
 
   const flush = () => {
     if (timer.current && latest.current) {
@@ -142,46 +166,62 @@ export default function KpiEditorPage() {
     }
   };
 
+  const goTo = (s: Step) => {
+    setStep(s);
+    setSlot(null);
+    if (s !== 'workflow') setSelectedId('');
+  };
+
   const pick = (p: LibraryPick) => {
     if (!slot) return;
-    const step = createNode(p.kind, p.tool);
-    setWorkflow(insertStep(workflow, slot.parentId, slot.route, step));
+    const node = createNode(p.kind, p.tool);
+    if (node.tool === 'extract_evidence') node.extract = { fileInputId: content.inputs.find((i) => i.type === 'file')?.id ?? '', fields: [] };
+    setWorkflow(insertStep(workflow, slot.parentId, slot.route, node));
     setSlot(null);
-    setSelectedId(step.id);
+    setSelectedId(node.id);
   };
 
   const patchNode = (nodeId: string, patch: Partial<WfNode>) => setWorkflow(updateNode(workflow, nodeId, patch));
 
   const panel =
-    mode === 'test' ? (
+    step === 'test' ? (
       <TestPanel
         content={content}
         workflow={workflow}
         result={run}
-        onResult={setRun}
+        onResult={(r) => {
+          setRun(r);
+          if (r && !r.stopped) {
+            setTested(true);
+            markProgress('tested');
+          }
+        }}
         onFocusStep={(nodeId) => {
-          setMode('build');
+          goTo('workflow');
           setSelectedId(nodeId);
         }}
       />
-    ) : slot ? (
+    ) : step === 'workflow' && slot ? (
       <StepLibrary midPath={!!slotParent?.routes[slot.route]} onPick={pick} onClose={() => setSlot(null)} />
-    ) : selected ? (
+    ) : step === 'workflow' && selected ? (
       <StepSettings
         key={selected.id}
         node={selected}
         content={content}
+        workflow={workflow}
         issues={issues.filter((i) => i.nodeId === selected.id)}
         readOnly={readOnly}
-        onContent={change}
         onNode={(p) => patchNode(selected.id, p)}
         onRemove={() => {
           setWorkflow(removeStep(workflow, selected.id));
           setSelectedId('');
         }}
         onClose={() => setSelectedId('')}
+        onEditForm={() => goTo('form')}
       />
     ) : null;
+
+  const canvasStep = step === 'workflow' || step === 'test';
 
   return (
     <div className="flex h-dvh flex-col">
@@ -194,8 +234,9 @@ export default function KpiEditorPage() {
         <button
           type="button"
           onClick={() => setDetailsOpen(true)}
-          className="hover:bg-muted/60 group flex min-w-0 items-center gap-2 rounded-md px-1.5 py-1 xl:max-w-[calc(50vw-22rem)]"
+          className="hover:bg-muted/60 group flex min-w-0 items-center gap-2 rounded-md px-1.5 py-1 xl:max-w-[calc(50vw-26rem)]"
           aria-label="Edit KPI details"
+          data-tour="kpi-details"
         >
           {kra && <span className="size-2 shrink-0 rounded-full" style={{ background: colorOf(kra.color).fg }} aria-hidden />}
           <span className="text-muted-foreground font-mono text-xs">{code}</span>
@@ -206,32 +247,49 @@ export default function KpiEditorPage() {
           {kpi.status === 'archived' ? 'Archived' : isPublished ? `Live v${kpi.version}${editingNext ? ` · editing v${kpi.version + 1}` : ''}` : 'Draft'}
         </span>
 
-        {/* Centred on the page on wide screens; the title is capped there so they never overlap. */}
-        <div className="bg-muted inline-flex rounded-md p-0.5 text-xs max-md:order-last xl:absolute xl:left-1/2 xl:-translate-x-1/2" role="group" aria-label="Editor mode">
-          {(['build', 'test'] as Mode[]).map((m) => (
-            <button
-              key={m}
-              type="button"
-              aria-pressed={mode === m}
-              onClick={() => {
-                setMode(m);
-                setSlot(null);
-                if (m === 'test') setSelectedId('');
-              }}
-              className={cn('rounded px-3 py-1', mode === m ? 'bg-card text-foreground font-medium shadow-xs' : 'text-muted-foreground hover:text-foreground')}
-            >
-              {m === 'build' ? 'Workflow' : 'Test'}
-            </button>
-          ))}
-        </div>
+        {/* The four steps. Centred on the page on wide screens; the title is capped there so they never overlap. */}
+        <nav
+          aria-label="Editor steps"
+          data-tour="editor-steps"
+          className="flex items-center gap-0.5 text-xs max-md:order-last max-md:w-full max-md:overflow-x-auto xl:absolute xl:left-1/2 xl:-translate-x-1/2"
+        >
+          {STEPS.map((s, i) => {
+            const on = step === s.key;
+            return (
+              <div key={s.key} className="flex items-center">
+                {i > 0 && <span className="bg-border mx-1 h-px w-3 sm:w-5" aria-hidden />}
+                <button
+                  type="button"
+                  aria-current={on ? 'step' : undefined}
+                  onClick={() => goTo(s.key)}
+                  data-tour={`step-${s.key}`}
+                  className={cn('flex items-center gap-1.5 rounded-md px-2 py-1 whitespace-nowrap', on ? 'bg-secondary text-foreground font-medium' : 'text-muted-foreground hover:text-foreground')}
+                >
+                  <span
+                    className={cn(
+                      'grid size-4 place-items-center rounded-full border text-[10px] tabular-nums',
+                      done[s.key] ? 'bg-foreground text-background border-foreground' : on ? 'border-foreground' : '',
+                    )}
+                    aria-hidden
+                  >
+                    {done[s.key] ? <Check className="size-2.5" /> : i + 1}
+                  </span>
+                  {s.label}
+                  {done[s.key] && <span className="sr-only">(done)</span>}
+                </button>
+              </div>
+            );
+          })}
+        </nav>
 
         <div className="ml-auto flex items-center gap-2">
-          <span className="text-muted-foreground hidden text-xs lg:inline" aria-live="polite">
+          <span className="text-muted-foreground hidden text-xs 2xl:inline" aria-live="polite">
             {readOnly ? 'Read only' : saved === 'saving' ? 'Saving…' : saved === 'saved' ? 'Saved' : isPublished && !editingNext ? 'Edits create a new version' : 'Draft saved'}
           </span>
+          <HelpButton page="editor" />
           {kpi.versions.length > 0 && (
             <Button variant="ghost" size="sm" onClick={() => setVersionsOpen(true)} aria-label="Versions">
-              <History aria-hidden data-icon="inline-start" /> <span className="hidden sm:inline">Versions</span>
+              <History aria-hidden data-icon="inline-start" /> <span className="hidden lg:inline">Versions</span>
             </Button>
           )}
           {kpi.status === 'archived' ? (
@@ -247,6 +305,7 @@ export default function KpiEditorPage() {
               )}
               <Button
                 size="sm"
+                data-tour="publish"
                 disabled={isPublished && !editingNext && saved !== 'saving'}
                 onClick={() => {
                   flush();
@@ -268,46 +327,85 @@ export default function KpiEditorPage() {
         </div>
       )}
 
-      <div className="relative flex min-h-0 flex-1">
-        <div className="bg-muted/30 relative min-w-0 flex-1">
-          <WorkflowCanvas
+      {step === 'form' && (
+        <div className="flex-1 overflow-y-auto">
+          <FormStep content={content} onChange={change} readOnly={readOnly} onNext={() => goTo('workflow')} />
+        </div>
+      )}
+
+      {step === 'scoring' && (
+        <div className="flex-1 overflow-y-auto">
+          <ScoringStep
             content={content}
             workflow={workflow}
-            issues={issues}
-            selectedId={mode === 'build' ? selectedId : ''}
-            onSelect={(nodeId) => {
-              if (mode === 'test') setMode('build');
-              select(nodeId);
+            readOnly={readOnly}
+            onNode={patchNode}
+            onShowOnCanvas={(nodeId) => {
+              goTo('workflow');
+              setSelectedId(nodeId);
             }}
-            onAdd={mode === 'build' && !readOnly ? openSlot : undefined}
-            activeSlot={slot}
-            path={path}
+            onGoToWorkflow={() => goTo('workflow')}
+            onNext={() => goTo('test')}
           />
-          {mode === 'build' && !readOnly && (
-            <p className="bg-card/90 text-muted-foreground pointer-events-none absolute top-3 left-3 rounded-md border px-2.5 py-1 text-xs backdrop-blur">
-              Click a step to set it up · <span className="text-foreground font-medium">+</span> adds a step
-            </p>
-          )}
-          {mode === 'test' && path && (
-            <p className="bg-card/90 text-muted-foreground pointer-events-none absolute top-3 left-3 rounded-md border px-2.5 py-1 text-xs backdrop-blur">
-              Dark steps are the path this test took
-            </p>
+        </div>
+      )}
+
+      {canvasStep && (
+        <div className="relative flex min-h-0 flex-1">
+          <div className="bg-muted/30 relative min-w-0 flex-1" data-tour="canvas">
+            <WorkflowCanvas
+              content={content}
+              workflow={workflow}
+              issues={issues}
+              selectedId={step === 'workflow' ? selectedId : ''}
+              onSelect={(nodeId) => {
+                if (step === 'test') goTo('workflow');
+                select(nodeId);
+              }}
+              onAdd={step === 'workflow' && !readOnly && workflow.started !== false ? openSlot : undefined}
+              activeSlot={slot}
+              path={path}
+            />
+            {step === 'workflow' && workflow.started === false && !readOnly && (
+              <StartingPoints
+                hasFile={content.inputs.some((i) => i.type === 'file')}
+                onPick={(pid) => {
+                  setWorkflow(startFrom(pid, content));
+                  setSelectedId('');
+                }}
+              />
+            )}
+            {step === 'workflow' && workflow.started !== false && !readOnly && (
+              <p className="bg-card/90 text-muted-foreground pointer-events-none absolute top-3 left-3 rounded-md border px-2.5 py-1 text-xs backdrop-blur">
+                <span className="text-foreground font-medium">Step 2 of 4.</span> Click a step to set it up · <span className="text-foreground font-medium">+</span> adds a step
+              </p>
+            )}
+            {step === 'test' && (
+              <p className="bg-card/90 text-muted-foreground pointer-events-none absolute top-3 left-3 rounded-md border px-2.5 py-1 text-xs backdrop-blur">
+                <span className="text-foreground font-medium">Step 4 of 4.</span> {path ? 'Dark steps are the path this test took' : 'Run a test to see the path'}
+              </p>
+            )}
+            {step === 'workflow' && workflow.started !== false && (
+              <Button size="sm" className="absolute bottom-3 left-3 shadow-sm" onClick={() => goTo('scoring')} data-tour="next-scoring">
+                Next: Scoring <ArrowRight aria-hidden data-icon="inline-end" />
+              </Button>
+            )}
+          </div>
+
+          {panel && (
+            <aside
+              className={cn(
+                'bg-card flex min-h-0 flex-col border-l',
+                'md:relative md:w-[380px] md:shrink-0',
+                'max-md:fixed max-md:inset-x-0 max-md:bottom-0 max-md:z-30 max-md:max-h-[72dvh] max-md:rounded-t-2xl max-md:border-t max-md:border-l-0 max-md:shadow-lg',
+              )}
+              aria-label={step === 'test' ? 'Test a submission' : slot ? 'Add a step' : 'Step settings'}
+            >
+              {panel}
+            </aside>
           )}
         </div>
-
-        {panel && (
-          <aside
-            className={cn(
-              'bg-card flex min-h-0 flex-col border-l',
-              'md:relative md:w-[380px] md:shrink-0',
-              'max-md:fixed max-md:inset-x-0 max-md:bottom-0 max-md:z-30 max-md:max-h-[72dvh] max-md:rounded-t-2xl max-md:border-t max-md:border-l-0 max-md:shadow-lg',
-            )}
-            aria-label={mode === 'test' ? 'Test a submission' : slot ? 'Add a step' : 'Step settings'}
-          >
-            {panel}
-          </aside>
-        )}
-      </div>
+      )}
 
       <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
         <DialogContent className="sm:max-w-lg">
@@ -335,7 +433,7 @@ export default function KpiEditorPage() {
       </Dialog>
 
       <Dialog open={publishOpen} onOpenChange={setPublishOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md" data-tour="publish-dialog">
           {published !== null ? (
             <>
               <DialogHeader>
@@ -348,7 +446,9 @@ export default function KpiEditorPage() {
                 <Button variant="outline" onClick={() => setPublishOpen(false)}>
                   Keep editing
                 </Button>
-                <Button onClick={() => router.push('/frameworks/library')}>Back to KRAs and KPIs</Button>
+                <Button onClick={() => router.push('/frameworks/library')} data-tour="publish-done">
+                  Back to KRAs and KPIs
+                </Button>
               </DialogFooter>
             </>
           ) : (
@@ -359,6 +459,7 @@ export default function KpiEditorPage() {
                 if (blocked) return;
                 const v = isPublished ? kpi.version + 1 : 1;
                 frameworkActions.publish(kpi.id, note);
+                markProgress('published');
                 setSaved('idle');
                 setPublished(v);
               }}
@@ -400,15 +501,18 @@ export default function KpiEditorPage() {
                       className="text-primary ml-auto shrink-0 text-xs hover:underline"
                       onClick={() => {
                         setPublishOpen(false);
-                        setMode('build');
-                        setSlot(null);
-                        setSelectedId(i.nodeId);
+                        if (i.nodeId === triggerId && i.text !== 'Choose a starting point') goTo('form');
+                        else {
+                          goTo('workflow');
+                          if (i.nodeId !== triggerId) setSelectedId(i.nodeId);
+                        }
                       }}
                     >
                       Fix
                     </button>
                   </li>
                 ))}
+                {!tested && <li className="text-muted-foreground text-xs">Tip: run a test first to check the path and points.</li>}
               </ul>
               <div className="grid gap-1.5">
                 <Label htmlFor="pub-note">What changed {isPublished ? '' : '(optional)'}</Label>
@@ -418,7 +522,7 @@ export default function KpiEditorPage() {
                 <Button type="button" variant="outline" onClick={() => setPublishOpen(false)}>
                   Cancel
                 </Button>
-                <Button type="submit" disabled={blocked}>
+                <Button type="submit" disabled={blocked} data-tour="publish-confirm">
                   <Check aria-hidden data-icon="inline-start" /> Publish
                 </Button>
               </DialogFooter>

@@ -5,12 +5,13 @@ import { ArrowDown, ArrowUp, CircleAlert, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Toggle } from '@/components/settings-rows';
 import { INPUT_TYPE_LABEL } from '@/lib/frameworks/format';
 import { OP_LABEL, scorableInputs } from '@/lib/frameworks/scoring';
 import type { InputType, KpiContent, KpiInput, Kra, ScoringRule } from '@/lib/frameworks/types';
+import type { SourceGroup } from '@/lib/frameworks/workflow';
 import { cn } from '@/lib/utils';
 
 type SectionProps = { content: KpiContent; onChange: (patch: Partial<KpiContent>) => void; readOnly?: boolean; /** Hide the section title inside a panel that has its own. */ bare?: boolean };
@@ -248,17 +249,19 @@ export function EvidenceSection({ content, onChange, readOnly, bare }: SectionPr
 
 /** Rules for one Score step: "if <field> <op> <value> then <points>". The first match wins; no match scores 0. */
 export function RulesEditor({
-  inputs: all,
+  sources,
   rules,
   onChange,
   readOnly,
 }: {
-  inputs: KpiInput[];
+  /** Values the rules can use, grouped: the form, then anything extracted earlier on the path. */
+  sources: SourceGroup[];
   rules: ScoringRule[];
   onChange: (rules: ScoringRule[]) => void;
   readOnly?: boolean;
 }) {
-  const inputs = scorableInputs(all);
+  const groups = sources.map((g) => ({ ...g, items: scorableInputs(g.items) })).filter((g) => g.items.length);
+  const inputs = groups.flatMap((g) => g.items);
   const patch = (id: string, p: Partial<ScoringRule>) => onChange(rules.map((r) => (r.id === id ? { ...r, ...p } : r)));
   const num = (v: string) => (v === '' ? 0 : Number(v));
   const swap = (i: number, j: number) => {
@@ -268,7 +271,7 @@ export function RulesEditor({
   };
   return (
     <div className="grid gap-3">
-      {inputs.length === 0 && <p className="text-muted-foreground text-sm">Add a number, yes/no or choice field to the form first. Rules test those.</p>}
+      {inputs.length === 0 && <p className="text-muted-foreground text-sm">Add a number, yes/no or choice field to the form, or extract one from a file. Rules test those.</p>}
       <ol className="grid gap-2">
         {rules.map((r, i) => (
           <li key={r.id} className="bg-card grid gap-2 rounded-lg border p-3 text-sm">
@@ -291,14 +294,19 @@ export function RulesEditor({
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-muted-foreground">If</span>
               <Select value={r.inputId} disabled={readOnly} onValueChange={(inputId) => patch(r.id, { inputId })}>
-                <SelectTrigger size="sm" className="min-w-0 flex-1" aria-label="Field">
-                  <SelectValue placeholder="Choose field" />
+                <SelectTrigger size="sm" className="min-w-0 flex-1" aria-label="Value to test">
+                  <SelectValue placeholder="Choose a value" />
                 </SelectTrigger>
                 <SelectContent>
-                  {inputs.map((x) => (
-                    <SelectItem key={x.id} value={x.id}>
-                      {x.label || 'Untitled field'}
-                    </SelectItem>
+                  {groups.map((g) => (
+                    <SelectGroup key={g.label}>
+                      <SelectLabel>{g.label}</SelectLabel>
+                      {g.items.map((x) => (
+                        <SelectItem key={x.id} value={x.id}>
+                          {x.label || 'Untitled field'}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
                   ))}
                 </SelectContent>
               </Select>

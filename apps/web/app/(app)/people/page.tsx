@@ -140,7 +140,7 @@ export default function PeoplePage() {
               </DropdownMenuContent>
             </DropdownMenu>
           )}
-          <Button size="sm" onClick={() => setAdding(selected ? selected.id : '')}>
+          <Button data-tour="people-actions" size="sm" onClick={() => setAdding(selected ? selected.id : '')}>
             <Plus aria-hidden /> Add person
           </Button>
           </>
@@ -181,7 +181,7 @@ export default function PeoplePage() {
           {railItem(NOREV, 'No reviewer', noReviewer, undefined, noReviewer > 0)}
         </aside>
 
-        <section className="min-w-0">
+        <section className="min-w-0" data-tour="people-list">
           <div className="flex flex-wrap items-center gap-2 border-b p-3">
             <SearchField value={query} onChange={setQuery} placeholder="Search people" label="Search people" className="min-w-40 flex-1" />
             <Select value={role} onValueChange={setRole}>

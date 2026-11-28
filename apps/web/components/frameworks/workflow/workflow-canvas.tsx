@@ -190,7 +190,7 @@ function useLayout({ content, workflow, issues, selectedId, onSelect, onAdd, act
         height: STEP_H,
         data: {
           node: n,
-          summary: summaryOf(n, content),
+          summary: summaryOf(n, content, workflow),
           issue: issues.find((i) => i.nodeId === n.id && i.blocking) ?? issues.find((i) => i.nodeId === n.id),
           selected: n.id === selectedId,
           onPath: path ? path.nodes.has(n.id) : undefined,

@@ -24,10 +24,10 @@ export function FrameworksEmpty({ canBuild, onStartFromTemplate, onCreateFromScr
       </div>
       {canBuild && (
         <div className="flex flex-wrap justify-center gap-2">
-          <Button size="sm" onClick={onCreateFromScratch} disabled={!onCreateFromScratch}>
+          <Button size="sm" onClick={onCreateFromScratch} disabled={!onCreateFromScratch} data-tour="new-kra-empty">
             <Plus aria-hidden data-icon="inline-start" /> New KRA
           </Button>
-          <Button size="sm" variant="outline" onClick={onStartFromTemplate} disabled={!onStartFromTemplate}>
+          <Button size="sm" variant="outline" onClick={onStartFromTemplate} disabled={!onStartFromTemplate} data-tour="use-template">
             Use a template
           </Button>
         </div>

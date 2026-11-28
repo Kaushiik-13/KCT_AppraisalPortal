@@ -57,31 +57,44 @@ Filter chips for KRA and department sit above (dashed when off, solid with the p
 
 ### KPI editor (`/frameworks/kpis/[id]`)
 
-A full-screen **workflow canvas**, top-down and laid out automatically, based on the PoC's workflow builder (`legacy/poc/web/src/TreeBuilder.jsx`, `workflowModel.js`, `reusableTools.js`). Steps cannot be dragged freely; a free, n8n-style canvas may replace the auto layout later.
+**New KPI** in the library opens a small dialog first (name, KRA, who it applies to, an optional description), so nobody lands on "Untitled KPI". **Create and build** opens the editor.
 
-**Top bar:** back to the library; the code and name, which open **KPI details** (name, code, description, KRA, who it applies to); the status ("Draft", "Live v2" or "Live v2 · editing v3"); a **Workflow | Test** switch; a save indicator; **Versions**; **Discard**; and **Publish**.
+The editor is a **guided, four-step** builder. A step bar in the top bar shows **1 Form · 2 Workflow · 3 Scoring · 4 Test**, with a tick on each step that is done. The steps are a guide, not a lock: any step can be opened at any time. A new KPI opens on Form; a KPI that already has fields opens on Workflow.
 
-**The PoC's three layers:**
+**Top bar:** back to the library; the code and name, which open **KPI details** (name, code, description, KRA, who it applies to); the status; the step bar; **?** for help and tours; **Versions**; **Discard**; and **Publish**.
+
+1. **Form:** the fields the employee fills in (number, choice, yes/no, text, date, file upload) and the evidence settings, with a live **What the employee sees** preview beside them.
+2. **Workflow:** a top-down canvas, laid out automatically, based on the PoC's workflow builder (`legacy/poc/web/src/TreeBuilder.jsx`, `workflowModel.js`, `reusableTools.js`). A new KPI first picks a **starting point**:
+   - **Score from the form** (most KPIs): Submit → Score → Review.
+   - **Check evidence first:** Submit → Extract evidence → Score → Review.
+   - **Different by role:** Submit → Split by role → a Score for each role → Review.
+   - **Start blank.**
+3. **Scoring:** every Score step in one place, in path order, each labelled with the branch it sits on (for example "Lead"). **Show on canvas** opens the step.
+4. **Test:** choose who is submitting, fill the form (and type what an extraction would return), and **Run test**. The canvas darkens the path taken; the panel shows the points and each step's result.
+
+**The PoC's three layers on the canvas:**
 
 | Layer | What it is | In the prototype |
 |---|---|---|
-| **Blocks** | Steps on the canvas | **Trigger** "Employee submits" (holds the form fields and evidence settings; always first), **Action**, **Condition** (one field: is at least / at most / equals / between / is answered; Met and Not met paths), **Split by role**, **Human review** (hands the submission to the person's reviewer; ends the path), **Result** (ends a path with a named outcome) |
-| **Tools** | What an Action runs | **Score** works: rules of the form "if *field* *is at least / at most / equals / between* *value* then *points*"; the first match wins and no match scores 0. **Check date range**, **Extract evidence**, **Compare evidence** and **Find duplicates** are listed as **Later** |
+| **Blocks** | Steps on the canvas | **Trigger** "Employee submits" (its form is edited in step 1), **Action**, **Condition** (one value: is at least / at most / equals / between / is answered; Met and Not met paths), **Split by role**, **Human review** (hands the submission to the person's reviewer; ends the path), **Result** (ends a path with a named outcome) |
+| **Tools** | What an Action runs | **Score** and **Extract evidence** work. **Check date range**, **Compare evidence** and **Find duplicates** are listed as **Later** |
 | **Plugins** | A ready-made workflow added in one go | **Publication** is listed as **Later** |
 
-Score is the only step that gives marks, so a Condition and a scoring rule can never give two different verdicts (a problem found in the PoC walkthrough). Each path can have its own Score step.
+**Values from the form or from a file:** every step can produce values, and later steps check and score them, as the PoC's `policySources` did. The form produces its fields. **Extract evidence** reads a chosen file field and produces the values you list (each a number, yes/no, choice or text), for example "Indexed in: Scopus, Web of Science, None". Scoring rules and Conditions pick from a grouped list: **Form**, then **Extracted from *file***. A step only offers values read **before** it on its path, so a rule cannot use a value that has not been extracted yet. In the prototype nothing reads real files: Test mode asks you to type what the file would say.
 
-**Building:**
+Score is the only step that gives marks, so a Condition and a scoring rule can never give two different verdicts (a problem found in the PoC walkthrough).
 
-- A new KPI starts with **Employee submits → Score → Reviewer checks it**, so a simple KPI needs no canvas work.
-- **+** on every connection, and on every open path, opens the step library (blocks, tools, plugins, with search). The new step takes over what that connection led to. Blocks that end a path (Human review, Result) can only go on an open path.
-- Clicking a step opens its settings in a drawer on the right (a bottom sheet on phones). **Remove step** joins up a step with one way out; for a Condition or Split it also removes the steps only it led to.
-- Each step shows **Ready** or what it still needs, for example "Add at least one form field", "Choose a field to check" or "Connect every path".
-- Zoom in, zoom out and fit to screen sit at the bottom right.
+**Building on the canvas:** **+** on every connection and open path opens the step library (tools, blocks, plugins, with search); blocks that end a path only go on an open path. Clicking a step opens its settings in a drawer (a bottom sheet on phones). **Remove step** joins up a step with one way out; for a Condition or Split it also removes the steps only it led to. Each step shows **Ready** or what it still needs. Branch labels sit on each branch, just above the step they lead to.
 
-**Scoring by role:** **Split by role** sends people down different paths. Each role branch matches **people who review others** or **job titles containing** given words (for example "Lead, Manager"); a last path catches everyone else and can be renamed, for example "Team member". The sample KPI **TL-6 Peer reviews completed** shows it: team members get 10 points for 1 peer review, while leads need 2 for 10 points (1 gives 5).
+**Scoring by role:** **Split by role** matches **people who review others** or **job titles containing** given words; a last, renameable path catches everyone else (for example "Team member"). The sample **TL-6 Peer reviews completed** shows it: team members get 10 points for 1 peer review, leads need 2 for 10 points (1 gives 5).
 
-**Test mode:** choose who is submitting (Team member or Lead presets, or any job title and whether they review others), fill the form and **Run test**. The canvas darkens the path taken and fades the rest; the panel shows the points, the outcome and each step's result, for example "Went to Lead" and "Rule 2 matched: 5 points". Clicking a step in the trace opens it. A run stops at the trigger when a required field is empty, and a warning appears when the workflow or form changed after the run.
+### Help, tours and getting started
+
+- **?** in the top bar of every page, and **Get help** in the user menu, offer **Tour this page** and **Guided tour: create a KPI**.
+- **Guided tour: create a KPI** runs from the sidebar to a published KPI (21 stops): Frameworks, the library, the New KPI dialog, each editor step, Test and Publish. It points at the real control with a spotlight and a short card. Stops marked **Do this** wait for the person to do it (for example "Click New KPI") and move on by themselves; every stop also has Next, Back and Skip tour. It carries on across pages, catches up when someone goes ahead of it, and shows a **Go there** pill when it is paused on another page. It starts on its own the first time Frameworks is opened.
+- **Page tours** cover Home, People, Invitations, the Frameworks overview, the library, the KPI editor, Your profile and Organization settings.
+- **Getting started** on the Frameworks overview lists the steps to a first live KPI (create a KRA, create a KPI, add form fields, build the workflow, set scoring rules, test, publish), each linking to where it is done, with a **Guided tour** button. It hides itself when everything is done, or with ×.
+- Stops whose control is not on screen (another layout or state) are skipped. On phones the card docks at the top or bottom, away from the control.
 
 **Saving and versions:**
 
@@ -101,7 +114,9 @@ Score is the only step that gives marks, so a Condition and a scoring rule can n
 | `lib/frameworks/use-framework-analytics.ts` | `useFrameworkAnalytics(scope, filters)` over a pure `buildFrameworkAnalytics` function. Scope is the organization or one reviewer's team. |
 | `lib/frameworks/scoring.ts` | Runs a test submission through one Score step's rules. |
 | `lib/frameworks/workflow.ts` | The workflow model: blocks, tools and plugins, adding and removing steps, the checks shown on steps, and test runs. |
-| `components/frameworks/workflow/` | The canvas (React Flow with a dagre top-down layout), the step library, step settings and the test panel. |
+| `components/frameworks/workflow/` | The four editor steps, the canvas (React Flow with a dagre top-down layout), the step library, step settings and the test panel. |
+| `components/frameworks/new-kpi-dialog.tsx` | The New KPI dialog. |
+| `lib/tour/` and `components/tour/` | Tours (`tours.ts` holds every stop), the tour host mounted in the root layout, the ? button and the Getting started checklist. Tour state is kept in `localStorage` under `afpi-tour-v1`. |
 | `components/dashboard/` | `MetricStrip` and `RankedPanel`, shared with Home. |
 | `components/frameworks/` | Analytics, KPI table, empty state, library dialogs, editor sections and the prototype view switch. |
 
@@ -118,7 +133,9 @@ To start again from nothing, clear the browser tab's site data or open a new tab
 - Appraisal cycles and assigning KPIs to people are not built. Submission, review and late numbers come from a sample cycle shown once a KPI is live. Cycles keeping "their" version is described, not implemented.
 - The appraisal-cycle selector in the top bar does not filter anything.
 - File uploads are shown but not tested in Test mode.
-- Only the Score tool runs. Check date range, Extract evidence, Compare evidence, Find duplicates and the Publication plugin are listed as Later.
+- Score and Extract evidence work; Extract evidence does not read real files, so Test mode asks for the values. Check date range, Compare evidence, Find duplicates and the Publication plugin are listed as Later.
+- Scoring rules and Conditions compare numbers, yes/no and choices. Extracted dates and text can only be checked for being present.
+- Tours point at controls by CSS selector. A control that moves or is renamed needs its selector updated in `lib/tour/tours.ts`. Which tours were seen is kept in the browser, not per user.
 - Split by role matches free-text job titles, which is approximate. A proper list of roles or designations belongs to the Organization module. The Overview still counts expected submissions as employees × live KPIs, not per role.
 - The canvas uses an automatic top-down layout; steps cannot be dragged or freely connected, and there is no undo yet.
 - Checked by hand and with scripted browser runs at 1366 by 900 (desktop) and 390 wide (phone). Dark mode, keyboard-only use and screen readers were not reviewed in depth.

@@ -101,7 +101,7 @@ export default function InvitationsPage() {
         </div>
       )}
 
-      <section className="grid gap-3">
+      <section className="grid gap-3" data-tour="invitations-list">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <StatusTabs
             label="Filter by status"

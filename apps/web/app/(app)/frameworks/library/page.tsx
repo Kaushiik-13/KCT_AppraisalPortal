@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Archive, Copy, History, MoreHorizontal, Pencil, Plus, RotateCcw } from 'lucide-react';
 import { KraDialog } from '@/components/frameworks/kra-dialog';
+import { NewKpiDialog } from '@/components/frameworks/new-kpi-dialog';
 import { VersionsDialog } from '@/components/frameworks/versions-dialog';
 import { SearchField } from '@/components/search-field';
 import { Button } from '@/components/ui/button';
@@ -21,6 +22,7 @@ import { colorOf } from '@/lib/department-colors';
 import { inputsSummary, relativeDay } from '@/lib/frameworks/format';
 import type { Kpi, KpiStatus, Kra } from '@/lib/frameworks/types';
 import { editableContent, frameworkActions, useFrameworkLibrary } from '@/lib/frameworks/use-framework-library';
+import { useSetup } from '@/lib/setup-store';
 import { cn } from '@/lib/utils';
 
 const ALL = 'all';
@@ -44,6 +46,8 @@ export default function FrameworkLibraryPage() {
   const [status, setStatus] = useState<StatusFilter>('all');
   const [query, setQuery] = useState('');
   const [kraDialog, setKraDialog] = useState<{ open: boolean; kra?: Kra }>({ open: false });
+  const [newKpiOpen, setNewKpiOpen] = useState(false);
+  const { departments } = useSetup();
   const [versionsOf, setVersionsOf] = useState<Kpi | null>(null);
 
   // "Create from scratch" on the empty Overview links here with #new-kra.
@@ -66,11 +70,8 @@ export default function FrameworkLibraryPage() {
     .filter((k) => !query.trim() || `${k.code} ${k.name}`.toLowerCase().includes(query.trim().toLowerCase()))
     .sort((a, b) => a.code.localeCompare(b.code, undefined, { numeric: true }));
 
-  const newKpi = () => {
-    const target = kra && !kra.archived ? kra.id : activeKras[0]?.id;
-    if (!target) return setKraDialog({ open: true });
-    router.push(`/frameworks/kpis/${frameworkActions.createKpi(target)}`);
-  };
+  const target = kra && !kra.archived ? kra.id : (activeKras[0]?.id ?? '');
+  const newKpi = () => (target ? setNewKpiOpen(true) : setKraDialog({ open: true }));
   const liveInKra = (id: string) => kpis.some((k) => k.kraId === id && k.status === 'published');
 
   const railItem = (key: string, label: string, n: number, color?: string) => (
@@ -94,10 +95,10 @@ export default function FrameworkLibraryPage() {
     <>
       <div className="grid gap-6 md:grid-cols-[200px_minmax(0,1fr)]">
         {/* KRA list: a rail on desktop, a dropdown on phones. */}
-        <aside className="hidden content-start gap-0.5 md:grid" aria-label="KRAs">
+        <aside className="hidden content-start gap-0.5 md:grid" aria-label="KRAs" data-tour="kra-rail">
           <div className="text-muted-foreground flex items-center justify-between px-2 pb-1.5 text-[11px] font-medium tracking-wide uppercase">
             KRAs
-            <Button variant="ghost" size="icon-xs" aria-label="New KRA" onClick={() => setKraDialog({ open: true })}>
+            <Button variant="ghost" size="icon-xs" aria-label="New KRA" data-tour="new-kra" onClick={() => setKraDialog({ open: true })}>
               <Plus aria-hidden />
             </Button>
           </div>
@@ -163,7 +164,7 @@ export default function FrameworkLibraryPage() {
               </p>
             </div>
             {selected !== ARCHIVED && (
-              <Button onClick={newKpi}>
+              <Button onClick={newKpi} data-tour="new-kpi">
                 <Plus aria-hidden data-icon="inline-start" /> New KPI
               </Button>
             )}
@@ -195,7 +196,7 @@ export default function FrameworkLibraryPage() {
             </div>
           )}
 
-          <div className="bg-card overflow-hidden rounded-xl border">
+          <div className="bg-card overflow-hidden rounded-xl border" data-tour="kpi-list">
             <Table className="table-fixed text-[13px]">
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
@@ -332,6 +333,18 @@ export default function FrameworkLibraryPage() {
         }}
       />
       <VersionsDialog kpi={versionsOf} onOpenChange={(open) => !open && setVersionsOf(null)} />
+      <NewKpiDialog
+        open={newKpiOpen}
+        onOpenChange={setNewKpiOpen}
+        kras={activeKras}
+        defaultKraId={target}
+        audiences={['All teaching staff', 'All staff', ...departments.map((d) => `${d.name} department`)]}
+        onCreate={(v) => {
+          const id = frameworkActions.createKpi(v.kraId, v);
+          setNewKpiOpen(false);
+          router.push(`/frameworks/kpis/${id}`);
+        }}
+      />
     </>
   );
 }

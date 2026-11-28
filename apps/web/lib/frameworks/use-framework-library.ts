@@ -3,7 +3,7 @@
 import { useSyncExternalStore } from 'react';
 import { SAMPLE_KPIS, SAMPLE_KRAS } from './sample-data';
 import type { Kpi, KpiContent, Kra } from './types';
-import { allRules, defaultWorkflow, workflowOf } from './workflow';
+import { allRules, unstartedWorkflow, workflowOf } from './workflow';
 
 /**
  * Prototype store for Framework Studio. Frontend only: there is no backend yet.
@@ -107,27 +107,27 @@ export const frameworkActions = {
     setKras((list) => list.map((k) => (k.id === id ? { ...k, ...patch } : k)));
   },
 
-  /** Creates a draft KPI and returns its id. */
-  createKpi(kraId: string): string {
+  /** Creates a draft KPI and returns its id. Its workflow waits for a starting point. */
+  createKpi(kraId: string, details: { name?: string; appliesTo?: string; description?: string } = {}): string {
     const { kras, kpis } = read();
     const kra = kras.find((k) => k.id === kraId);
     const id = uid('kpi');
     const kpi: Kpi = {
       id,
       code: nextCode(kra, kpis),
-      name: 'Untitled KPI',
+      name: details.name?.trim() || 'Untitled KPI',
       kraId,
       status: 'draft',
       version: 1,
       hasDraftChanges: false,
       inputs: [],
       evidenceRequired: false,
-      appliesTo: 'All teaching staff',
+      appliesTo: details.appliesTo ?? 'All teaching staff',
       hasScoringRules: false,
-      description: '',
+      description: details.description ?? '',
       evidence: { fileTypes: [], guidance: '' },
       rules: [],
-      workflow: defaultWorkflow(),
+      workflow: unstartedWorkflow(),
       updatedAt: now(),
       versions: [],
     };

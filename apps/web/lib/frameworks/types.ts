@@ -38,6 +38,7 @@ export type KpiInput = {
  */
 export type ScoringRule = {
   id: string;
+  /** A form field id, or an extracted field (`x:<stepId>:<fieldId>`). See `sourcesFor` in workflow.ts. */
   inputId: string;
   op: 'gte' | 'lte' | 'eq' | 'between';
   value: number;
@@ -73,6 +74,8 @@ export type WfNode = {
   tool?: ToolKind;
   /** Score tool: its rules. Condition: the check. Split: its branches. Result: the outcome. */
   rules?: ScoringRule[];
+  /** Extract evidence: which file field to read, and the fields to pull out of it. */
+  extract?: { fileInputId: string; fields: ExtractField[] };
   condition?: { inputId: string; op: ConditionOp; value: number; value2?: number };
   branches?: SplitBranch[];
   /** Name of the split's catch-all path. Defaults to "Everyone else". */
@@ -82,7 +85,14 @@ export type WfNode = {
   routes: Record<string, string | null>;
 };
 
-export type Workflow = { nodes: WfNode[] };
+/** A value the Extract evidence tool pulls out of a file. Later steps can check and score it like a form field. */
+export type ExtractField = { id: string; label: string; type: 'number' | 'yesno' | 'choice' | 'text'; options?: string[] };
+
+export type Workflow = {
+  nodes: WfNode[];
+  /** False until a starting point is chosen for a new KPI. Missing means chosen (older and sample workflows). */
+  started?: boolean;
+};
 
 /** The editable part of a KPI. A published KPI keeps its live content while a draft of the next version is edited. */
 export type KpiContent = {

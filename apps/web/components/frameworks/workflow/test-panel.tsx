@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import type { KpiContent, Workflow } from '@/lib/frameworks/types';
-import { runWorkflow, type RunResult, type TestPerson } from '@/lib/frameworks/workflow';
+import { allExtracted, runWorkflow, type RunResult, type TestPerson } from '@/lib/frameworks/workflow';
 import { cn } from '@/lib/utils';
 
 const PRESETS: { label: string; person: TestPerson }[] = [
@@ -33,7 +33,7 @@ export function TestPanel({ content, workflow, result, onResult, onFocusStep }: 
   const name = (id: string) => workflow.nodes.find((n) => n.id === id)?.name || 'Step';
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col" data-tour="test-panel">
       <div className="border-b px-4 py-3">
         <h2 className="text-sm font-semibold">Test a submission</h2>
         <p className="text-muted-foreground text-xs">Nothing is saved. Only the path this person takes runs.</p>
@@ -79,7 +79,7 @@ export function TestPanel({ content, workflow, result, onResult, onFocusStep }: 
             <h3 className="text-sm font-semibold">{content.name || 'Untitled KPI'}</h3>
             {content.description && <p className="text-muted-foreground text-xs">{content.description}</p>}
           </div>
-          {content.inputs.length === 0 && <p className="text-muted-foreground text-sm">The form has no fields yet. Add them on the Trigger step.</p>}
+          {content.inputs.length === 0 && <p className="text-muted-foreground text-sm">The form has no fields yet. Add them in the Form step.</p>}
           {content.inputs.map((i) => {
             const id = `test-${i.id}`;
             return (
@@ -115,6 +115,32 @@ export function TestPanel({ content, workflow, result, onResult, onFocusStep }: 
               </div>
             );
           })}
+          {allExtracted(content, workflow).map((g) => (
+            <fieldset key={g.label} className="grid gap-3 rounded-lg border border-dashed p-3">
+              <legend className="text-muted-foreground px-1 text-xs">{g.label} · type what the file would say</legend>
+              {g.items.map((i) => (
+                <div key={i.id} className="grid gap-1.5">
+                  <Label htmlFor={`test-${i.id}`}>{i.label}</Label>
+                  {i.type === 'yesno' || i.type === 'choice' ? (
+                    <Select value={values[i.id] ?? ''} onValueChange={(v) => setValues((s) => ({ ...s, [i.id]: v }))}>
+                      <SelectTrigger id={`test-${i.id}`} className="w-full">
+                        <SelectValue placeholder="Choose" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {(i.type === 'yesno' ? ['yes', 'no'] : (i.options ?? [])).map((o) => (
+                          <SelectItem key={o} value={o}>
+                            {i.type === 'yesno' ? (o === 'yes' ? 'Yes' : 'No') : o}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <Input id={`test-${i.id}`} type={i.type === 'number' ? 'number' : 'text'} value={values[i.id] ?? ''} onChange={(e) => setValues((s) => ({ ...s, [i.id]: e.target.value }))} />
+                  )}
+                </div>
+              ))}
+            </fieldset>
+          ))}
           <div className="flex items-center gap-2">
             <Button type="submit" size="sm">
               <Play aria-hidden data-icon="inline-start" /> Run test

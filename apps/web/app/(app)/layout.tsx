@@ -21,6 +21,7 @@ import {
   UserRound,
   Users,
   type LucideIcon,
+  Route,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -38,6 +39,9 @@ import { initials, useAdminUser } from '@/lib/admin-user';
 import { useSetupProgress } from '@/lib/setup-progress';
 import { SetupProvider, useSetup } from '@/lib/setup-store';
 import { cn } from '@/lib/utils';
+import { HelpButton, startFirstKpiTour } from '@/components/tour/help-button';
+import { tourActions } from '@/lib/tour/progress';
+import { pageTourFor } from '@/lib/tour/tours';
 
 type NavItem = { href: string; label: string; icon: LucideIcon; built: boolean };
 
@@ -230,6 +234,7 @@ function Shell({ children }: { children: ReactNode }) {
             <DropdownMenuTrigger asChild>
               <button
                 type="button"
+                data-tour="user-menu"
                 className="hover:bg-secondary/60 flex w-full items-center gap-2.5 rounded-lg p-2 text-left"
               >
                 <span className="bg-secondary text-foreground grid size-8 shrink-0 place-items-center rounded-full text-xs font-medium">
@@ -256,9 +261,16 @@ function Shell({ children }: { children: ReactNode }) {
                 <Settings aria-hidden /> Organization settings
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem disabled>
-                <CircleQuestionMark aria-hidden /> Get help
-                <span className="bg-secondary text-muted-foreground ml-auto rounded px-1.5 text-[11px] leading-5">Soon</span>
+              <DropdownMenuItem
+                onSelect={() => {
+                  const t = pageTourFor(pathname);
+                  if (t) tourActions.start(t.id);
+                }}
+              >
+                <CircleQuestionMark aria-hidden /> Get help: tour this page
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => startFirstKpiTour(pathname, router.push)}>
+                <Route aria-hidden /> Guided tour: create a KPI
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={() => setShortcutsOpen(true)}>
                 <Keyboard aria-hidden /> Keyboard shortcuts
@@ -313,6 +325,7 @@ function Shell({ children }: { children: ReactNode }) {
             </kbd>
           </div>
           <div className="ml-auto flex items-center gap-2 md:ml-0">
+          <HelpButton />
           <Select value={cycle} onValueChange={setCycle}>
             <SelectTrigger size="sm" className="w-28" aria-label="Appraisal cycle">
               <SelectValue />
@@ -354,7 +367,7 @@ function Shell({ children }: { children: ReactNode }) {
           </div>
         </div>
         <main className="min-w-0 flex-1 overflow-y-auto px-5 pt-8 pb-16 md:px-10">
-          <div className="mx-auto grid max-w-5xl gap-8 *:min-w-0">{children}</div>
+          <div className="mx-auto grid max-w-5xl gap-8 *:min-w-0" data-tour="page-body">{children}</div>
         </main>
       </div>
       <div className="text-muted-foreground bg-background/80 fixed right-4 bottom-3 hidden items-center md:flex gap-1.5 rounded-md px-2 py-1 text-xs backdrop-blur-sm">
